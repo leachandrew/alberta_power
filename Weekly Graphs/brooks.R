@@ -17,13 +17,13 @@ target_months<-month.abb
 
 ggplot(filter(graph_data,month %in% target_months)) +
   #geom_ribbon(aes(x = hour_start, ymin = min_vol, ymax = max_vol,fill="A"),alpha=.25, linetype = 0)+
-  geom_line(data=filter(brooks_vols,month %in% target_months),aes(hour_start,brooks_vols,group=day,colour="Daily patterns"),
+  geom_line(data=filter(brooks_vols,month %in% target_months),aes(hour_start,brooks_vols/15,group=day,colour="Daily patterns"),
             size=.05)+
-  geom_line(size=1.5,aes(hour_start,mean_vol,color="Monthly mean pattern"))+
+  geom_line(size=1.5,aes(hour_start,mean_vol/15,color="Monthly mean pattern"))+
   facet_wrap(~month,ncol = 4)+
   scale_x_continuous(breaks=seq(0,23,3))+
-  scale_y_continuous(breaks=pretty_breaks(),limits = c(0,17))+
-  scale_colour_manual("",values = c("grey40","dodgerblue"))+
+  scale_y_continuous(breaks=pretty_breaks(),limits = c(0,1.05),labels=percent)+
+  scale_colour_manual("",values = c("grey30","dodgerblue"))+
   theme_minimal()+theme(    
     legend.position = "bottom",
     legend.margin=margin(c(0,0,0,0),unit="cm"),
@@ -34,8 +34,8 @@ ggplot(filter(graph_data,month %in% target_months)) +
     panel.grid.minor = element_blank(),
     text = element_text(size = 14,face = "bold"),
     axis.text = element_text(size = 12,face = "bold", colour="black")
-  )+    labs(y="Hourly Metered Volumes (MWh)",x="Hour",
-             title="Brooks Solar Plant Generation by Month",
-             subtitle=paste("Monthly mean and range of hourly generation values from ",start_date," to ",end_date,sep=""),
+  )+    labs(y="Hourly Capacity Factor",x="Hour",
+             title="Brooks Solar Plant Hourly Capacity Factor by Month",
+             subtitle=paste("Monthly mean and range of hourly capacity factors from ",start_date," to ",end_date,sep=""),
              caption="Source: Generation data via NRGStream\nGraph by Andrew Leach")
 ggsave("brooks_ajl.png",width = 16,height = 10)
