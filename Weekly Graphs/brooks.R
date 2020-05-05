@@ -88,9 +88,9 @@ ggplot(filter(graph_data,month %in% target_months)) +
     panel.grid.minor = element_blank(),
     text = element_text(size = 14,face = "bold"),
     axis.text = element_text(size = 12,face = "bold", colour="black")
-  )+    labs(y="Hourly Capacity Factor",x="Hour",
-             title="Brooks Solar Plant Hourly Capacity Factor by Month",
-             subtitle=paste("Monthly mean and range of hourly capacity factors from ",start_date," to ",end_date,sep=""),
+  )+    labs(y="Hourly Average Generation (MW)",x="Hour",
+             title="Brooks Solar Plant Hourly Generation by Month",
+             subtitle=paste("Monthly mean and range of hourly generation from ",start_date," to ",end_date,sep=""),
              caption="Source: Generation data via NRGStream\nGraph by Andrew Leach")
 ggsave("brooks_box.png",width = 16,height = 10)
 
