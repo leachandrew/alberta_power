@@ -7,7 +7,7 @@ library(scales)
 
 brooks_vols<-read_csv("brooks_data.csv",col_names = c("date","pool_price","brooks_vols"),skip = 3)%>%
       mutate(date=dmy_hms(date),hour_start=hour(date),month=factor(month.abb[month(date)],levels = month.abb),
-             year=year(date),day=as.Date(date))
+             year=year(date),day=as.Date(date))%>%filter(!is.na(brooks_vols))
 
 graph_data<-brooks_vols %>% group_by(month,hour_start)%>% 
   summarize(min_vol=min(brooks_vols),max_vol=max(brooks_vols),mean_vol=mean(brooks_vols))
