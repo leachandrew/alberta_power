@@ -35,7 +35,7 @@ ggplot(filter(graph_data,month %in% target_months)) +
     text = element_text(size = 14,face = "bold"),
     axis.text = element_text(size = 12,face = "bold", colour="black")
   )+    labs(y="Hourly Metered Volumes (MWh)",x="Hour",
-             title="Brooks Solar Plant Generation In January and June",
+             title="Brooks Solar Plant Generation by Month",
              subtitle=paste("Monthly mean and range of hourly generation values from ",start_date," to ",end_date,sep=""),
              caption="Source: Generation data via NRGStream\nGraph by Andrew Leach")
 ggsave("brooks_ajl.png",width = 16,height = 10)
