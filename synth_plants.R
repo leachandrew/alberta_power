@@ -218,7 +218,7 @@ synth_plants<-function(){
     merit_aug<-merit_aug %>%
       group_by(date,he) %>%
     arrange(price,Plant_Type) %>% mutate(merit=cumsum(available_mw),merit_dispatch=cumsum(dispatched_mw)) %>%
-    ungroup() %>%arrange(date,he,merit) %>% select(date,he,Plant_Type,block_number,price,size,available_mw,dispatched_mw,merit,co2_est,oba_val,ctax_cost,net,import_export)
+    ungroup() %>%arrange(date,he,merit) %>% select(date,he,Plant_Type,Plant_Fuel,block_number,price,size,available_mw,dispatched_mw,merit,co2_est,oba_val,ctax_cost,net,import_export)
   
 
     
@@ -394,6 +394,15 @@ synth_plants()
 gc()
 paste("Built synthetic plants, elapsed time is",time_length(interval(start_time, Sys.time()), "seconds"),"seconds")
 load(file="synth_ghg_price.Rdata" ) 
+
+
+
+
+
+
+
+
+
 
 merit_avg <-merit_aug %>% group_by(Plant_Type, year, percentile) %>%
   summarize(n=n(),p_mean=mean(price),min_price=min(price),max_price=max(price))%>%
