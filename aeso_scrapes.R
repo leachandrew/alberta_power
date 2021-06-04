@@ -36,7 +36,7 @@ library(stringi)
    #headers<- gsub("\"-\",", "", headers)
    data<-gsub("\"-\",", "",paste(c(paste(test[8:9], collapse=","), test[13:length(test)]), collapse="\n"))
    clean_data<-read.csv(text=data,header = TRUE, stringsAsFactors=FALSE)
-   clean_data<-janitor::clean_names(clean_data)%>%   tbl_df()
+   clean_data<-janitor::clean_names(clean_data)%>%   as_tibble()
    clean_data$date<-start_date
    
    #clean_data$he<-hour(clean_data$date)
@@ -59,7 +59,7 @@ library(stringi)
  }
  
 get_all_data<-function() {
-  years<-seq(2010,2019)
+  years<-seq(2020,2020)
   for(year_id in years){
    print(paste("Starting year ",year_id))
    days<-seq.Date(as.Date(paste(year_id,"-01-01",sep="")),as.Date(paste(year_id,"-12-31",sep="")),by="1 day")
@@ -81,44 +81,55 @@ get_all_data<-function() {
    #write.xlsx(data_store, file = filename, colNames = TRUE, borders = "columns") 
   }
 }
+#get_all_data()
+
+#rebuild the data
+build_all<-function(){
+years<-seq(2004,2020)
+data_list<-list()
+i<-1
+load("forecast_data.Rdata")
+for(year_id in years){
+  filename<-paste("measured_vols_",year_id,".RData",sep = "")
+  print(filename)
+  load(file= filename)
+  #Need to process time and dates to have date,he,hour,dest
+  data_list[[i]]<-process_data(data_store)
+  i<-i+1
+}
+all_vols<-data.frame(do.call(rbind,data_list))
+save(all_vols, file="metered_vols_data.Rdata" ) 
+#save(all_vols, file="new_metered_vols_data.Rdata" ) 
+}
 
 
 #if you want to add the latest metered volumes data to the existing data set
 update_vols <- function(data_sent) {
+  #data_sent<-tail(all_vols,10000)
   max_date<-max(data_sent$date)
   data_sent<-data_sent %>% filter(date<max_date)
-  days<-seq.Date(max_date,Sys.Date()-days(3),by="1 day")
+  days<-seq.Date(max_date,Sys.Date()-days(4),by="1 day")
+  #shifted to 4 days lag here to correct potential for early day errors
   data_store<-data.frame()
-  list_item<-1
+  #list_item<-1
+  #days<-head(days,3)
   for(day in days){
       print(as.Date(day))
       xdf<-get_metered_volumes_report(as.Date(day), as.Date(day)+days(1))
       data_store<-rbind(data_store,clean_volume_data(xdf))
-      list_item<-list_item+1
+      #list_item<-list_item+1
     }
   rbind(data_sent,process_data(data_store))
 }
 
-
-# #code to update volumes data
-# #update the forecast data first
-# update_forecasts()
-# #re-load the updated forecast data
-# load("forecast_data.Rdata")
-# #load existing file
-# load(file="metered_vols_data.Rdata" ) 
-# #update
-# all_vols<-update_vols(all_vols)
-# #save
-# save(all_vols, file="metered_vols_data.Rdata" ) 
-
-
 process_data <- function(data_sent) {
-#function to process all AESO data into useful load and trade volumes
+  #function to process all AESO data into useful load and trade volumes
   #testing
   #day<-ymd("2019-02-01")
   #xdf<-get_metered_volumes_report(as.Date(day), as.Date(day)+days(1)) %>% clean_volume_data()
   #data_sent<-xdf
+  #data_sent<-get_metered_volumes_report(Sys.Date()-days(5), Sys.Date()-days(5)+days(1))%>% clean_volume_data()
+  
   
   include_list<-c("IMPORTER","IPP","EXPORTER","GENCO","SPP")
   #take out retailers, microgen, but leave zero volume data to avoid errors later
@@ -153,7 +164,7 @@ process_data <- function(data_sent) {
     mutate(dest = ifelse(grepl("PWX",asset_name),"AB_BC",dest))%>%
     mutate(vol = ifelse(grepl("IMPORTER",asset_type),vol,-vol))
   #group exports and imports by destination
-  trade<- trade %>% group_by(date,he,hour,dest) %>% summarise(vol = sum(vol)) %>% ungroup()
+  trade<- trade %>% group_by(date,he,hour,dest) %>% summarise(vol = sum(vol)) %>% filter(vol>0)%>%ungroup()
   #change the name of the "dest" column to be "asset_id, since it will then merge based on NRGStream data
   names(trade)[names(trade) == "dest"] <- "asset_id"
   trade$asset_type<-"TRADE"
@@ -173,7 +184,7 @@ process_data <- function(data_sent) {
   #merge in asset names and pool participant ID combos
   clean2<-clean2 %>% left_join(select(aeso_assets,asset_name,asset_id,pool_participant_id),by=c("asset_id","pool_participant_id"))%>%
     #now we need to fix some of the joint marketing of power from assets
-    group_by_at(vars(-vol,-pool_participant_id)) %>% summarize(vol=sum(vol))
+    group_by_at(vars(-vol,-pool_participant_id)) %>% arrange(pool_participant_id,-vol)%>% summarize(vol=sum(vol),pool_participant_id=first(pool_participant_id)) %>% ungroup()
   #bring in plant data
   plant_data <- read.xlsx(xlsxFile = "AB_Plant_Info_New.xlsx", sheet = "Plant_info", startRow = 1,skipEmptyRows = TRUE,detectDates = TRUE)
   colnames(plant_data)<-gsub("\\.", " ", colnames(plant_data)) 
@@ -186,6 +197,8 @@ process_data <- function(data_sent) {
     mutate(NRG_Stream = ifelse(grepl("AB - H R Milner Hr Avg MW",NRG_Stream),"AB Milner Hr Avg MW",NRG_Stream))%>%
     mutate(NRG_Stream = ifelse(grepl("AB - NPC1 Denis St Pierre Hr Avg MW",NRG_Stream),"AB - NPC1 Denis St  Pierre Hr Avg MW",NRG_Stream))  
   plant_info<-arrange(plant_info,NRG_Stream)
+  
+  #ids<-clean2%>% select(asset_id)%>%unique() %>% left_join(plant_info%>%select(ID,AESO_Name),by=c("asset_id"="ID"))
   
   #bring in ghg data
   ghg_rates <- read.xlsx(xlsxFile = "AB_Plant_Info_New.xlsx", sheet = "GHG_Rates", startRow = 1,skipEmptyRows = TRUE,detectDates = TRUE)
@@ -224,27 +237,27 @@ process_data <- function(data_sent) {
     pool_participant_id="Pooled",
     asset_type="IPP",
     asset_id="IPP",
-    Asset.Name="Generic IPP",
+    #Asset.Name="Generic IPP",
     AESO_Name="Generic IPP",
     Capacity=NA,
     Latitude=NA,
     Longitude=NA,
     Aurora_ID="Generic IPP",
     Aurora_Name="Generic IPP",
-    Utility="Generic IPP",
+    #Utility="Generic IPP",
     Heat.Rate=NA,
-    Heat.Rate.At.Minimum=NA,
-    Nameplate.Capacity=NA,
-    Fuel=NA,
-    AESO.Class=NA,
-    ID.Check=NA,
+    #Heat.Rate.At.Minimum=NA,
+    #Nameplate.Capacity=NA,
+    #Fuel=NA,
+    #AESO.Class=NA,
+    #ID.Check=NA,
     GHG_ID="0",
-    HG=NA,
-    NOX=NA,
-    SO2=NA,
+    #HG=NA,
+    #NOX=NA,
+    #SO2=NA,
     co2_est=0,
     NRG_Stream=NA,
-    CO2=NA
+    #CO2=NA
   )
   #stack the other gens back into combined new
   combined_new<-combined_new %>% filter(Plant_Type!="MICRO") %>% bind_rows(other_gen)
@@ -255,14 +268,38 @@ process_data <- function(data_sent) {
   
   combined_new<-combined_new%>%left_join(forecast_data,by=c("date","he"))
   
-  combined_new$month<-as.factor(month(combined_new$date))
-  combined_new$year<-as.factor(year(combined_new$date))
-  combined_new <- transform(combined_new, MonthAbb = month.abb[month])
-  combined_new$MonthAbb<-factor(combined_new$MonthAbb,levels = month.abb)
+  combined_new$month<-month(combined_new$date)
+  combined_new$year<-year(combined_new$date)
+  combined_new$MonthAbb<-factor(month.abb[combined_new$month])
   
   combined_new$ghg_hr<-combined_new$co2_est*combined_new$vol
   return(combined_new)
 }
+
+
+#xdf<-get_metered_volumes_report(Sys.Date()-days(5), Sys.Date()-days(5)+days(1))
+#xdf<-clean_volume_data(xdf)
+#cleaned_data<-process_data(xdf)
+
+#xdf<-get_metered_volumes_report(ymd("2013-1-1"),ymd("2013-01-01")) %>% clean_volume_data()%>% filter(asset_type%in% c("IMPORTER","EXPORTER"))%>%
+#  filter(vol>0) %>% group_by(date,he,asset_type) %>% summarize(vol=sum(vol))
+
+
+#cleaned_data<-cleaned_data %>% filter(Plant_Type=="TRADE")
+
+# #code to update volumes data
+# #update the forecast data first
+# update_forecasts()
+# #re-load the updated forecast data
+# load("forecast_data.Rdata")
+# #load existing file
+#load(file="metered_vols_data.Rdata" ) 
+# #update
+#all_vols<-update_vols(all_vols)
+# #save
+# save(all_vols, file="metered_vols_data.Rdata" ) 
+
+#trade_vols<-all_vols %>% filter(Plant_Type=="TRADE")
 
 #time_start<-Sys.time()
 #test_data<-process_data(data_sent)
@@ -293,7 +330,7 @@ get_forecast_report <- function(start_date, end_date) {
   test<-paste(test[5:length(test)], collapse="\n")
   forecast_data<-read.csv(text=test,header = TRUE, stringsAsFactors=FALSE)
   clean_data<-janitor::clean_names(forecast_data) %>% 
-    tbl_df()
+    as_tibble()
   #date formats from AESO are date and he as : 03/11/2018 01
   #process dates
   clean_data$time<-as.POSIXct(clean_data$date, format="%m/%d/%Y %H",tz="America/Denver")
@@ -398,7 +435,7 @@ get_merit_report <- function(start_date, end_date,key_firms=NULL) {
   test<-paste(test[3:length(test)], collapse="\n")
   merit_data<-read.csv(text=test,header = TRUE, stringsAsFactors=FALSE)
   clean_data<-janitor::clean_names(merit_data) %>% 
-    tbl_df()
+    as_tibble()
   if(!is.null(key_firms))
   {
     clean_data$key_firm<-grepl(paste(key_firms, collapse="|"), clean_data$offer_control)
@@ -522,7 +559,7 @@ get_DDS_merit_report <- function(start_date, end_date,key_firms=NULL) {
   test<-paste(test[3:length(test)], collapse="\n")
   merit_data<-read.csv(text=test,header = TRUE, stringsAsFactors=FALSE)
   clean_data<-janitor::clean_names(merit_data) %>% 
-    tbl_df()
+    as_tibble()
   #key_firms<-firms()
   #if(!is.null(key_firms))
   #{
@@ -610,7 +647,7 @@ get_AS_merit_report <- function(start_date, end_date,key_firms=NULL) {
   test<-paste(test[3:length(test)], collapse="\n")
   merit_data<-read.csv(text=test,header = TRUE, stringsAsFactors=FALSE)
   clean_data<-janitor::clean_names(merit_data) %>% 
-    tbl_df()
+    as_tibble()
   #key_firms<-firms()
   #if(!is.null(key_firms))
   #{
@@ -791,7 +828,6 @@ update_itc_data<-function(){
   save(itc_data, file= "aeso_itc_data.RData") 
 }  
 
-#update_itc_data()
 
 
 

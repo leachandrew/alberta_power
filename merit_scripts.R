@@ -58,9 +58,13 @@ ngx_data_read<-function(){
   #testing stuff
   file_name<-"nit_gas_spot_old.csv"
   ngx_data_old <- read.csv(file_name,blank.lines.skip=T,stringsAsFactors=F,header=T)
+  file_name<-"nit_gas_15_19.csv"
+  ngx_data_15_19 <- read.csv(file_name,blank.lines.skip=T,stringsAsFactors=F,header=T)
   file_name<-"nit_gas_spot.csv"
   ngx_data <- read.csv(file_name,blank.lines.skip=T,stringsAsFactors=F,header=T)
-  ngx_data<-rbind(ngx_data_old,ngx_data)
+  ngx_data<-rbind(ngx_data_old,ngx_data_15_19,ngx_data)
+  
+  
   names(ngx_data)<-c("date_time","low","WAvg", "High","Open","Settle", "Volume","Inst_Date","Drop") 
   ngx_data<-ngx_data %>% select(date_time,Settle,Inst_Date)
   ngx_data$date<-as.Date(parse_date_time(ngx_data$date_time,c("ymd HM","dmy HMS")))
