@@ -56,11 +56,11 @@ ctax_year<-function(year_sent){
 #get gas spots
 ngx_data_read<-function(){
   #testing stuff
-  file_name<-"nit_gas_spot_old.csv"
+  file_name<-"data/nit_gas_spot_old.csv"
   ngx_data_old <- read.csv(file_name,blank.lines.skip=T,stringsAsFactors=F,header=T)
-  file_name<-"nit_gas_15_19.csv"
+  file_name<-"data/nit_gas_15_19.csv"
   ngx_data_15_19 <- read.csv(file_name,blank.lines.skip=T,stringsAsFactors=F,header=T)
-  file_name<-"nit_gas_spot.csv"
+  file_name<-"data/nit_gas_spot.csv"
   ngx_data <- read.csv(file_name,blank.lines.skip=T,stringsAsFactors=F,header=T)
   ngx_data<-rbind(ngx_data_old,ngx_data_15_19,ngx_data)
   
@@ -91,7 +91,7 @@ sger_emissions_data<-function(){
       "Total.Production",                     "Cogen.Electricity.(MWh)",
       "BEI.(in.CR)",                          "NEIL.Limit",                          
       "EI.(incl.cogen.adjustment)")
-  file_name<-"SGER_data.xlsx"
+  file_name<-"data/SGER_data.xlsx"
   sger_data <- read.xlsx(file_name,sheet = "2016 CR Tracking")
   #spread the ids to new columns
   sger_data<-sger_data %>% separate(IDs.on.site, paste("asset",seq(1,6),sep="_"))%>%
@@ -119,7 +119,7 @@ augment_data<-function(merit_sent){
   #merit_sent<-filter(merit_data, year(date)==2019,month(date)==2)%>% clean_merit_trade()
   
   #bring in plant data
-  plant_data <- read.xlsx(xlsxFile = "AB_Plant_Info_New.xlsx", sheet = "Plant_info", startRow = 1,skipEmptyRows = TRUE,detectDates = TRUE)
+  plant_data <- read.xlsx(xlsxFile = "data/AB_Plant_Info_New.xlsx", sheet = "Plant_info", startRow = 1,skipEmptyRows = TRUE,detectDates = TRUE)
   colnames(plant_data)<-gsub("\\.", " ", colnames(plant_data)) 
   plant_info<-data.frame(t(plant_data[(1:10),-1]),stringsAsFactors = F)
   #fix names
@@ -132,13 +132,13 @@ augment_data<-function(merit_sent){
   plant_info<-arrange(plant_info,NRG_Stream)
   
   #bring in ghg data
-  ghg_rates <- read.xlsx(xlsxFile = "AB_Plant_Info_New.xlsx", sheet = "GHG_Rates", startRow = 1,skipEmptyRows = TRUE,detectDates = TRUE)
+  ghg_rates <- read.xlsx(xlsxFile = "data/AB_Plant_Info_New.xlsx", sheet = "GHG_Rates", startRow = 1,skipEmptyRows = TRUE,detectDates = TRUE)
   #ghg_rates<-dcast(ghg_rates, formula = GHG_ID ~ ...,value.var = "Poln_rate")
   ghg_rates<-ghg_rates %>% spread(Pollutant,Poln_rate) %>% select(GHG_ID,CO2)
   
   
   #bring in heat rates
-  heat_rates <- read.xlsx(xlsxFile = "AB_Plant_Info_New.xlsx", sheet = "Heat_Rates", startRow = 1,skipEmptyRows = TRUE,detectDates = TRUE) %>%
+  heat_rates <- read.xlsx(xlsxFile = "data/AB_Plant_Info_New.xlsx", sheet = "Heat_Rates", startRow = 1,skipEmptyRows = TRUE,detectDates = TRUE) %>%
     select(GHG_ID,Aurora_ID,Heat.Rate)
   #combine all plant info, heat rates, and GHGs by plant ID
   combined<-merge(ghg_rates,heat_rates,by="GHG_ID",all.y = T) # NA's match
@@ -167,7 +167,7 @@ plant_data<-function(){
   #merit_sent<-filter(merit_data, year(date)==2019,month(date)==2)%>% clean_merit_trade()
   
   #bring in plant data
-  plant_data <- read.xlsx(xlsxFile = "AB_Plant_Info_New.xlsx", sheet = "Plant_info", startRow = 1,skipEmptyRows = TRUE,detectDates = TRUE)
+  plant_data <- read.xlsx(xlsxFile = "data/AB_Plant_Info_New.xlsx", sheet = "Plant_info", startRow = 1,skipEmptyRows = TRUE,detectDates = TRUE)
   colnames(plant_data)<-gsub("\\.", " ", colnames(plant_data)) 
   plant_info<-data.frame(t(plant_data[(1:10),-1]),stringsAsFactors = F)
   #fix names
@@ -180,13 +180,13 @@ plant_data<-function(){
   plant_info<-arrange(plant_info,NRG_Stream)
   
   #bring in ghg data
-  ghg_rates <- read.xlsx(xlsxFile = "AB_Plant_Info_New.xlsx", sheet = "GHG_Rates", startRow = 1,skipEmptyRows = TRUE,detectDates = TRUE)
+  ghg_rates <- read.xlsx(xlsxFile = "data/AB_Plant_Info_New.xlsx", sheet = "GHG_Rates", startRow = 1,skipEmptyRows = TRUE,detectDates = TRUE)
   #ghg_rates<-dcast(ghg_rates, formula = GHG_ID ~ ...,value.var = "Poln_rate")
   ghg_rates<-ghg_rates %>% spread(Pollutant,Poln_rate) %>% select(GHG_ID,CO2)
   
   
   #bring in heat rates
-  heat_rates <- read.xlsx(xlsxFile = "AB_Plant_Info_New.xlsx", sheet = "Heat_Rates", startRow = 1,skipEmptyRows = TRUE,detectDates = TRUE) %>%
+  heat_rates <- read.xlsx(xlsxFile = "data/AB_Plant_Info_New.xlsx", sheet = "Heat_Rates", startRow = 1,skipEmptyRows = TRUE,detectDates = TRUE) %>%
     select(GHG_ID,Aurora_ID,Heat.Rate)
   #combine all plant info, heat rates, and GHGs by plant ID
   combined<-merge(ghg_rates,heat_rates,by="GHG_ID",all.y = T) # NA's match
@@ -222,11 +222,11 @@ clean_merit_trade<-function(data_sent,id_tag){
     zz =
       readHTMLTable("http://ets.aeso.ca/ets_web/ip/Market/Reports/AssetListReportServlet?contentType=html",colClasses = "character",stringsAsFactors = FALSE)
     aeso_assets<-as.data.frame(rbind(zz)[2])
-    save(aeso_assets,file="aeso_assets.Rdata")
+    save(aeso_assets,file="data/aeso_assets.Rdata")
   }
   #if you don't have internet, load the archived file
   if(-has_internet())
-    load(file="aeso_assets.Rdata")
+    load(file="data/aeso_assets.Rdata")
   colnames(aeso_assets)<- aeso_assets[1, ] # the first row will be the header
   aeso_assets<-clean_names(aeso_assets[-1,])
   zz<-NULL

@@ -1,16 +1,3 @@
-#Mac
-if(R.version$platform ==  "x86_64-apple-darwin15.6.0")
-  setwd("/Users/aleach/Google Drive/alberta_power")
-
-#PC
-if(R.version$platform ==  "x86_64-w64-mingw32")
-  setwd("C:/Users/aleach/Google Drive/alberta_power")
-print(getwd())
-source("../andrew_base.R")
-
-library(stringi)
-
- 
 #aeso site scraper
 
  get_metered_volumes_report <- function(start_date, end_date) {
@@ -75,7 +62,7 @@ get_all_data<-function() {
        list_item<-list_item+1
        }
      }
-   filename<-paste("measured_vols_",year_id,".RData",sep = "")
+   filename<-paste("data/measured_vols_",year_id,".RData",sep = "")
    save(data_store, file= filename) 
    #filename<-paste("measured_vols_",year_id,".xlsx",sep = "")
    #write.xlsx(data_store, file = filename, colNames = TRUE, borders = "columns") 
@@ -88,7 +75,7 @@ build_all<-function(){
 years<-seq(2004,2020)
 data_list<-list()
 i<-1
-load("forecast_data.Rdata")
+load("data/forecast_data.Rdata")
 for(year_id in years){
   filename<-paste("measured_vols_",year_id,".RData",sep = "")
   print(filename)
@@ -98,17 +85,26 @@ for(year_id in years){
   i<-i+1
 }
 all_vols<-data.frame(do.call(rbind,data_list))
-save(all_vols, file="metered_vols_data.Rdata" ) 
+save(all_vols, file="data/metered_vols_data.Rdata" ) 
 #save(all_vols, file="new_metered_vols_data.Rdata" ) 
 }
 
 
 #if you want to add the latest metered volumes data to the existing data set
 update_vols <- function(data_sent) {
-  #data_sent<-tail(all_vols,10000)
+  #testing
+  #  data_sent<-tail(all_vols,10000)
+  #update forecast data and load into memory
+  update_forecasts()  
+  load("data/forecast_data.Rdata")
+  #figure out where current data ends
   max_date<-max(data_sent$date)
+  #truncate current data to include last full day
   data_sent<-data_sent %>% filter(date<max_date)
+  #list of days since last full day
   days<-seq.Date(max_date,Sys.Date()-days(4),by="1 day")
+  #testing
+  #  days<-seq.Date(max_date,max_date+days(1),by="1 day")
   #shifted to 4 days lag here to correct potential for early day errors
   data_store<-data.frame()
   #list_item<-1
@@ -119,8 +115,13 @@ update_vols <- function(data_sent) {
       data_store<-rbind(data_store,clean_volume_data(xdf))
       #list_item<-list_item+1
     }
+  #testing
+  #  testing<-process_data(data_store)
   rbind(data_sent,process_data(data_store))
 }
+
+
+
 
 process_data <- function(data_sent) {
   #function to process all AESO data into useful load and trade volumes
@@ -130,7 +131,6 @@ process_data <- function(data_sent) {
   #data_sent<-xdf
   #data_sent<-get_metered_volumes_report(Sys.Date()-days(5), Sys.Date()-days(5)+days(1))%>% clean_volume_data()
   
-  
   include_list<-c("IMPORTER","IPP","EXPORTER","GENCO","SPP")
   #take out retailers, microgen, but leave zero volume data to avoid errors later
   clean<-filter(data_sent,asset_type %in% include_list)
@@ -139,11 +139,11 @@ process_data <- function(data_sent) {
     zz =
       readHTMLTable("http://ets.aeso.ca/ets_web/ip/Market/Reports/AssetListReportServlet?contentType=html",colClasses = "character",stringsAsFactors = FALSE)
     aeso_assets<-as.data.frame(rbind(zz)[2])
-    save(aeso_assets,file="aeso_assets.Rdata")
+    save(aeso_assets,file="data/aeso_assets.Rdata")
   }
   #if you don't have internet, load the archived file
   if(-has_internet())
-    load(file="aeso_assets.Rdata")
+    load(file="data/aeso_assets.Rdata")
   
   colnames(aeso_assets)<- aeso_assets[1, ] # the first row will be the header
   aeso_assets<-clean_names(aeso_assets[-1,])
@@ -186,7 +186,7 @@ process_data <- function(data_sent) {
     #now we need to fix some of the joint marketing of power from assets
     group_by_at(vars(-vol,-pool_participant_id)) %>% arrange(pool_participant_id,-vol)%>% summarize(vol=sum(vol),pool_participant_id=first(pool_participant_id)) %>% ungroup()
   #bring in plant data
-  plant_data <- read.xlsx(xlsxFile = "AB_Plant_Info_New.xlsx", sheet = "Plant_info", startRow = 1,skipEmptyRows = TRUE,detectDates = TRUE)
+  plant_data <- read.xlsx(xlsxFile = "data/AB_Plant_Info_New.xlsx", sheet = "Plant_info", startRow = 1,skipEmptyRows = TRUE,detectDates = TRUE)
   colnames(plant_data)<-gsub("\\.", " ", colnames(plant_data)) 
   plant_info<-data.frame(t(plant_data[(1:10),-1]),stringsAsFactors = F)
   #fix names
@@ -201,13 +201,13 @@ process_data <- function(data_sent) {
   #ids<-clean2%>% select(asset_id)%>%unique() %>% left_join(plant_info%>%select(ID,AESO_Name),by=c("asset_id"="ID"))
   
   #bring in ghg data
-  ghg_rates <- read.xlsx(xlsxFile = "AB_Plant_Info_New.xlsx", sheet = "GHG_Rates", startRow = 1,skipEmptyRows = TRUE,detectDates = TRUE)
+  ghg_rates <- read.xlsx(xlsxFile = "data/AB_Plant_Info_New.xlsx", sheet = "GHG_Rates", startRow = 1,skipEmptyRows = TRUE,detectDates = TRUE)
   #ghg_rates<-dcast(ghg_rates, formula = GHG_ID ~ ...,value.var = "Poln_rate")
   ghg_rates<-ghg_rates %>% spread(Pollutant,Poln_rate) %>% select(GHG_ID,CO2)
   
   
   #bring in heat rates
-  heat_rates <- read.xlsx(xlsxFile = "AB_Plant_Info_New.xlsx", sheet = "Heat_Rates", startRow = 1,skipEmptyRows = TRUE,detectDates = TRUE) %>%
+  heat_rates <- read.xlsx(xlsxFile = "data/AB_Plant_Info_New.xlsx", sheet = "Heat_Rates", startRow = 1,skipEmptyRows = TRUE,detectDates = TRUE) %>%
     select(GHG_ID,Aurora_ID,Heat.Rate)
   #combine all plant info, heat rates, and GHGs by plant ID
   combined<-merge(ghg_rates,heat_rates,by="GHG_ID",all.y = T) # NA's match
@@ -276,35 +276,6 @@ process_data <- function(data_sent) {
   return(combined_new)
 }
 
-
-#xdf<-get_metered_volumes_report(Sys.Date()-days(5), Sys.Date()-days(5)+days(1))
-#xdf<-clean_volume_data(xdf)
-#cleaned_data<-process_data(xdf)
-
-#xdf<-get_metered_volumes_report(ymd("2013-1-1"),ymd("2013-01-01")) %>% clean_volume_data()%>% filter(asset_type%in% c("IMPORTER","EXPORTER"))%>%
-#  filter(vol>0) %>% group_by(date,he,asset_type) %>% summarize(vol=sum(vol))
-
-
-#cleaned_data<-cleaned_data %>% filter(Plant_Type=="TRADE")
-
-# #code to update volumes data
-# #update the forecast data first
-# update_forecasts()
-# #re-load the updated forecast data
-# load("forecast_data.Rdata")
-# #load existing file
-#load(file="metered_vols_data.Rdata" ) 
-# #update
-#all_vols<-update_vols(all_vols)
-# #save
-# save(all_vols, file="metered_vols_data.Rdata" ) 
-
-#trade_vols<-all_vols %>% filter(Plant_Type=="TRADE")
-
-#time_start<-Sys.time()
-#test_data<-process_data(data_sent)
-#time_end<-Sys.time()
-#print(time_length(time_end-time_start))
 #load and price data
 
 get_forecast_report <- function(start_date, end_date) {
@@ -371,7 +342,7 @@ all_forecasts<-function() {
       }
     }
   }
-  filename<-paste("forecast_data",".RData",sep = "")
+  filename<-paste("data/forecast_data",".RData",sep = "")
   forecast_data<-data_store
   save(forecast_data, file= filename) 
 }
@@ -382,7 +353,7 @@ all_forecasts<-function() {
 
 update_forecasts<-function() {
   #load the existing file
-  load("forecast_data.Rdata")
+  load("data/forecast_data.Rdata")
   #start on the first day of the first month for which you have data
   start_date<-as.Date(paste(year(max(na.omit(forecast_data$start_date))),month(max(na.omit(forecast_data$start_date))),"01",sep ="-"))
   #this is where you get a problem with the hour-ending vs hour-beginning because the last entry on each day is an hour ending the next day
@@ -400,7 +371,7 @@ update_forecasts<-function() {
       list_item<-list_item+1
     }
   }
-  filename<-paste("forecast_data",".RData",sep = "")
+  filename<-paste("data/forecast_data",".RData",sep = "")
   save(forecast_data, file= filename) 
 }
 
@@ -484,7 +455,7 @@ all_merit<- function(){
         list_item<-list_item+1
       }
     }
-    filename<-paste("merit_orders_",year_id,".RData",sep = "")
+    filename<-paste("data/merit_orders_",year_id,".RData",sep = "")
     save(data_store, file= filename) 
     #filename<-paste("measured_vols_",year_id,".xlsx",sep = "")
     #write.xlsx(data_store, file = filename, colNames = TRUE, borders = "columns") 
@@ -496,7 +467,7 @@ all_merit<- function(){
   merit_data<-data.frame()
   years<-seq(2009,2019)
   for(year_id in years){
-    filename<-paste("merit_orders_",year_id,".RData",sep = "")
+    filename<-paste("data/merit_orders_",year_id,".RData",sep = "")
     load(filename) ## which is here *equivalent* to
     merit_data<-rbind(merit_data,data_store)
   }
@@ -505,7 +476,7 @@ all_merit<- function(){
   for(hour in as.character(singles)){
     merit_data$he[merit_data$he==hour]<-paste(0,hour,sep="")
   }
-  save(merit_data, file="all_merit.RData")  
+  save(merit_data, file="data/all_merit.RData")  
 }
 
 
@@ -531,7 +502,15 @@ update_merit <- function(data_sent) {
   return(data_store)
 }
 
+
 #code to update merits
+
+replace_merit_day<-function(data_sent,day=ymd("2013-11-28"))
+{
+  xdf<-get_merit_report(as.Date(day), as.Date(day)+days(1),key_firms=firms())
+  data_sent %>% filter(date!=day) %>% rbind(xdf) %>% arrange(date,he)
+}
+
 
 
 # load(file="all_merit.RData")
@@ -598,7 +577,7 @@ all_dds_merit<- function(){
         list_item<-list_item+1
       }
     }
-    filename<-paste("merit_DDS_orders_",year_id,".RData",sep = "")
+    filename<-paste("data/merit_DDS_orders_",year_id,".RData",sep = "")
     save(data_store, file= filename) 
     #filename<-paste("measured_vols_",year_id,".xlsx",sep = "")
     #write.xlsx(data_store, file = filename, colNames = TRUE, borders = "columns") 
@@ -682,7 +661,7 @@ all_as_merit<- function(){
         list_item<-list_item+1
       }
     }
-    filename<-paste("merit_AS_orders_",year_id,".RData",sep = "")
+    filename<-paste("data/merit_AS_orders_",year_id,".RData",sep = "")
     save(data_store, file= filename) 
     #filename<-paste("measured_vols_",year_id,".xlsx",sep = "")
     #write.xlsx(data_store, file = filename, colNames = TRUE, borders = "columns") 
@@ -708,7 +687,7 @@ year_as_merit<- function(year_id){
         list_item<-list_item+1
       }
     }
-    filename<-paste("merit_AS_orders_",year_id,".RData",sep = "")
+    filename<-paste("data/merit_AS_orders_",year_id,".RData",sep = "")
     save(data_store, file= filename) 
     #filename<-paste("measured_vols_",year_id,".xlsx",sep = "")
     #write.xlsx(data_store, file = filename, colNames = TRUE, borders = "columns") 
@@ -730,7 +709,7 @@ singles<-seq(1,9)
 for(hour in singles){
   merit_AS_data$he[merit_AS_data$he==hour]<-paste(0,hour,sep="")
 }
-save(merit_AS_data, file= "merit_AS.RData") 
+save(merit_AS_data, file= "data/merit_AS.RData") 
 
 #filename<-paste("merit_AS.xlsx",sep = "")
 #write.xlsx(merit_AS_data, file = filename, colNames = TRUE, borders = "columns") 
@@ -779,10 +758,10 @@ if(as.numeric(ymd(end_date)-ymd(start_date))>=400)
 #build url
 url<-paste("http://itc.aeso.ca/itc/public/queryHistoricalIntertieReport.do?availableEffectiveDate=943279200000+1999-11-22+07%3A00%3A00+MST+%281999-11-22+14%3A00%3A00+GMT%29&availableExpiryDate=1582354800000+2020-02-22+00%3A00%3A00+MST+%282020-02-22+07%3A00%3A00+GMT%29&fileFormat=CSV&startDate=",start_date,"&endDate=",end_date,sep = "")  
 #download data
-download_indic<-download.file(url,"test.csv",mode="wb")
+download_indic<-download.file(url,"data/itc_temp.csv",mode="wb")
 stop_for_status(download_indic)
 #process data to build capability by hour and data
-itc_data<-read.csv("test.csv",skip = 2,stringsAsFactors = F) %>% clean_names() %>%
+itc_data<-read.csv("data/itc_temp.csv",skip = 2,stringsAsFactors = F) %>% clean_names() %>%
   mutate(date=ymd(date),hour_ending=as.character(hour_ending)) %>% 
   rename("he"="hour_ending") %>%
   select(date,he,sk_import_capability,sk_export_capability,bc_export_capability,bc_import_capability,matl_export_capability,matl_import_capability,bc_matl_export_capability,bc_matl_import_capability)
@@ -805,14 +784,14 @@ for(hour in singles){
   itc_data$he[itc_data$he==hour]<-paste(0,hour,sep="")
 }  
 itc_data$he[itc_data$he=="2*"]<-"02*"
-save(itc_data, file= "aeso_itc_data.RData") 
+save(itc_data, file= "data/aeso_itc_data.RData") 
 }  
 
 #get_all_itc_data()
 
 
 update_itc_data<-function(){
-  load(file= "aeso_itc_data.RData") 
+  load(file= "data/aeso_itc_data.RData") 
   #find max date in file
   start_date<-max(itc_data$date)
   end_date<-today()
@@ -825,7 +804,7 @@ update_itc_data<-function(){
   itc_data$he[itc_update$he=="2*"]<-"02*"
   #take out today's last day obs from itc data, append updated data
   itc_data<-itc_data %>% filter(date<ymd(start_date)) %>% bind_rows(itc_update)
-  save(itc_data, file= "aeso_itc_data.RData") 
+  save(itc_data, file= "data/aeso_itc_data.RData") 
 }  
 
 
