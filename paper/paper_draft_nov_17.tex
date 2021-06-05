@@ -1,0 +1,233 @@
+\documentclass[12pt]{article}
+\usepackage{fullpage}
+\usepackage{multirow}
+\usepackage{graphicx}
+\usepackage[sort&compress]{natbib}
+\usepackage{amssymb, amsmath, amsthm}
+\usepackage[breaklinks=true]{hyperref}
+\hypersetup{
+    colorlinks,
+    citecolor= black,
+    filecolor= black,
+    linkcolor= black,
+    urlcolor= black
+}
+\usepackage{setspace}
+\usepackage{tikz}
+\usetikzlibrary{patterns,arrows,decorations.pathreplacing}
+\usepackage{subcaption}
+\usepackage{booktabs}
+\usepackage{multicol}
+\usepackage{rotating}
+\usepackage{tabularx}
+\usepackage[normalem]{ulem}
+
+\usepackage{siunitx}
+\sisetup{group-separator={,},group-minimum-digits=3}
+
+\usepackage[multiple]{footmisc}
+
+\newcommand{\insitu}{\textit{in situ} }
+%%%%%%%%%%
+
+
+
+% FOR COMMENTING:
+\usepackage{comment}
+\usepackage{ifthen}
+\usepackage{color}
+\usepackage{tabularx}
+
+\specialcomment{ALnote}{\begingroup\sffamily\colorbox{blue}{Andrew: } \color{blue}}{\endgroup}
+\specialcomment{BBnote}{\begingroup\sffamily\colorbox{red}{Branko: }\color{red}}{\endgroup}
+
+
+\setlength{\abovecaptionskip}{10pt}
+\setlength{\belowcaptionskip}{10pt}
+
+\addtolength{\parskip}{5pt}
+
+%\usepackage[normalem]{ulem}
+
+%%%% TITLE %%%%
+\title{Carbon Price Pass-Through in Alberta's Electricity Market\thanks{We are grateful to Sam Harrison for excellent
+research assistance. We thank seminar and conference participants at the 2019 AERE Summer Meetings for comments and suggestions. Financial support for this work was provided by the Future Energy Systems Canada First Research Excellence Fund grant.
+}
+}
+
+%%%% DATE %%%%
+\date{\today}
+
+%%%% AUTHOR INFORMATION %%%%
+% AUTHOR INFO
+\author{Andrew Leach\\
+ University of Alberta
+ \and
+Blake Shaffer\\University of Calgary and\\Stanford University
+}
+\begin{document}
+\maketitle
+
+%%%% ABSTRACT %%%%
+\begin{abstract}
+\noindent We evaluate .\\
+\vspace{0.2in}
+\noindent Keywords: climate change, social cost of carbon, oil sands\\
+JEL classification: Q3, Q4, Q54
+\end{abstract}
+
+\thispagestyle{empty}
+\newpage
+\onehalfspacing
+
+
+\section{Introduction}
+
+We evaluate the response of wholesale power market participants in Alberta to a series of changes in greenhouse gas (GHG) emissions policies.  Between 2015 and 2018, changes affecting carbon prices, output-based allocations of emissions credits, and which facilities are covered by the policies.  These combinations imply changes both across and within facility types, and across and within portfolios held by major players in the market.  We show that even after adjusting for actual costs imposed by carbon policies at the facility level, statistically significant changes in portfolio-level offer curves were induced leading to a shift in the merit order toward gas and away from coal which exceeded that which would have been predicted by carbon prices alone.
+
+The Alberta wholesale power market provides an excellent laboratory for study because it is small, isolated, and the market is settled on a real-time, energy-only basis so there are limited confounding factors. Alberta's market is winter-peaking, with peak 2018 load of just under 12,000 MW.  It has only three small interconnections to British Columbia, Montana, and Saskatchewan.\footnote{The British Columbia and Montana tie lines have a joint capacity of 1500 MW for imports and 1325 MW for export, while the Saskatchewan intertie has a path rating of 150 MW.} This means that Alberta's market will be more affected by Alberta's policies than would be the case if traded power had a more important market share. We do face a challenge in that Alberta was hit with a major, oil-price-induced recession contemporaneously with some of the changes in carbon policies that led to record-low prices in the market. Alberta's generation mix is also somewhat unique, with a significant portion of internal load served by combined heat and power (or cogeneration) plants associated with industrial facilities, primarily located in the oil sands.
+
+We compile data describing market offer behaviour and a wide range of relevant covariates.  We measure and describe facility level hourly offers of power into the market over nearly 10 full years.  We combine these data with plant characteristics compiled from regulatory data, emissions data from Alberta's and Canada's air emissions reporting, weather data, commodity price information, and power market data include hourly renewable generation, imports and exports, import and export capabilities and total and forecast internal loads.  We combine these data with observed carbon policy costs at the facility level.
+
+In order to isolate the impact of the changes in policies on offer behaviour, we develop a empirical strategy based on power portfolios.  For each hour of each day, we create synthetic power portfolios either by plant type or by which entity holds offer control on the units in question.  We are then able to examine, for example, how changes in policies affected the offer of power across all coal- or gas-fired plants in the province, or across all facilities owned by particular actors in the market.  We normalize these portfolios by percentile, so we are able to compare behaviour across portfolios of different sizes without loss of generality.
+
+\section{Alberta's GHG Policy Changes}
+
+Alberta has had carbon pricing in place since the Specified Gas Emitters Regulation (SGER) took effect on July 1, 2007. That regulation, the first industrial carbon price in North America, implemented a price of \$15/tonne, and allocated emissions credits to covered facilities at a rate equal to 88\% of the facility's historic (2003-2005) emissions intensity or, for new facilities, a rate equal to 88\% of their average year 3 emissions intensity. This system remained in place until June, 2015 when the newly-elected government of Premier Rachel Notley introduced changes to the existing regulation which increased the price to \$20/tonne for 2016 and to \$30/tonne for 2017, while also reducing the benchmarks for emissions allocation to 85\% and 80\% respectively for 2016 and 2017.  Combined, these changes implied at increase in the average cost of carbon in each of the years 2016 and 2017.
+
+In addition to carbon pricing on industrial emissions, the SGER also included an offset protocol which provided emissions credits for deemed emissions reductions due to certain activities.  In the case of combined heat and power plants, the deemed emissions reductions where equivalent to an allocation of 0.418t/MWh for net-to-grid electricity.  New renewable power facilities were also eligible for offset credits.
+
+The government also adopted, in November of 2015, a more comprehensive change to GHG emissions policies. Two changes in this iteration of policies affected power markets.  Most importantly, the \textit{Carbon Competitiveness Incentive Regulation (CCIR)} replaced the SGER and these regulations levelized the output-based allocation of emissions credits across all power generators at 0.37t/MWh, the emissions-intensity of the best-in-class combined cycle natural gas generation facility.  This implied that coal producers saw a steep increase in their average costs of carbon, while impacts on gas power plants varied depending on the heat rates of the facility. Both combined heat and power plants and existing renewable generation facilities saw the value of their emissions credits issued per MWh generated decrease under the CCIR.  The second important change was that an economy-wide carbon price was introduced for facilities not covered under the CCIR - those without historic emissions in any previous year greater than 100,000 tonnes. These facilities did not, by default, receive output-based allocations of emissions credits to offset the cost of the carbon price, so their average costs of carbon could be much higher than their larger competitors.  An opt-in provision allowing these smaller firms to be covered under the CCIR was available, should facilities wish to undertake the more comprehensive emissions reporting.
+
+
+COVERED FACILITIES TABLE
+
+
+
+
+
+\section{Data}
+
+The majority of our data for this paper comes from the Alberta Electricity System Operator (AESO). The AESO provides, with a 60 day lag, offers made by power plants into the pool on an hourly basis. Facilities offer their power in up to 7 increasing price blocks, with a price cap of \$1000/MWh. Blocks may be either flexible or not, and non-flexible blocks will only be dispatched when demand allows the entire block to be used for the hour. Plants are dispatched in merit order, with the lowest price blocks dispatched first. We have hourly merit order and dispath data from September 1, 2009 through February 28, 2020 where we cut off the data to avoid impacts of the COVID-19 pandemic.\footnote{For a discussion of Alberta market responses to the COVID-19 pandemic, see Leach et al. (2020)} A subset of the data, from 2015 onward, allows us to identify, by block, which entity had offer control in the market for that block of power in each hour. 
+
+We also use three other AESO data sets to build our analysis sample. First, the AESO issues hourly price and load data including lagged load and price forecasts which we merge with merit order data. Next, we also included combined intertie capability rating data which allow us to account for hours of limited import or export capability. Finally, and most importantly, we used metered volumes data at the facility level to incorporate renewable generation into the merit order. The AESO currently treats non-dispatchable renewables (wind and solar power in our case) as negative load, but lists them in the merit order data as \$0 offers at full nameplate capacity. Prior to 2015, non-dispatchable renewables were not included at all in the merit order. We correct this omission using hourly metered net-to-grid volumes for each facility-hour pair in our data set, which we use to create \$0 offers which we merge into the merit order. This accurately reflects how the Alberta grid operator treats non-dispatchable renewables - generators do not bear any quantity risk and simply act as price takers.
+
+We supplement these data with a variety of other information.  Most importantly, we add facility-level information including fuel source, ownership, nameplate capacity, heat rate, and estimated emissions-intensity based on heat rates and fuel sources.  ADD ON-LINE APPENDIX TABLE OF PLANT INFO. We also use compliance data from the Alberta Specified Gas Emitters Regulations and the Federal Greenhouse Gas Emissions Reporting Program to provide, where available, more precise emissions intensity data for facilities.  Since these data are both reported at the facility level, not by units or blocks, we apply these measurements in the same way in our data.  As such, we do not allow emissions intensity to vary with the intensity of use of a particular unit in a particular hour nor do we account for any ramping rates of units.
+
+We add weather data from Environment Canada weather stations in Edmonton, Fort McMurray and Calgary, the three major demand centers in Alberta.  We take the average of two measurements in each area in order to maximize the number of hours we can cover with weather data.  With this approach, we lose only X hours without at least one observation in each of the three areas.
+
+Finally, we merge daily natural gas prices for the Nova Inventory Transfer (NIT) hub.  We access daily spot prices from NRGStream.
+
+All data save the natural gas prices which we are not authorized to redistribute are available HERE and can be replicated using code for the paper which is available at GITHUB LINK. For the publicly available code, we substitute Henry Hub gas prices as a placeholder, to which we apply the average discount observed between Henry Hub and NIT to adjust the values so that regression results may be more closely replicated.
+
+WE MIGHT BE ABLE TO GET PERMISSION TO INCLUDE THE NGX DATA.
+
+
+\section{Alberta's Power Market}
+
+Alberta's wholesale market is a single price, energy-only market. There is no day-ahead energy market, but there is a separate ancillary services market which we do not model in this paper. Alberta's record internal load, reached on January 11, 2018, is 11,697 MW, so Alberta's is a relatively small power market.  Alberta has seen significant growth in average and peak loads, with X cumulative annual average load growth rate during our sample period, although the 2016 through 2020 period has seen much less growth in load. Alberta is also a winter-peaking system which differentiates it from most North American power grids. Finally,
+consumption in Alberta is relatively stable due to the large industrial base.
+
+
+\begin{figure}[!h]%%
+	\centering \vspace{-.25cm} \includegraphics[width=6.5in]{../images/load_time.png}
+\label{fig:AB load}
+\vspace{-0.75cm}	\caption{Alberta internal load, average and range.  Source: Alberta Electric System Operator data.}
+\end{figure}
+
+
+Our sample period covers ten years with no major regulatory changes in the power market design. Alberta briefly considered an addition of a capacity market, but this was never implemented. However, market conditions have varied over the sample period. There are three distinct periods during our sample - relatively high load growth and tight market conditions from 2009 through 2013, followed by sharply constrained growth and high reserve margins after 2014 until 2018, followed by a return to tighter market conditions after the spring of 2018. There was also a major short-term market event with the wildfire in Fort McMurray in 2016 which took a lot of oil sands generation and load offline. Some of these changes market coincide with policy changes in our experiment - in particular, the changes to the Specified Gas Emitters regulations introduced in June of 2015 which took effect in January of 2016 and 2017 respectively coincide with a period of over-supply, while the introduction of the CCIR in 2018 occurred during a period of tightening reserve margins and lingering uncertainty over market structure. From 2018 through pre-COVID 2020, both GHG policy and the wholesale electricity market were tightening, and so we need to be careful to disentangle these impacts.
+
+\begin{figure}[!h]%%
+	\centering \vspace{-.25cm} \includegraphics[width=6.5in]{../images/peak_prices_2000_2020.png}
+\label{fig:prices}
+\vspace{-0.75cm}	\caption{Wholesale power prices, peak and off-peak hours.  Source: Alberta Electric System Operator data.}
+\end{figure}
+
+The generation mix in Alberta's power market is dominated by fossil fuels although, as shown in Figure \ref{fig:gen_mix}, the dominant fossil fuel has change from coal to natural gas. Within natural gas generation, the mix of plant types is also relevant to our study. X\% are combined cycle plants, y\% are simple-cycle plants, and Z\% are combined heat and power facilities which tend to be price-takers in the market, with very little flexibility at the margin since the industrial processes with which they are associated relay on them for process heat. As will be discussed below, any net-to-grid power from these facilities is primarily offered into the market at a \$0 offer and accepts market price.
+
+\begin{figure}[!h]%%
+	\centering \vspace{-.25cm} \includegraphics[width=6.5in]{../images/gen_fuel.png}
+\label{fig:gen_mix}
+\vspace{-0.75cm}	\caption{Generation mix in Alberta.  Source: Alberta Electric System Operator data.}
+\end{figure}
+
+
+
+\section{Estimation}
+
+\subsection{Market Merit Order}
+
+
+\subsection{Synthetic Plants}
+
+
+
+\subsection{Synthetic Portfolios}
+
+
+
+
+\section{Results and Discussion}
+
+
+
+
+\section{Analysis and Results}
+
+\section{Conclusion}
+
+
+\bibliographystyle{chicago}
+\bibliography{../env}
+
+\end{document}
+
+
+
+\section{Introduction}
+We examine the offer behaviour of competitive electricity suppliers in response to carbon prices. We exploit a unique set of significant policy variations over time and across facilities to measure carbon pricing pass-through to electricity prices. Beginning in 2007, the province of Alberta, Canada, instituted carbon pricing which affected generators in its energy-only wholesale electricity market. Changes in provincial governments in 2015 and 2019 led to the emissions pricing scheme being changed 3 times in 4 years, with the first 3 changes all announced during the 2015 calendar year, and a subsequent change announced in 2018. These changes were each implemented in such a way as to have firm- and facility-type-specific impacts which generates variation that we can exploit to separately characterize the role of carbon pricing and output-based allocations (OBAs) on pricing behaviour.
+
+Compare to Mar and other literature.
+
+
+
+
+
+First, in June 2015, it was announced that the carbon price would increase to \$20 per tonne and that output-based allocations would decrease beginning in 2016. The price was also set to increase further, to \$30 per tonne, in 2017.  Later in 2015, following the recommendations of an expert panel, the government announced that it would alter the formula by which output-based allocations were provided to one which was consistent across all electricity generators beginning in 2018. This change was material, with coal plant allocations reduced by more than 0.5t/MWh in many cases, leading to changes in average costs of output of more than \$15/MWh for some facilities.  This combination of policy changes implies that the effective marginal cost of emissions and the average emissions cost per unit output both changed significantly, with changes having different impacts on generators within and across fuel types.  We show the effect of the policy changes on average revenue by fuel type in Figure 1.
+
+\begin{figure}[!h]%
+	\centering \vspace{-.25cm} \includegraphics[width=6.5in]{../images/price_capture_ctax.png}
+\label{fig:masnadi_1}
+\vspace{-0.75cm}	\caption{Impact of changes in carbon pricing on plant revenues by type}
+\end{figure}
+
+
+ Fossil-fuel-fired generators were charged a carbon price of \$15/tonne on emissions net of allocations of emissions credits. Emissions credits were allocated per unit output at rates based on facility-specific emissions-intensity histories. Renewable generators were also able to qualify for offset credits which provided an alternative revenue stream.
+
+\noindent
+
+
+\newpage \noindent We use data including hourly electricity prices and loads, plant availability, as well as offer functions at the plant level, historic emissions intensities, and emissions policy compliance records to assess the degree to which carbon prices have been passed through to wholesale electricity prices. We also assess the degree to which changes in the composition of the market including changes to offer control and firm concentration, as well as changes due to facility exit, have altered the pass-through of carbon prices.  Our work builds largely on the analysis of electricity price pass-through of \citet{fabra_reguant}, but also draws on work by \citet{hintermann17} on market power, \citet{hintermann15} and \citet{hintermann16} on impacts of carbon pricing in the EU-ETS, \citet{nazifi16} on pass-through in Australia's electricity market, and \citet{woo_et_al} on pass-through in California's market.
+
+\noindent Our preliminary analysis suggests that there has been both a significant effect on emissions (see Figure \ref{fig:monthly_ghg}) and on the composition of the market (see Figure \ref{fig:monthly_gen}) with significant reduction in the generation from coal plants and significant increase in the hourly daily cycling of coal plants as the change in carbon prices push coal plants higher in the merit order relative to gas generation, a dynamic examined in \citet{cullen_mansur}.
+
+\begin{figure}[p]%
+	\centering \vspace{-.25cm} \includegraphics[width=5.5in]{../images/monthly_ghg_mwh.png}
+\vspace{-0.75cm}	\caption{Impact of changes in carbon pricing on GHG emissions}\label{fig:monthly_ghg}
+\end{figure}
+
+
+\begin{figure}[p]%
+	\centering \vspace{-.25cm} \includegraphics[width=5.5in]{../images/gen_ghg_price.png}
+\vspace{-.5cm}	\caption{Impact of changes in carbon pricing on market share by fuel. Combined heat and power (COGEN), simple-cycle gas turbines (SCGT) and natural gas combined cycle (NGCC) facilities are each natural-gas-fired.}\label{fig:monthly_gen}
+\end{figure}
+
+
+%\begin{figure}[!h]%
+	%\centering \vspace{-.5cm} \includegraphics[width=6.5in]{CJE/masnadi_fig_1.png} %\label{fig:masnadi_1}
+%	\caption{Figure 1 from Masnadi et al. (2018)}
+%	\vspace{-.5cm}
+%\end{figure}
+\newpage
+\vspace{10cm}

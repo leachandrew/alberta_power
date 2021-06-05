@@ -209,7 +209,7 @@ load("data/forecast_data.RData")
   
   #add updated temperature data
   source("cdn_weather.R")
-  load("ab_power_temps.RData")
+  load("data/ab_power_temps.RData")
   temps_power<-update_weather_data(temps_power)
   save(temps_power,file="ab_power_temps.RData")  
   
