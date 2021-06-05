@@ -400,7 +400,7 @@ load("data/forecast_data.RData")
   
 print(paste("Market Data Merged. Elapsed time is",time_length(interval(start_time, Sys.time()), "seconds"),"seconds"))
 
-save<-0
+save<-1
 #save<-1
 
 if(save==1)
