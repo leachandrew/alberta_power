@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.21 (MiKTeX 20.11) (preloaded format=pdflatex 2021.1.8)  4 JUN 2021 19:55
+This is pdfTeX, Version 3.14159265-2.6-1.40.21 (MiKTeX 20.11) (preloaded format=pdflatex 2021.1.8)  4 JUN 2021 21:45
 entering extended mode
 **./paper_draft.tex
 (paper_draft.tex
@@ -994,10 +994,10 @@ See the caption package documentation for explanation.
 
 LaTeX Warning: Reference `fig:ab_load' on page 6 undefined on input line 128.
 
-<images/load_time.png, id=76, 778.29231pt x 416.9423pt>
-File: images/load_time.png Graphic file (type png)
-<use images/load_time.png>
-Package pdftex.def Info: images/load_time.png  used on input line 131.
+<../images/load_time.png, id=76, 778.29231pt x 416.9423pt>
+File: ../images/load_time.png Graphic file (type png)
+<use ../images/load_time.png>
+Package pdftex.def Info: ../images/load_time.png  used on input line 131.
 (pdftex.def)             Requested size: 469.75499pt x 251.65602pt.
 
 LaTeX Warning: `!h' float specifier changed to `!ht'.
@@ -1011,11 +1011,11 @@ LaTeX Warning: Reference `fig:ab_prices' on page 6 undefined on input line 136.
 
 
 [6]
-<images/peak_prices_2000_2020.png, id=84, 778.29231pt x 416.9423pt>
-File: images/peak_prices_2000_2020.png Graphic file (type png)
-<use images/peak_prices_2000_2020.png>
-Package pdftex.def Info: images/peak_prices_2000_2020.png  used on input line 1
-40.
+<../images/peak_prices_2000_2020.png, id=84, 778.29231pt x 416.9423pt>
+File: ../images/peak_prices_2000_2020.png Graphic file (type png)
+<use ../images/peak_prices_2000_2020.png>
+Package pdftex.def Info: ../images/peak_prices_2000_2020.png  used on input lin
+e 140.
 (pdftex.def)             Requested size: 469.75499pt x 251.65602pt.
 
 
@@ -1028,10 +1028,10 @@ See the caption package documentation for explanation.
 
 LaTeX Warning: Reference `fig:gen_mix' on page 7 undefined on input line 145.
 
-<images/gen_fuel.png, id=86, 1156.32pt x 650.43pt>
-File: images/gen_fuel.png Graphic file (type png)
-<use images/gen_fuel.png>
-Package pdftex.def Info: images/gen_fuel.png  used on input line 152.
+<../images/gen_fuel.png, id=86, 1156.32pt x 650.43pt>
+File: ../images/gen_fuel.png Graphic file (type png)
+<use ../images/gen_fuel.png>
+Package pdftex.def Info: ../images/gen_fuel.png  used on input line 152.
 (pdftex.def)             Requested size: 469.75499pt x 264.23653pt.
 
 LaTeX Warning: `!h' float specifier changed to `!ht'.
@@ -1044,16 +1044,16 @@ See the caption package documentation for explanation.
 LaTeX Warning: Reference `fig:load_pattern' on page 7 undefined on input line 1
 59.
 
-[7 <./images/load_time.png (PNG copy)>]
+[7 <../images/load_time.png (PNG copy)>]
 
 LaTeX Warning: Text page 8 contains only floats.
 
-[8 <./images/peak_prices_2000_2020.png (PNG copy)> <./images/gen_fuel.png (PNG 
-copy)>]
-<images/load_compare.png, id=99, 1011.78pt x 275.3487pt>
-File: images/load_compare.png Graphic file (type png)
-<use images/load_compare.png>
-Package pdftex.def Info: images/load_compare.png  used on input line 162.
+[8 <../images/peak_prices_2000_2020.png (PNG copy)> <../images/gen_fuel.png (PN
+G copy)>]
+<../images/load_compare.png, id=99, 1011.78pt x 275.3487pt>
+File: ../images/load_compare.png Graphic file (type png)
+<use ../images/load_compare.png>
+Package pdftex.def Info: ../images/load_compare.png  used on input line 162.
 (pdftex.def)             Requested size: 469.75499pt x 127.84254pt.
 
 
@@ -1072,19 +1072,19 @@ See the caption package documentation for explanation.
 LaTeX Warning: Reference `fig:capture_prices' on page 9 undefined on input line
  167.
 
-<images/price_capture.png, id=102, 778.29231pt x 416.9423pt>
-File: images/price_capture.png Graphic file (type png)
-<use images/price_capture.png>
-Package pdftex.def Info: images/price_capture.png  used on input line 171.
+<../images/price_capture.png, id=102, 778.29231pt x 416.9423pt>
+File: ../images/price_capture.png Graphic file (type png)
+<use ../images/price_capture.png>
+Package pdftex.def Info: ../images/price_capture.png  used on input line 171.
 (pdftex.def)             Requested size: 469.75499pt x 251.65602pt.
 
 LaTeX Warning: `!h' float specifier changed to `!ht'.
 
-[9 <./images/load_compare.png>] (paper_draft.bbl
+[9 <../images/load_compare.png>] (paper_draft.bbl
 
 Package natbib Warning: Empty `thebibliography' environment on input line 3.
 
-) [10 <./images/price_capture.png (PNG copy)>] [11] (paper_draft.aux)
+) [10 <../images/price_capture.png (PNG copy)>] [11] (paper_draft.aux)
 Package rerunfilecheck Info: File `paper_draft.out' has not changed.
 (rerunfilecheck)             Checksum: EE9354890F6027F1B0199C0FADC26786;495.
 
@@ -1094,7 +1094,7 @@ LaTeX Warning: There were undefined references.
  ) 
 Here is how much of TeX's memory you used:
  22531 strings out of 479798
- 464454 string characters out of 2869231
+ 464532 string characters out of 2869231
  702677 words of memory out of 3000000
  39050 multiletter control sequences out of 15000+200000
  551286 words of font info for 93 fonts, out of 3000000 for 9000

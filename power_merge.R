@@ -15,7 +15,7 @@ library(data.table)
 
 #create long data file
 
-setwd("C:/Users/aleach/Google Drive")
+#setwd("C:/Users/aleach/Google Drive")
 
 #df <- read.xlsx(xlsxFile = "simple_test2.xlsx", sheet = 1, startRow = 1,skipEmptyRows = TRUE,detectDates = TRUE)
 
