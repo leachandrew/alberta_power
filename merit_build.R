@@ -2,11 +2,13 @@ source("power_paper_base.R")
 source("cdn_weather.R")
 source("aeso_scrapes.R")
 source("merit_scripts.R")
+source("cdn_weather.R")
 
 start_time<-Sys.time()
 #update merit order data
 
-update<-1
+update<-0
+
 load("data/all_merit.RData")  
 if(update==1){
   merit_data<-rbind(merit_data,update_merit(merit_data))
@@ -15,7 +17,10 @@ if(update==1){
   save(merit_data, file="data/all_merit.RData")  
 }
 
-update_forecasts()
+#bring in market data
+if(update==1){
+  update_forecasts()
+  }
 load("data/forecast_data.RData")
 
 #merit_data<-replace_merit_day(merit_data,day=ymd("2009-12-15"))
@@ -57,8 +62,8 @@ load("data/forecast_data.RData")
   
   #load volumes
   
-  new_renew<-1
-  if(new_renew==1){
+  if(update==1){
+    {
     load(file="data/metered_vols_data.Rdata" ) 
     update_vols(all_vols)
     save(all_vols,file="data/metered_vols_data.Rdata" ) 
@@ -80,9 +85,8 @@ load("data/forecast_data.RData")
           )
     save(renew_vols, file="data/renew_vols.RData")  
   }
-  if(new_renew==0){
-    load("data/renew_vols.RData")
-    }
+  load("data/renew_vols.RData")
+
   asset_list<-"http://ets.aeso.ca/ets_web/ip/Market/Reports/AssetListReportServlet"
   aeso_assets<-readHTMLTable(asset_list, trim=T, as.data.frame=T, header=T,skip.rows = 3)[[2]]
   names(aeso_assets)<-aeso_assets[1,]
@@ -94,9 +98,9 @@ load("data/forecast_data.RData")
   #grab only the last name associated to an ID
   aeso_assets<-aeso_assets%>%group_by(pool_participant_id)%>%
     summarize(pool_participant_name=last(pool_participant_name))
- renew_vols<-renew_vols %>% left_join(aeso_assets,by="pool_participant_id")%>%
+  renew_vols<-renew_vols %>% left_join(aeso_assets,by="pool_participant_id")%>%
     rename(offer_control=pool_participant_name)%>% select(-pool_participant_id)
- renew_vols<-renew_vols %>% mutate(key_firm=case_when(
+  renew_vols<-renew_vols %>% mutate(key_firm=case_when(
    grepl("TransAlta",offer_control)~TRUE,
    grepl("TransCanada",offer_control)~TRUE,
    grepl("ENMAX",offer_control)~TRUE,
@@ -208,16 +212,20 @@ load("data/forecast_data.RData")
     mutate(supply_cushion=hourly_avail-hourly_dispatch)
   
   #add updated temperature data
-  source("cdn_weather.R")
   load("data/ab_power_temps.RData")
-  temps_power<-update_weather_data(temps_power)
-  save(temps_power,file="ab_power_temps.RData")  
+  
+  if(update==1){
+      temps_power<-update_weather_data(temps_power)
+      save(temps_power,file="data/ab_power_temps.RData")
+  }
   
   hourly_summary<-hourly_summary%>%left_join(temps_power)
   
   
   #update and load intertie capacities
-  update_itc_data()
+  if(update==1){
+    update_itc_data()
+    }
   load(file="data/aeso_itc_data.Rdata" ) 
   
   mkt_data<-forecast_data %>% left_join(itc_data,by=c("date","he")) %>%
@@ -417,7 +425,7 @@ if(save==1)
   if(synth==0) #saving the processed merit data
   {
   print(paste("Saving merit file. Elapsed time is",time_length(interval(start_time, Sys.time()), "seconds"),"seconds"))
-  save(merit_aug,file=format(Sys.time(),format="merit_data_%Y_%b_%d_%H_%M.RData"))
+  save(merit_aug,file=format(Sys.time(),format="data/merit_data_%Y_%b_%d_%H_%M.RData"))
   #student csv  
   print(paste("Saving student csv file. Elapsed time is",time_length(interval(start_time, Sys.time()), "seconds"),"seconds"))
   student_data<-merit_aug %>% select(date,he,asset_id,AESO_Name,Plant_Type,Plant_Fuel,co2_est,block_number,size,flexible,price,import_export,available_mw,dispatched_mw,merit,actual_posted_pool_price,actual_ail,month,day,hour,year,on_peak,temp_ymm=temp_YMM,temp_yeg=temp_YEG,temp_yyc=temp_YYC,hourly_dispatch,hourly_imports,hourly_exports,hourly_renewables)
@@ -430,15 +438,15 @@ paste("Built and saved merit data set, elapsed time is",time_length(interval(sta
 
 
 
-ggplot(filter(merit_aug,year==2020))+
-  geom_line(aes(as.numeric(percentile),ghg/10^6*365,group=time),size=.25)
+#ggplot(filter(merit_aug,year==2020))+
+#  geom_line(aes(as.numeric(percentile),ghg/10^6*365,group=time),size=.25)
 
-ggplot(filter(merit_aug))+
-  geom_line(aes(as.numeric(percentile),ghg/10^6*365,group=time),size=.25)+
-  facet_grid(cols = vars(he),rows=vars(year))
+#ggplot(filter(merit_aug))+
+#  geom_line(aes(as.numeric(percentile),ghg/10^6*365,group=time),size=.25)+
+#  facet_grid(cols = vars(he),rows=vars(year))
   
 
-ggplot(filter(merit_aug))+
-  geom_line(aes(as.numeric(percentile),bid,group=time),size=.25)+
-  facet_grid(cols = vars(he),rows=vars(year))
+#ggplot(filter(merit_aug))+
+#  geom_line(aes(as.numeric(percentile),bid,group=time),size=.25)+
+#  facet_grid(cols = vars(he),rows=vars(year))
 
