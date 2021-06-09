@@ -7,7 +7,11 @@ source("cdn_weather.R")
 start_time<-Sys.time()
 #update merit order data
 
-update<-0
+update<-0 #add new data
+save<-1 #save files at the end
+synth<-0 #synthetic plants?
+  synth_type<-1 #1 is by plant_type, 0 is full merit as synthetic plant
+
 
 load("data/all_merit.RData")  
 if(update==1){
@@ -23,11 +27,6 @@ if(update==1){
   }
 load("data/forecast_data.RData")
 
-#merit_data<-replace_merit_day(merit_data,day=ymd("2009-12-15"))
-#day=ymd("2009-12-15")
-#xdf<-get_merit_report(as.Date(day), as.Date(day)+days(1),key_firms=firms()) %>% filter(he=="18")
-
-
   singles<-seq(1,9)
   for(hour in singles){
     merit_data$he[merit_data$he==hour]<-paste(0,hour,sep="")
@@ -36,8 +35,8 @@ load("data/forecast_data.RData")
 
   #clean up the trade date in the merit order
     
-    merit_aug<-merit_data%>% 
-      mutate(import_export=case_when(
+  merit_aug<-merit_data%>% 
+    mutate(import_export=case_when(
     is.na(import_export) ~ "",
     TRUE                      ~  import_export
   ),
@@ -46,8 +45,11 @@ load("data/forecast_data.RData")
   ungroup() %>% 
   select(-merit)
     
-    
+  rm(merit_data) #no longer need this object, so clean it out
+  gc()
+      
   #remove exports from the merit and store them - they're demand, not supply
+  
   #store them
   exports<-merit_aug %>% group_by(date,he)%>%
     summarize(hourly_exports=sum(dispatched_mw*(import_export=="E")))
@@ -62,9 +64,9 @@ load("data/forecast_data.RData")
   
   #load volumes
   
-  if(update==1){
-    {
-    load(file="data/metered_vols_data.Rdata" ) 
+  if(update==1)
+   {
+   load(file="data/metered_vols_data.Rdata" ) 
     update_vols(all_vols)
     save(all_vols,file="data/metered_vols_data.Rdata" ) 
     #isolate renewable volumes from metered volumes
@@ -211,6 +213,8 @@ load("data/forecast_data.RData")
     ) %>%ungroup() %>% left_join(exports) %>%
     mutate(supply_cushion=hourly_avail-hourly_dispatch)
   
+  rm(exports) #no longer need to store this
+  
   #add updated temperature data
   load("data/ab_power_temps.RData")
   
@@ -273,8 +277,7 @@ load("data/forecast_data.RData")
   #merit_aug<-merit_small
   
   
-  synth<-0
-  synth_type<-1 #1 is by plant_type, 0 is full merit as synthetic plant
+  
   if(synth==1){
     if(synth_type==1)
       {
@@ -408,8 +411,6 @@ load("data/forecast_data.RData")
   
 print(paste("Market Data Merged. Elapsed time is",time_length(interval(start_time, Sys.time()), "seconds"),"seconds"))
 
-save<-1
-#save<-1
 
 if(save==1)
   {
@@ -428,14 +429,12 @@ if(save==1)
   save(merit_aug,file=format(Sys.time(),format="data/merit_data_%Y_%b_%d_%H_%M.RData"))
   #student csv  
   print(paste("Saving student csv file. Elapsed time is",time_length(interval(start_time, Sys.time()), "seconds"),"seconds"))
-  student_data<-merit_aug %>% select(date,he,asset_id,AESO_Name,Plant_Type,Plant_Fuel,co2_est,block_number,size,flexible,price,import_export,available_mw,dispatched_mw,merit,actual_posted_pool_price,actual_ail,month,day,hour,year,on_peak,temp_ymm=temp_YMM,temp_yeg=temp_YEG,temp_yyc=temp_YYC,hourly_dispatch,hourly_imports,hourly_exports,hourly_renewables)
-  write_csv(student_data, file.path(format(Sys.time(),format="data/student_data_%Y_%b_%d_%H_%M.csv.gz",sep="")))
+  write_csv(merit_aug %>% 
+              select(date,he,asset_id,AESO_Name,Plant_Type,Plant_Fuel,co2_est,block_number,size,flexible,price,import_export,available_mw,dispatched_mw,merit,actual_posted_pool_price,actual_ail,month,day,hour,year,on_peak,temp_ymm=temp_YMM,temp_yeg=temp_YEG,temp_yyc=temp_YYC,hourly_dispatch,hourly_imports,hourly_exports,hourly_renewables), 
+            file.path(format(Sys.time(),format="data/student_data_%Y_%b_%d_%H_%M.csv.gz",sep="")))
   }
 }
 paste("Built and saved merit data set, elapsed time is",time_length(interval(start_time, Sys.time()), "seconds"),"seconds")
-
-
-
 
 
 #ggplot(filter(merit_aug,year==2020))+
