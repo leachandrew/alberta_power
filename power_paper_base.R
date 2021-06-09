@@ -1,29 +1,64 @@
-#library(EIAdata)
-library(nleqslv)
-library(curl)
-library(janitor)
-library(viridis)
-library(scales)
-library(openxlsx)
-library(reshape2)
-library(zoo)
-library(RColorBrewer)
-library(scales) 
-library(pdfetch)
-library(tidyverse)
-library(XML)
 library(lubridate)
-library(httr)
-library(jsonlite)
 library(readxl)
-library(rvest)
-library(forcats)
-library(ggrepel)
-library(ggpubr)
+library(scales)
+library(grid)
 library(gridExtra)
+library(ggpubr)
+library(labeling)
 library(timeDate)
-library(cansim)
-library(stringi)
+library(cowplot)
+library(patchwork)
+
+library(gghighlight)
+library(viridis)
+
+library(tidyverse)
+
+
+paper_theme<-function(caption_align=1){
+  theme_minimal()+theme(
+    axis.title.x = element_text(size = 12,margin = margin(t = 2, b =2)),
+    axis.text.x = element_text(size = 12,margin = margin(t = 2, b = 2)),
+    axis.title.y = element_text(size = 12,margin = margin(r = 2, l = 2)),
+    axis.text.y = element_text(size = 12,margin = margin(r = 2, l = 2)),
+    legend.position = "bottom",
+    legend.text=element_text(size=12),
+    legend.margin=margin(c(0,0,-0.25,0),unit="cm"),
+    plot.caption = element_text(size = 9, color = "gray40",hjust=1),
+    plot.title = element_text(face = "bold"),
+    plot.subtitle = element_text(size = 10, color = "gray40"),
+    panel.grid.minor = element_blank(),
+    panel.grid.major.x = element_blank()
+  )
+}
+
+
+insertLayer <- function(P, after=0, ...) {
+  #  P     : Plot object
+  # after  : Position where to insert new layers, relative to existing layers
+  #  ...   : additional layers, separated by commas (,) instead of plus sign (+)
+  
+  if (after < 0)
+    after <- after + length(P$layers)
+  
+  if (!length(P$layers))
+    P$layers <- list(...)
+  else 
+    P$layers <- append(P$layers, list(...), after)
+  
+  return(P)
+}
+
+`-.gg` <- function(plot, layer) {
+  if (missing(layer)) {
+    stop("Cannot use `-.gg()` with a single argument. Did you accidentally put - on a new line?")
+  }
+  if (!is.ggplot(plot)) {
+    stop('Need a plot on the left side')
+  }
+  plot$layers = c(layer, plot$layers)
+  plot
+}
 
 
 
@@ -196,7 +231,10 @@ assign_peaks<-function(data_orig,time_var=time){
     Victoria_Day=ifelse(month(!!temp_time)==5 & day(!!temp_time)<=24 & day(!!temp_time)>=18 & wday(!!temp_time,label = T)=="Mon",T,F) #Monday before May 25
   ) %>% mutate(
     stat = select(., holiday_list) %>% rowSums()>0
+    #stat = select(all_of(holiday_list)) %>% rowSums()>0
   )
+  
+  
   #On-Peak: hour ending HE8 to HE23 Monday through Saturday, excluding Sundays and NERC holidays
   #Off-Peak: HE1 to HE7 and HE24 Monday through Saturday, and all hours on Sundays and NERC holidays
   #Extended Peak: HE8 to HE23 every day in the contract period

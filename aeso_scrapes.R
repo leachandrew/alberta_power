@@ -115,8 +115,7 @@ update_vols <- function(data_sent) {
       data_store<-rbind(data_store,clean_volume_data(xdf))
       #list_item<-list_item+1
     }
-  #testing
-  #  testing<-process_data(data_store)
+  #return the data
   rbind(data_sent,process_data(data_store))
 }
 
