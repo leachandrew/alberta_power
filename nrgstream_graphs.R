@@ -1,5 +1,4 @@
 source("power_paper_base.R")
-library(reshape2)
 
 oba_type<-function(plant_sent,year_sent){
   grid_avg<-0.65
@@ -75,7 +74,6 @@ deemed_ei<-function(plant_sent,year_sent){
 load("nrgstream/nrgstream_gen.RData") ## which is here *equivalent* to
 
 nrgstream_gen <- nrgstream_gen %>% rename(time=Time)
-
 
 errors<-nrgstream_gen %>% filter(is.na(Price),date<Sys.Date())
 gen_errors<-nrgstream_gen %>% filter(is.na(gen),date<Sys.Date())
