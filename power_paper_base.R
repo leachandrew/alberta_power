@@ -8,11 +8,20 @@ library(labeling)
 library(timeDate)
 library(cowplot)
 library(patchwork)
+library(timeDate)
+library(broom)
+library(ggthemes)
+library(directlabels)
 
 library(gghighlight)
 library(viridis)
 
 library(tidyverse)
+
+
+blakes_blue<-"#4477AA"
+graph_grey<-"grey20"
+graph_black<-"black"
 
 
 paper_theme<-function(caption_align=1){
@@ -32,6 +41,25 @@ paper_theme<-function(caption_align=1){
   )
 }
 
+
+
+
+blake_theme<-function(){
+  theme_hc(20)+
+    theme(plot.subtitle = element_text(color="grey10",size=rel(.7)),
+          plot.title = element_text(face="bold"),
+          plot.caption = element_text(color="grey50",size=rel(.5)),
+          legend.title = element_text(color="grey10",size=rel(.5)),
+          legend.text = element_text(color="grey10",size=rel(.5)),
+          axis.title = element_text(size=rel(.8)),
+          axis.ticks = element_blank(),
+          panel.spacing = unit(2,"lines"),
+          legend.position = "none",
+          plot.margin = margin(t = .5, r = 1, b = .25, l = 1,unit= "cm"),
+          axis.text.x = element_text(margin = margin(t = 10, r = 0, b = 0, l = 0))
+          
+    )
+}
 
 insertLayer <- function(P, after=0, ...) {
   #  P     : Plot object
