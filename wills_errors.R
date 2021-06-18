@@ -27,6 +27,24 @@ resid<-resid%>% mutate(resid=actual_posted_pool_price-.fitted)
 #ar_fit<-arima(data_set$actual_posted_pool_price,order = c(2,0,0),xreg =x_reg)
 
 ar_fit<-arima(resid$resid,order = c(2,0,0))
-tidy(ar_fit)
-glance(ar_fit)
+ar_model<-tidy(ar_fit)
+ar_glance<-glance(ar_fit)
 
+
+#set.seed(456)
+#ts.sim<-resid$.fitted[1:1000]+arima.sim(list(ar = ar_model$estimate[1:2]),n=1000,sd = ar_glance$sigma)#
+
+#ts.sim<-resid$.fitted[1:1000]+arima.sim(list(ar = c(0.00000000000001,0.000000000000001)),n=1000,sd = ar_glance$sigma)
+
+
+ts_test<-as_tibble(rnorm(nrow(resid)+500,0,sd=ar_glance$sigma)) #use 50 iterations to seed the processs
+ts_test<-ts_test %>% mutate(ar_val=lag(value,1)*ar_model$estimate[1]+lag(value,2)*ar_model$estimate[2]+value)
+
+ts_test<-tail(ts_test,nrow(resid)) #trim those 50 seed values
+ts_test<-ts_test %>% mutate(ar_val=resid$.fitted+ar_val,
+                            ar_val=pmax(ar_val,0),
+                            ar_val=pmin(ar_val,1000)
+                            ) #add in the fitted price values
+
+
+ts.plot(ts_test$ar_val)
