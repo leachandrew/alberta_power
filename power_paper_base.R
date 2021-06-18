@@ -1,4 +1,5 @@
 library(curl)
+library(openxlsx)
 library(janitor)
 library(viridis)
 library(scales)
@@ -20,6 +21,7 @@ library(cansim)
 library(ggthemes)
 library(stringi)
 library(tidyverse)
+library(broom)
 
 blakes_blue<-"#4477AA"
 graph_grey<-"grey20"

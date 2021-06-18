@@ -37,7 +37,7 @@
 
  clean_volume_data<-function(xdf){
    #tool to clean data from the metered volumes
-   xdf<-melt(xdf,id.vars = c("pool_participant_id","asset_type","asset_id","date"),variable.name = "hour",value.name = "vol" )
+   xdf<-xdf %>% pivot_longer(cols = - c("pool_participant_id","asset_type","asset_id","date"),names_to = "hour",values_to = "vol" )
    xdf$he<-stri_pad(gsub("hour_","",xdf$hour), 2, pad = "0")
    xdf$he<-gsub("2_2","02*",xdf$he) #match time change hour notation for forecast data he fields
    xdf$hour<-as.numeric(gsub("02\\*","02",xdf$he)) #create an actual numeric hour

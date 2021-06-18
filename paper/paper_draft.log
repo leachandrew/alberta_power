@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.21 (MiKTeX 20.11) (preloaded format=pdflatex 2021.1.8)  9 JUN 2021 15:22
+This is pdfTeX, Version 3.14159265-2.6-1.40.21 (MiKTeX 20.11) (preloaded format=pdflatex 2021.1.8)  18 JUN 2021 12:58
 entering extended mode
 **./paper_draft.tex
 (paper_draft.tex
@@ -893,22 +893,22 @@ Excluding comment 'comment') Special comment 'ALnote' Special comment 'BBnote'
 (paper_draft.aux)
 \openout1 = `paper_draft.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 67.
-LaTeX Font Info:    ... okay on input line 67.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 67.
-LaTeX Font Info:    ... okay on input line 67.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 67.
-LaTeX Font Info:    ... okay on input line 67.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 67.
-LaTeX Font Info:    ... okay on input line 67.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 67.
-LaTeX Font Info:    ... okay on input line 67.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 67.
-LaTeX Font Info:    ... okay on input line 67.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 67.
-LaTeX Font Info:    ... okay on input line 67.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 67.
-LaTeX Font Info:    ... okay on input line 67.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 71.
+LaTeX Font Info:    ... okay on input line 71.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 71.
+LaTeX Font Info:    ... okay on input line 71.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 71.
+LaTeX Font Info:    ... okay on input line 71.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 71.
+LaTeX Font Info:    ... okay on input line 71.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 71.
+LaTeX Font Info:    ... okay on input line 71.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 71.
+LaTeX Font Info:    ... okay on input line 71.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 71.
+LaTeX Font Info:    ... okay on input line 71.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 71.
+LaTeX Font Info:    ... okay on input line 71.
 
 (C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/context/base/mkii\supp-pdf.m
 kii
@@ -931,7 +931,7 @@ Package: epstopdf-base 2020-01-24 v2.11 Base part for package epstopdf
 Package epstopdf-base Info: Redefining graphics rule for `.eps' on input line 4
 85.
 )
-Package hyperref Info: Link coloring ON on input line 67.
+Package hyperref Info: Link coloring ON on input line 71.
 
 (C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/latex/hyperref\nameref.sty
 Package: nameref 2019/09/16 v2.46 Cross-referencing by name of section
@@ -945,9 +945,9 @@ Package: gettitlestring 2019/12/15 v1.6 Cleanup title references (HO)
 )
 \c@section@level=\count341
 )
-LaTeX Info: Redefining \ref on input line 67.
-LaTeX Info: Redefining \pageref on input line 67.
-LaTeX Info: Redefining \nameref on input line 67.
+LaTeX Info: Redefining \ref on input line 71.
+LaTeX Info: Redefining \pageref on input line 71.
+LaTeX Info: Redefining \nameref on input line 71.
  (paper_draft.out) (paper_draft.out)
 \@outlinefile=\write5
 \openout5 = `paper_draft.out'.
@@ -964,24 +964,24 @@ File: siunitx-abbreviations.cfg 2017/11/26 v2.7k siunitx: Abbreviated units
 basic-dictionary-English.dict
 Dictionary: translator-basic-dictionary, Language: English 
 )
-LaTeX Font Info:    Trying to load font information for U+msa on input line 67.
+LaTeX Font Info:    Trying to load font information for U+msa on input line 71.
 
 
 (C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/latex/amsfonts\umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
-LaTeX Font Info:    Trying to load font information for U+msb on input line 67.
+LaTeX Font Info:    Trying to load font information for U+msb on input line 71.
 
 
 (C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/latex/amsfonts\umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 )
-Underfull \hbox (badness 10000) in paragraph at lines 73--76
+Underfull \hbox (badness 10000) in paragraph at lines 79--82
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 73--76
+Underfull \hbox (badness 10000) in paragraph at lines 79--82
 
  []
 
@@ -992,52 +992,66 @@ Underfull \hbox (badness 10000) in paragraph at lines 73--76
 <../images/loads_clean.png, id=81, 1011.78pt x 464.4552pt>
 File: ../images/loads_clean.png Graphic file (type png)
 <use ../images/loads_clean.png>
-Package pdftex.def Info: ../images/loads_clean.png  used on input line 129.
+Package pdftex.def Info: ../images/loads_clean.png  used on input line 135.
 (pdftex.def)             Requested size: 469.75499pt x 215.64343pt.
 <../images/peak_prices.png, id=83, 1011.78pt x 464.4552pt>
 File: ../images/peak_prices.png Graphic file (type png)
 <use ../images/peak_prices.png>
-Package pdftex.def Info: ../images/peak_prices.png  used on input line 137.
+Package pdftex.def Info: ../images/peak_prices.png  used on input line 143.
 (pdftex.def)             Requested size: 469.75499pt x 215.64343pt.
-<../images/gen_fuel.png, id=84, 1156.32pt x 650.43pt>
+<../images/gen_fuel.png, id=84, 1011.78pt x 464.4552pt>
 File: ../images/gen_fuel.png Graphic file (type png)
 <use ../images/gen_fuel.png>
-Package pdftex.def Info: ../images/gen_fuel.png  used on input line 144.
-(pdftex.def)             Requested size: 469.75499pt x 264.23653pt.
+Package pdftex.def Info: ../images/gen_fuel.png  used on input line 150.
+(pdftex.def)             Requested size: 469.75499pt x 215.64343pt.
  [7 <../images/loads_clean.png>]
 <../images/load_compare.png, id=95, 1011.78pt x 275.3487pt>
 File: ../images/load_compare.png Graphic file (type png)
 <use ../images/load_compare.png>
-Package pdftex.def Info: ../images/load_compare.png  used on input line 159.
+Package pdftex.def Info: ../images/load_compare.png  used on input line 164.
 (pdftex.def)             Requested size: 469.75499pt x 127.84254pt.
 
 
 LaTeX Warning: `!h' float specifier changed to `!ht'.
 
-[8 <../images/peak_prices.png>] [9 <../images/gen_fuel.png (PNG copy)> <../imag
-es/load_compare.png>]
-<../images/price_capture.png, id=110, 778.29231pt x 416.9423pt>
+[8 <../images/peak_prices.png>]
+<../images/price_capture.png, id=104, 778.29231pt x 416.9423pt>
 File: ../images/price_capture.png Graphic file (type png)
 <use ../images/price_capture.png>
-Package pdftex.def Info: ../images/price_capture.png  used on input line 167.
+Package pdftex.def Info: ../images/price_capture.png  used on input line 172.
 (pdftex.def)             Requested size: 469.75499pt x 251.65602pt.
- [10 <../images/price_capture.png (PNG copy)>]
-(paper_draft.bbl
+
+
+LaTeX Warning: `!h' float specifier changed to `!ht'.
+
+[9 <../images/gen_fuel.png (PNG copy)> <../images/load_compare.png>]
+<../../SGER/sector_compliance_cost.png, id=112, 1156.32pt x 722.7pt>
+File: ../../SGER/sector_compliance_cost.png Graphic file (type png)
+<use ../../SGER/sector_compliance_cost.png>
+Package pdftex.def Info: ../../SGER/sector_compliance_cost.png  used on input l
+ine 183.
+(pdftex.def)             Requested size: 469.75499pt x 293.59615pt.
+
+
+LaTeX Warning: `!h' float specifier changed to `!ht'.
+
+[10 <../images/price_capture.png (PNG copy)>] [11 <../../SGER/sector_compliance
+_cost.png>] (paper_draft.bbl
 
 Package natbib Warning: Empty `thebibliography' environment on input line 3.
 
-) [11] (paper_draft.aux)
+) [12] (paper_draft.aux)
 Package rerunfilecheck Info: File `paper_draft.out' has not changed.
 (rerunfilecheck)             Checksum: EE9354890F6027F1B0199C0FADC26786;495.
  ) 
 Here is how much of TeX's memory you used:
- 22530 strings out of 479798
- 464518 string characters out of 2869231
- 704784 words of memory out of 3000000
- 39049 multiletter control sequences out of 15000+200000
+ 22542 strings out of 479798
+ 464815 string characters out of 2869231
+ 704877 words of memory out of 3000000
+ 39057 multiletter control sequences out of 15000+200000
  550979 words of font info for 92 fonts, out of 3000000 for 9000
  1141 hyphenation exceptions out of 8191
- 85i,8n,96p,2332b,721s stack positions out of 5000i,500n,10000p,200000b,50000s
+ 85i,8n,96p,2332b,723s stack positions out of 5000i,500n,10000p,200000b,50000s
  <C:\Users\aleach\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\tcr
 m1200.pk> <C:\Users\aleach\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi
 600\tcrm0700.pk> <C:\Users\aleach\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen
@@ -1050,10 +1064,11 @@ ppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr17.pfb><C:/Users
 /aleach/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr7.pfb><
 C:/Users/aleach/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cm
 r8.pfb><C:/Users/aleach/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfon
-ts/cm/cmti12.pfb>
-Output written on paper_draft.pdf (11 pages, 861994 bytes).
+ts/cm/cmsy10.pfb><C:/Users/aleach/AppData/Local/Programs/MiKTeX/fonts/type1/pub
+lic/amsfonts/cm/cmti12.pfb>
+Output written on paper_draft.pdf (12 pages, 722058 bytes).
 PDF statistics:
- 166 PDF objects out of 1000 (max. 8388607)
- 27 named destinations out of 1000 (max. 500000)
- 110 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 179 PDF objects out of 1000 (max. 8388607)
+ 29 named destinations out of 1000 (max. 500000)
+ 115 words of extra memory for PDF output out of 10000 (max. 10000000)
 
