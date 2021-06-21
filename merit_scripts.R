@@ -96,8 +96,8 @@ sger_emissions_data<-function(){
   #spread the ids to new columns
   sger_data<-sger_data %>% separate(IDs.on.site, paste("asset",seq(1,6),sep="_"))%>%
     #keep the data we need
-    select(keep_columns)  %>%
-    melt(id=id_columns,variable.name="generating_unit",value.name = "asset_id") %>%
+    select(all_of(keep_columns))  %>%
+    pivot_longer(cols=-all_of(id_columns),names_to = "generating_unit",values_to = "asset_id") %>%
     filter(!is.na(asset_id),!(Sector=="Power Plant - Cogen")) %>%
     rename("SGER_baseline"="BEI.(in.CR)",
            "limit_2016"="NEIL.Limit",

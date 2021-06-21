@@ -9,7 +9,7 @@ start_time<-Sys.time()
 
 update<-0 #add new data
 save<-1 #save files at the end
-synth<-0 #synthetic plants?
+synth<-1 #synthetic plants?
   synth_type<-1 #1 is by plant_type, 0 is full merit as synthetic plant
 
 
@@ -43,7 +43,7 @@ load("data/forecast_data.RData")
   effective_date_time=mdy_hm(effective_date_time,tz="America/Denver"))%>%
   clean_merit_trade() %>%
   ungroup() %>% 
-  select(-merit)
+  select(-merit) 
     
   rm(merit_data) #no longer need this object, so clean it out
   gc()
@@ -114,11 +114,11 @@ load("data/forecast_data.RData")
  
 
   #storage objects for testing purposes
-  #merit_store<-merit_aug
+  merit_store<-merit_aug
   
   
   #use this to revert to stored merit_aug so you don't have to re-load
-  #merit_aug<-merit_store
+  merit_aug<-merit_store
   
   merit_aug<-merit_aug%>% #take out any asset that appears in the renewables data
     filter(! asset_id %in% unique(renew_vols$asset_id) )%>%
@@ -265,9 +265,9 @@ load("data/forecast_data.RData")
   
     
   #storage objects for testing purposes
-  #merit_store<-merit_aug
+  merit_store<-merit_aug
   #use this to revert to stored merit_aug so you don't have to re-load
-  #merit_aug<-merit_store
+  merit_aug<-merit_store
   
   
   
@@ -281,7 +281,8 @@ load("data/forecast_data.RData")
   if(synth==1){
     if(synth_type==1)
       {
-      merit_bids<-merit_aug %>% select(date,he,price,available_mw,dispatched_mw,co2_est,ctax_cost,oba_val,Plant_Type,renew_gen,offer_sum)%>%arrange(date,he,Plant_Type,price) %>%
+      merit_bids<-merit_aug %>% filter(date<ymd("2020-01-01"))%>%
+        select(date,he,price,available_mw,dispatched_mw,co2_est,ctax_cost,oba_val,Plant_Type,renew_gen,offer_sum)%>%arrange(date,he,Plant_Type,price) %>%
         group_by(date,he,Plant_Type)%>% 
         filter(available_mw>0)%>%
         mutate(merit_type=cumsum(available_mw)/sum(available_mw),
@@ -307,7 +308,8 @@ load("data/forecast_data.RData")
     }
     if(synth_type==0) # full merit order as the synthetic plant
     {
-      merit_bids<-merit_aug %>% select(date,he,price,available_mw,dispatched_mw,co2_est,ctax_cost,oba_val,Plant_Type,renew_gen,offer_sum)%>%arrange(date,he,Plant_Type,price) %>%
+      merit_bids<-merit_aug %>% filter(date<ymd("2020-01-01"))%>%
+        select(date,he,price,available_mw,dispatched_mw,co2_est,ctax_cost,oba_val,Plant_Type,renew_gen,offer_sum)%>%arrange(date,he,Plant_Type,price) %>%
         group_by(date,he)%>%arrange(date,he,price)%>% 
         filter(available_mw>0)%>%
         mutate(merit_type=cumsum(available_mw)/sum(available_mw),
@@ -348,7 +350,6 @@ load("data/forecast_data.RData")
               ghg_40=ghg_func[[1]](40),
               ghg_50=ghg_func[[1]](50),
               ghg_60=ghg_func[[1]](60),
-              ghg_70=ghg_func[[1]](70),
               ghg_80=ghg_func[[1]](80),
               ghg_90=ghg_func[[1]](90),
               ghg_100=ghg_func[[1]](100)) %>%
@@ -437,8 +438,8 @@ if(save==1)
 paste("Built and saved merit data set, elapsed time is",time_length(interval(start_time, Sys.time()), "seconds"),"seconds")
 
 
-#ggplot(filter(merit_aug,year==2020))+
-#  geom_line(aes(as.numeric(percentile),ghg/10^6*365,group=time),size=.25)
+ggplot(filter(merit_aug,year==2020))+
+  geom_line(aes(as.numeric(percentile),ghg/10^6*365,group=time),size=.25)
 
 #ggplot(filter(merit_aug))+
 #  geom_line(aes(as.numeric(percentile),ghg/10^6*365,group=time),size=.25)+
