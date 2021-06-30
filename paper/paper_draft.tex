@@ -28,6 +28,10 @@
 \usepackage[multiple]{footmisc}
 
 \newcommand{\insitu}{\textit{in situ} }
+
+\newcommand{\co}{\text{CO$_2$ }}
+\newcommand{\coe}{\text{CO$_2$e }}
+
 %%%%%%%%%%
 
 
@@ -68,6 +72,8 @@ Blake Shaffer\\University of Calgary}
 \maketitle
 
 
+
+
 %%%% ABSTRACT %%%%
 \begin{abstract}
 \noindent We evaluate the response of wholesale power market participants in Alberta to a series of changes in greenhouse gas (GHG) emissions policies.  Between 2015 and 2019, legislative changes have affected carbon price levels, the rates of output-based allocations of emissions credits, and the coverage of carbon pricing across facilities of different sizes, creating variation in average and marginal carbon prices both across and within facility types and across and within portfolios held by major players in Alberta's wholesale power market. We exploit this variance in treatment to provide unique evidence of offer response to carbon pricing in power markets. We show that even after adjusting for costs imposed by carbon policies at the facility level, statistically significant changes in portfolio-level offer curves were induced leading to a shift in the merit order toward gas and away from coal which exceeded that which would have been predicted by carbon prices alone.\\ \\
@@ -88,7 +94,7 @@ The Alberta wholesale power market provides an excellent laboratory for our stud
 
 We compile data describing market offer behaviour and a wide range of relevant covariates. We measure and describe facility-level hourly offers of power into the market over slightly more than 10 years preceding the COVID-19 pandemic. We combine these data with detailed plant characteristics compiled from regulatory data, emissions compliance data from Alberta's and Canada's air emissions reporting, weather data, commodity price information, and power market data including hourly renewable generation, imports and exports, import and export capabilities and total and forecast internal loads. Finally, we include both observed carbon policy costs and the value of output-based allocations at the facility level.
 
-In order to isolate the impact of the changes in policies on offer behaviour, we develop a unique empirical strategy based on synthetic power plants and synthetic power portfolios.  For each hour of each day, we create synthetic power portfolios either by plant type .  We are then able to examine, for example, how changes in policies affected the offer of power across all coal- or gas-fired plants in the province. 
+In order to isolate the impact of the changes in policies on offer behaviour, we develop a unique empirical strategy based on synthetic power plants and synthetic power portfolios.  For each hour of each day, we create synthetic power portfolios either by plant type .  We are then able to examine, for example, how changes in policies affected the offer of power across all coal- or gas-fired plants in the province.
 
 or by which entity holds offer control on the units in question
 , or across all facilities owned by particular actors in the market.  We normalize these portfolios by percentile, so we are able to compare behaviour across portfolios of different sizes without loss of generality.
@@ -147,11 +153,10 @@ Our sample period covers ten years with no major regulatory changes in the power
 \end{figure}
 
 
-The generation mix in Alberta's power market is dominated by fossil fuels although, as shown in Figure \ref{fig:gen_mix}, the dominant fossil fuel has changed from coal to natural gas. Within natural gas generation, the mix of plant types is also relevant to our study. X\% are combined cycle (NGCC) plants, y\% are simple-cycle (NGSC) plants, and Z\% are combined heat and power (COGEN) facilities. Combined heat and power plants tend to be price-takers in the market, with very little flexibility at the margin since the industrial processes with which they are associated rely on them for process heat. As will be discussed below, net-to-grid power from these facilities is primarily offered into the market at a \$0 offer and accepts market price, and so we see limited evidence of carbon price pass-through for most of the power offered by these facilities.
+The generation mix in Alberta's power market is dominated by fossil fuels although, as shown in Figure \ref{fig:gen_mix}, the dominant fossil fuel has changed from coal to natural gas. Within natural gas generation, the mix of plant types is also relevant to our study. By the end of our sample period, X\% of installed natural gas capacity comes from combined cycle (NGCC) plants, while y\% is from simple-cycle (NGSC) plants, and the remaining Z\% of capacity is from combined heat and power (COGEN) facilities. Combined heat and power plants tend to be price-takers in the market, with very little flexibility at the margin since the industrial processes with which they are associated rely on them for process heat. As will be discussed below, net-to-grid power from these facilities is primarily offered into the market at a \$0 offer and accepts market price, and so we see limited evidence of carbon price pass-through for most of the power offered by these facilities.
 
 
 ADJUST FIGURE TO SHOW SAMPLE PERIOD
-
 
 Consumption in Alberta is relatively stable on daily and annual bases due to the large industrial base. For example, in Figure \ref{fig:load_pattern}, we compare Alberta's hourly load pattern to ERCOT and MISO equivalents. In the left-hand panel, we see that there is less variability through the day in Alberta as industrial load dominates cycles in residential and commercial load. Seasonal patterns are also both less pronounced and exhibit a winter peak, compare to summer-peaking ERCOT and MISO systems.
 
@@ -172,7 +177,15 @@ The nature of the wholesale market is such that different generators will derive
 
 \section{The Impact of Carbon Pricing Policy Changes}
 
-Alberta's three carbon pricing regimes affect generating facilities in
+Alberta's three carbon pricing regimes affect generating facilities in two ways. First, each of three (\emph{SGER}, \emph{CCIR}, and \emph{TIER}) regimes imposes a price on emissions. Second, each regime allocates emissions credits based on output or deemed avoided emissions. The net effect of these policies creates variation within and across facility types over time.  Consider, for example, Figure \ref{fig:sector_compliance_cost} which shows the mean value and range of annual compliance costs for larger generators in Alberta's fleet over the sample period.\footnote{Plants were only included in the sample for this figure if their annual emissions were sufficiently large ($\geq$100kt CO$_2$e per year) such that we have specific compliance cost data. For our estimate, we impute compliance costs for a wider set of facilities using emissions intensities from the compliance cost data.}
+
+\begin{figure}[!h]%%
+	\centering \vspace{-.25cm} \includegraphics[width=6.5in]{../../SGER/sector_compliance_cost.png}
+\vspace{-0.75cm}	\caption{Annual average revenue by plant type}
+\label{fig:sector_compliance_cost}
+\end{figure}
+
+As Figure \ref{fig:sector_compliance_cost} shows, changes in facility compliance costs were not all coincident with increased marginal carbon prices, but are actually dominated by the changes in output-based allocations which occurred in 2018-2019 rather than the initial increase carbon prices from \$15 to \$30 per tonne \coe between 2016 and 2018.
 
 
 
@@ -259,7 +272,7 @@ First, in June 2015, it was announced that the carbon price would increase to \$
 \begin{figure}[!h]%
 	\centering \vspace{-.25cm} \includegraphics[width=6.5in]{../../alberta_power/peak_prices_2009_2019.png}
 \label{fig:masnadi_1}
-\vspace{-0.75cm}	\caption{Impact of changes in carbon pricing on plant revenues by type}
+\vspace{-0.75cm}	\caption{Peak and off-peak power prices, 2007-2019}
 \end{figure}
 
 \newpage 

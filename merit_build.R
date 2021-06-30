@@ -9,8 +9,8 @@ start_time<-Sys.time()
 
 update<-0 #add new data
 save<-1 #save files at the end
-synth<-0 #synthetic plants?
-  synth_type<-1 #1 is by plant_type, 0 is full merit as synthetic plant
+synth<-1 #synthetic plants?
+  synth_type<-0 #1 is by plant_type, 0 is full merit as synthetic plant
 
 
 load("data/all_merit.RData")  
@@ -20,6 +20,11 @@ if(update==1){
   #  merit_data<-merit_data%>%filter(he!="02*")
   save(merit_data, file="data/all_merit.RData")  
 }
+
+#small_testing_sample 
+#merit_small<-merit_data%>%filter(date==ymd("2019-10-05"))
+#merit_data<-merit_small
+
 
 #bring in market data
 if(update==1){
@@ -43,7 +48,7 @@ load("data/forecast_data.RData")
   effective_date_time=mdy_hm(effective_date_time,tz="America/Denver"))%>%
   clean_merit_trade() %>%
   ungroup() %>% 
-  select(-merit)
+  select(-merit) 
     
   rm(merit_data) #no longer need this object, so clean it out
   gc()
@@ -267,6 +272,7 @@ load("data/forecast_data.RData")
   #storage objects for testing purposes
   #merit_store<-merit_aug
   #use this to revert to stored merit_aug so you don't have to re-load
+  
   #merit_aug<-merit_store
   
   
@@ -275,125 +281,139 @@ load("data/forecast_data.RData")
   #small_testing_sample 
   #merit_small<-merit_aug%>%filter(date==ymd("2019-10-05"))
   #merit_aug<-merit_small
-  
-  
-  
+  #this is by plant type
   if(synth==1){
-    if(synth_type==1)
-      {
-      merit_bids<-merit_aug %>% select(date,he,price,available_mw,dispatched_mw,co2_est,ctax_cost,oba_val,Plant_Type,renew_gen,offer_sum)%>%arrange(date,he,Plant_Type,price) %>%
+    merit_aug<-merit_aug %>% mutate(Plant_Type=case_when( #use synth_type 0 for a single merit order
+      synth_type == 0 ~ "All",
+      TRUE ~ Plant_Type
+    ))%>%
+        filter(date<ymd("2020-01-01"))%>% #sample for the Shaffer paper is pre-2020
+        #select(date,he,price,available_mw,dispatched_mw,co2_est,ctax_cost,oba_val,Plant_Type,renew_gen,offer_sum)%>%
+        arrange(date,he,Plant_Type,price) %>%
         group_by(date,he,Plant_Type)%>% 
         filter(available_mw>0)%>%
         mutate(merit_type=cumsum(available_mw)/sum(available_mw),
-               merit_co2=cumsum(co2_est*available_mw/1000), #tonnes of emissions in the hour
-               merit_ctax=cumsum(ctax_cost),
-               merit_oba=cumsum(oba_val))%>%
+               merit_co2=cumsum(co2_est*available_mw/1000), #cumulative tonnes of emissions across the merit order
+               merit_ctax=(ctax_cost), #marginal compliance costs, $ per mwh
+               merit_oba=(oba_val),#marginal oba value, $ per mwh
+               merit_net_comp=(net))%>%
         summarize(
           #place offer percentiles and prices in lists of vectors
           available_mw=sum(available_mw),dispatched_mw=sum(dispatched_mw),renew_gen=sum(renew_gen,na.rm = T),
-          merit=list(merit_type*100),price=list(price),co2_est=list(merit_co2),ctax_cost=list(merit_ctax),oba_val=list(merit_oba)
+          merit=list(merit_type*100),price=list(price),co2_est=list(merit_co2),ctax_cost=list(merit_ctax),oba_val=list(merit_oba),net_comp=list(merit_net_comp)
         )%>%
         group_by(date,he,Plant_Type) %>% #re-group the summarized data
         #get and store the bid function
-        mutate(merit_func=list(bid_func(merit[[1]],price[[1]])),
-               ghg_func=list(bid_func(merit[[1]],co2_est[[1]])),
-               ctax_func=list(bid_func(merit[[1]],ctax_cost[[1]])),
-               oba_func=list(bid_func(merit[[1]],oba_val[[1]])),
+        mutate(merit_func=list(bid_func(merit[[1]],price[[1]])), #bids
+               ghg_func=list(bid_func(merit[[1]],co2_est[[1]])), #cumulative emissions in tonnes
+               ctax_func=list(bid_func(merit[[1]],ctax_cost[[1]])),#marginal ctax
+               oba_func=list(bid_func(merit[[1]],oba_val[[1]])), #marginal oba
+               net_comp_func=list(bid_func(merit[[1]],net_comp[[1]])),
                import_export=case_when(
                  Plant_Type=="IMPORT" ~ "I",
                  TRUE                      ~  "")
                )%>%
         ungroup()
-    }
-    if(synth_type==0) # full merit order as the synthetic plant
-    {
-      merit_bids<-merit_aug %>% select(date,he,price,available_mw,dispatched_mw,co2_est,ctax_cost,oba_val,Plant_Type,renew_gen,offer_sum)%>%arrange(date,he,Plant_Type,price) %>%
-        group_by(date,he)%>%arrange(date,he,price)%>% 
-        filter(available_mw>0)%>%
-        mutate(merit_type=cumsum(available_mw)/sum(available_mw),
-               merit_co2=cumsum(co2_est*available_mw),
-               merit_ctax=cumsum(ctax_cost),
-               merit_oba=cumsum(oba_val))%>%
-        summarize(
-          #place offer percentiles and prices in lists of vectors
-          available_mw=sum(available_mw),dispatched_mw=sum(dispatched_mw),renew_gen=sum(renew_gen,na.rm = T),
-          merit=list(merit_type*100),price=list(price),co2_est=list(merit_co2),ctax_cost=list(merit_ctax),oba_val=list(merit_oba)
-        )%>%
-        group_by(date,he) %>% #re-group the summarized data
-        #get and store the bid function
-        mutate(merit_func=list(bid_func(merit[[1]],price[[1]])),
-               ghg_func=list(bid_func(merit[[1]],co2_est[[1]])),
-               ctax_func=list(bid_func(merit[[1]],ctax_cost[[1]])),
-               oba_func=list(bid_func(merit[[1]],oba_val[[1]])),
-               Plant_Type="All",
-               import_export="")%>%
-        ungroup()
-    }
+  
     print(paste("Built step functions. Elapsed time is",time_length(interval(start_time, Sys.time()), "seconds"),"seconds"))
   
-    merit_bids<-merit_bids%>% group_by(date,he,Plant_Type) %>%
+    merit_aug<-merit_aug%>% group_by(date,he,Plant_Type) %>%
       mutate(bid_10=merit_func[[1]](10),
              bid_20=merit_func[[1]](20),
              bid_30=merit_func[[1]](30),
              bid_40=merit_func[[1]](40),
              bid_50=merit_func[[1]](50),
+             bid_55=merit_func[[1]](55),
              bid_60=merit_func[[1]](60),
+             bid_65=merit_func[[1]](65),
              bid_70=merit_func[[1]](70),
+             bid_75=merit_func[[1]](75),
              bid_80=merit_func[[1]](80),
+             bid_85=merit_func[[1]](85),
              bid_90=merit_func[[1]](90),
+             bid_95=merit_func[[1]](95),
              bid_100=merit_func[[1]](100))%>%
        mutate(ghg_10=ghg_func[[1]](10),
               ghg_20=ghg_func[[1]](20),
               ghg_30=ghg_func[[1]](30),
               ghg_40=ghg_func[[1]](40),
               ghg_50=ghg_func[[1]](50),
+              ghg_55=ghg_func[[1]](55),
               ghg_60=ghg_func[[1]](60),
+              ghg_65=ghg_func[[1]](65),
               ghg_70=ghg_func[[1]](70),
+              ghg_75=ghg_func[[1]](75),
               ghg_80=ghg_func[[1]](80),
+              ghg_85=ghg_func[[1]](85),
               ghg_90=ghg_func[[1]](90),
+              ghg_95=ghg_func[[1]](95),
               ghg_100=ghg_func[[1]](100)) %>%
      mutate(ctax_10=ctax_func[[1]](10),
             ctax_20=ctax_func[[1]](20),
             ctax_30=ctax_func[[1]](30),
             ctax_40=ctax_func[[1]](40),
             ctax_50=ctax_func[[1]](50),
+            ctax_55=ctax_func[[1]](55),
             ctax_60=ctax_func[[1]](60),
+            ctax_65=ctax_func[[1]](65),
             ctax_70=ctax_func[[1]](70),
+            ctax_75=ctax_func[[1]](75),
             ctax_80=ctax_func[[1]](80),
+            ctax_85=ctax_func[[1]](85),
             ctax_90=ctax_func[[1]](90),
+            ctax_95=ctax_func[[1]](95),
             ctax_100=ctax_func[[1]](100)) %>%
       mutate(oba_10=oba_func[[1]](10),
              oba_20=oba_func[[1]](20),
              oba_30=oba_func[[1]](30),
              oba_40=oba_func[[1]](40),
              oba_50=oba_func[[1]](50),
+             oba_55=oba_func[[1]](55),
              oba_60=oba_func[[1]](60),
+             oba_65=oba_func[[1]](65),
              oba_70=oba_func[[1]](70),
+             oba_75=oba_func[[1]](75),
              oba_80=oba_func[[1]](80),
+             oba_85=oba_func[[1]](85),
              oba_90=oba_func[[1]](90),
+             oba_95=oba_func[[1]](95),
              oba_100=oba_func[[1]](100)) %>%
+      mutate(net_10=net_comp_func[[1]](10),
+             net_20=net_comp_func[[1]](20),
+             net_30=net_comp_func[[1]](30),
+             net_40=net_comp_func[[1]](40),
+             net_50=net_comp_func[[1]](50),
+             net_55=net_comp_func[[1]](55),
+             net_60=net_comp_func[[1]](60),
+             net_65=net_comp_func[[1]](65),
+             net_70=net_comp_func[[1]](70),
+             net_75=net_comp_func[[1]](75),
+             net_80=net_comp_func[[1]](80),
+             net_85=net_comp_func[[1]](85),
+             net_90=net_comp_func[[1]](90),
+             net_95=net_comp_func[[1]](95),
+             net_100=net_comp_func[[1]](100)) %>%
     ungroup() %>% select(-merit,-price,-co2_est,-merit_func,-ghg_func,-ctax_func,-oba_func,
-                         -oba_val,-ctax_cost)
+                         -oba_val,-ctax_cost,-net_comp_func,-net_comp)
     print(paste("Build bids, cleaned data frame, elapsed time is",time_length(interval(start_time, Sys.time()), "seconds"),"seconds"))
   
     #turn these into the appropriate format for later analysis
     
     
-    merit_bids<-merit_bids %>% pivot_longer(cols = -c(date,he,Plant_Type,available_mw,dispatched_mw,renew_gen,import_export))
-    
+    merit_aug<-merit_aug %>% pivot_longer(cols = -c(date,he,Plant_Type,available_mw,dispatched_mw,renew_gen,import_export))%>%
     #split name at underscore
-    
-    merit_bids<-merit_bids %>% separate(name,"_",into = c("data_point","percentile"))%>%
-      mutate(percentile=as.numeric(percentile))
-    
+    separate(name,"_",into = c("data_point","percentile"))%>%
+    mutate(percentile=as.numeric(percentile))%>%
     #make it wider again
-    
-    merit_bids<-merit_bids %>% pivot_wider(names_from = data_point,values_from=value)
+    pivot_wider(names_from = data_point,values_from=value)
     
     #now replicate the merit_aug format, but for these compressed data
+    #testing: merit_bids<-merit_bids %>% left_join(mkt_data,by=c("date","he")) 
     
-    merit_aug<-merit_bids    
-  }
+    #merit_aug<-merit_bids    
+    
+    
+  } # end of synth plants
   
   
   
@@ -405,7 +425,7 @@ load("data/forecast_data.RData")
   mutate(nit_settle_cad_gj=na.locf(nit_settle_cad_gj))
   
 #clean up memory
-  rm(merit_bids,mkt_data)
+  rm(mkt_data)
   gc()
   
   
@@ -436,16 +456,14 @@ if(save==1)
 }
 paste("Built and saved merit data set, elapsed time is",time_length(interval(start_time, Sys.time()), "seconds"),"seconds")
 
+ggplot(filter(merit_aug,time>=ymd_h("2019-06-21 18",tz="America/Denver") & time<=ymd_h("2019-06-21 23",tz="America/Denver")))+
+  geom_line(aes(as.numeric(percentile)*available_mw/100,ghg,group=he,color=he),size=.25)+
+  facet_wrap(~Plant_Type)
 
-#ggplot(filter(merit_aug,year==2020))+
-#  geom_line(aes(as.numeric(percentile),ghg/10^6*365,group=time),size=.25)
 
-#ggplot(filter(merit_aug))+
-#  geom_line(aes(as.numeric(percentile),ghg/10^6*365,group=time),size=.25)+
-#  facet_grid(cols = vars(he),rows=vars(year))
-  
+ggplot(filter(merit_aug,time>=ymd_h("2019-06-21 16",tz="America/Denver") & time<=ymd_h("2019-06-21 22",tz="America/Denver")))+
+  geom_line(aes(as.numeric(percentile)*available_mw,bid,group=he,color=he),size=.25)+
+  facet_wrap(~Plant_Type)
 
-#ggplot(filter(merit_aug))+
-#  geom_line(aes(as.numeric(percentile),bid,group=time),size=.25)+
-#  facet_grid(cols = vars(he),rows=vars(year))
+
 

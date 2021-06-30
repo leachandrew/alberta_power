@@ -103,9 +103,7 @@ resid<-augment(full_model)
 
 #ts.sim<-resid$.fitted[1:1000]+arima.sim(list(ar = c(0.00000000000001,0.000000000000001)),n=1000,sd = ar_glance$sigma)
 
-
 ts_test<-as_tibble(rnorm(nrow(resid)+500,0,sd=resid$.sigma[1])) #use 500 iterations to seed the processs
-#ts_test<-ts_test %>% mutate(ar_val=lag(value,1)*ar_model$estimate[1]+lag(value,2)*ar_model$estimate[2]+value)
 
 ts_test<-tail(ts_test,nrow(resid)) #trim those 500 seed values
 ts_test<-ts_test %>% mutate(ar_val=resid$.fitted+value,
