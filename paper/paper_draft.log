@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.21 (MiKTeX 20.11) (preloaded format=pdflatex 2021.1.8)  18 JUN 2021 12:58
+This is pdfTeX, Version 3.14159265-2.6-1.40.21 (MiKTeX 20.11) (preloaded format=pdflatex 2021.1.8)  3 JUL 2021 12:51
 entering extended mode
 **./paper_draft.tex
 (paper_draft.tex
@@ -989,67 +989,84 @@ Underfull \hbox (badness 10000) in paragraph at lines 79--82
 
 {C:/Users/aleach/AppData/Local/MiKTeX/pdftex/config/pdftex.map}] [2] [3]
 [4] [5] [6]
-<../images/loads_clean.png, id=81, 1011.78pt x 464.4552pt>
+<../images/loads_clean.png, id=93, 1011.78pt x 464.4552pt>
 File: ../images/loads_clean.png Graphic file (type png)
 <use ../images/loads_clean.png>
-Package pdftex.def Info: ../images/loads_clean.png  used on input line 135.
-(pdftex.def)             Requested size: 469.75499pt x 215.64343pt.
-<../images/peak_prices.png, id=83, 1011.78pt x 464.4552pt>
-File: ../images/peak_prices.png Graphic file (type png)
-<use ../images/peak_prices.png>
-Package pdftex.def Info: ../images/peak_prices.png  used on input line 143.
-(pdftex.def)             Requested size: 469.75499pt x 215.64343pt.
-<../images/gen_fuel.png, id=84, 1011.78pt x 464.4552pt>
-File: ../images/gen_fuel.png Graphic file (type png)
-<use ../images/gen_fuel.png>
-Package pdftex.def Info: ../images/gen_fuel.png  used on input line 150.
+Package pdftex.def Info: ../images/loads_clean.png  used on input line 133.
 (pdftex.def)             Requested size: 469.75499pt x 215.64343pt.
  [7 <../images/loads_clean.png>]
-<../images/load_compare.png, id=95, 1011.78pt x 275.3487pt>
+<../images/peak_prices.png, id=102, 1011.78pt x 464.4552pt>
+File: ../images/peak_prices.png Graphic file (type png)
+<use ../images/peak_prices.png>
+Package pdftex.def Info: ../images/peak_prices.png  used on input line 141.
+(pdftex.def)             Requested size: 469.75499pt x 215.64343pt.
+<../images/gen_area_grey.png, id=103, 1156.32pt x 650.43pt>
+File: ../images/gen_area_grey.png Graphic file (type png)
+<use ../images/gen_area_grey.png>
+Package pdftex.def Info: ../images/gen_area_grey.png  used on input line 151.
+(pdftex.def)             Requested size: 469.75499pt x 264.23653pt.
+ [8 <../images/peak_prices.png>]
+<../images/load_compare.png, id=113, 1011.78pt x 275.3487pt>
 File: ../images/load_compare.png Graphic file (type png)
 <use ../images/load_compare.png>
-Package pdftex.def Info: ../images/load_compare.png  used on input line 164.
+Package pdftex.def Info: ../images/load_compare.png  used on input line 162.
 (pdftex.def)             Requested size: 469.75499pt x 127.84254pt.
 
 
 LaTeX Warning: `!h' float specifier changed to `!ht'.
 
-[8 <../images/peak_prices.png>]
-<../images/price_capture.png, id=104, 778.29231pt x 416.9423pt>
+[9 <../images/gen_area_grey.png>]
+<../images/price_capture.png, id=122, 778.29231pt x 416.9423pt>
 File: ../images/price_capture.png Graphic file (type png)
 <use ../images/price_capture.png>
-Package pdftex.def Info: ../images/price_capture.png  used on input line 172.
+Package pdftex.def Info: ../images/price_capture.png  used on input line 170.
 (pdftex.def)             Requested size: 469.75499pt x 251.65602pt.
-
-
-LaTeX Warning: `!h' float specifier changed to `!ht'.
-
-[9 <../images/gen_fuel.png (PNG copy)> <../images/load_compare.png>]
-<../../SGER/sector_compliance_cost.png, id=112, 1156.32pt x 722.7pt>
+<../../SGER/sector_compliance_cost.png, id=124, 1156.32pt x 722.7pt>
 File: ../../SGER/sector_compliance_cost.png Graphic file (type png)
 <use ../../SGER/sector_compliance_cost.png>
 Package pdftex.def Info: ../../SGER/sector_compliance_cost.png  used on input l
-ine 183.
+ine 181.
 (pdftex.def)             Requested size: 469.75499pt x 293.59615pt.
+ [10 <../images/load_compare.png>] [11 <../images/price_capture.png (PNG copy)>
+] [12 <../../SGER/sector_compliance_cost.png>]
+<../images/coal_merit.png, id=145, 1011.78pt x 722.7pt>
+File: ../images/coal_merit.png Graphic file (type png)
+<use ../images/coal_merit.png>
+Package pdftex.def Info: ../images/coal_merit.png  used on input line 198.
+(pdftex.def)             Requested size: 211.3883pt x 150.98853pt.
+<../images/coal_synth_merit.png, id=146, 1011.78pt x 722.7pt>
+File: ../images/coal_synth_merit.png Graphic file (type png)
+<use ../images/coal_synth_merit.png>
+Package pdftex.def Info: ../images/coal_synth_merit.png  used on input line 204
+.
+(pdftex.def)             Requested size: 211.3883pt x 150.98853pt.
+[13 <../images/coal_merit.png> <../images/coal_synth_merit.png>]
+<../images/all_coal_merit.png, id=158, 1011.78pt x 722.7pt>
+File: ../images/all_coal_merit.png Graphic file (type png)
+<use ../images/all_coal_merit.png>
+Package pdftex.def Info: ../images/all_coal_merit.png  used on input line 218.
+(pdftex.def)             Requested size: 211.3883pt x 150.98853pt.
+<../images/coal_synth_2019.png, id=159, 1011.78pt x 722.7pt>
+File: ../images/coal_synth_2019.png Graphic file (type png)
+<use ../images/coal_synth_2019.png>
+Package pdftex.def Info: ../images/coal_synth_2019.png  used on input line 224.
 
-
-LaTeX Warning: `!h' float specifier changed to `!ht'.
-
-[10 <../images/price_capture.png (PNG copy)>] [11 <../../SGER/sector_compliance
-_cost.png>] (paper_draft.bbl
+(pdftex.def)             Requested size: 211.3883pt x 150.98853pt.
+ [14 <../images/all_coal_merit.png> <../images/coal_synth_2019.png>] (paper_dra
+ft.bbl
 
 Package natbib Warning: Empty `thebibliography' environment on input line 3.
 
-) [12] (paper_draft.aux)
+) [15] (paper_draft.aux)
 Package rerunfilecheck Info: File `paper_draft.out' has not changed.
-(rerunfilecheck)             Checksum: EE9354890F6027F1B0199C0FADC26786;495.
+(rerunfilecheck)             Checksum: 21C80CC4D030DF86A3CD1363DDB9BE6D;730.
  ) 
 Here is how much of TeX's memory you used:
- 22542 strings out of 479798
- 464815 string characters out of 2869231
- 704877 words of memory out of 3000000
- 39057 multiletter control sequences out of 15000+200000
- 550979 words of font info for 92 fonts, out of 3000000 for 9000
+ 22584 strings out of 479798
+ 465865 string characters out of 2869231
+ 705665 words of memory out of 3000000
+ 39087 multiletter control sequences out of 15000+200000
+ 551286 words of font info for 93 fonts, out of 3000000 for 9000
  1141 hyphenation exceptions out of 8191
  85i,8n,96p,2332b,723s stack positions out of 5000i,500n,10000p,200000b,50000s
  <C:\Users\aleach\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\tcr
@@ -1066,9 +1083,9 @@ C:/Users/aleach/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cm
 r8.pfb><C:/Users/aleach/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfon
 ts/cm/cmsy10.pfb><C:/Users/aleach/AppData/Local/Programs/MiKTeX/fonts/type1/pub
 lic/amsfonts/cm/cmti12.pfb>
-Output written on paper_draft.pdf (12 pages, 722058 bytes).
+Output written on paper_draft.pdf (15 pages, 1993731 bytes).
 PDF statistics:
- 179 PDF objects out of 1000 (max. 8388607)
- 29 named destinations out of 1000 (max. 500000)
- 115 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 224 PDF objects out of 1000 (max. 8388607)
+ 37 named destinations out of 1000 (max. 500000)
+ 159 words of extra memory for PDF output out of 10000 (max. 10000000)
 
