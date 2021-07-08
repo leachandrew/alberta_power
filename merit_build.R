@@ -7,10 +7,12 @@ source("cdn_weather.R")
 start_time<-Sys.time()
 #update merit order data
 
+options(scipen=999)
+
 update<-0 #add new data
-save<-1 #save files at the end
-synth<-1 #synthetic plants?
-  synth_type<-0 #1 is by plant_type, 0 is full merit as synthetic plant
+save<-0 #save files at the end
+synth<-0 #synthetic plants?
+  synth_type<-1 # 2 is by facility,1 is by plant_type, 0 is full merit as synthetic plant
 
 
 load("data/all_merit.RData")  
@@ -137,10 +139,30 @@ load("data/forecast_data.RData")
   rm(renew_vols) 
   gc()
  
- merit_aug<-merit_aug %>% 
-  left_join(plant_data(),by=c("asset_id"="ID")) %>% #here, co2_est is in kg/MWh
-  left_join(sger_emissions_data(),by=c("asset_id"))
+#testing storage objects
+#merit_store<-merit_aug  
+#merit_small<-merit_aug%>%filter(year(date)==2019)
+#merit_aug<-merit_small
   
+#merit_aug<-merit_store  
+
+  
+#get sger info 
+load("data/emissions_data_merge.Rdata")
+  
+merit_aug<-merit_aug %>% mutate(year=year(date))%>%
+  left_join(plant_data(),by=c("asset_id"="ID")) %>% #here, co2_est is in kg/MWh
+  #left_join(sger_emissions_data(),by=c("asset_id"))
+  left_join(sger_data%>%select(-co2_est),by=c("year","asset_id"))
+  
+ 
+## merge_test<-merit_small %>% 
+#left_join(plant_data(),by=c("asset_id"="ID")) %>% #here, co2_est is in kg/MWh
+#  #left_join(sger_emissions_data(),by=c("asset_id"))
+#  left_join(sger_data,by=c("year","asset_id"))
+
+ 
+ 
  #sger data is t/mwh
 
   #build sger allocations for 2010-2015,2016,2017
@@ -156,6 +178,7 @@ load("data/forecast_data.RData")
   
   
   fossils<-c("SCGT","NGCC","COAL")
+  
   merit_aug <-merit_aug %>% mutate(
     #if we have SGER data (t/MWh), use that to fill in the values for the co2 emissions
     co2_est=case_when(!is.na(sger_2016_adj_ei) ~ sger_2016_adj_ei*1000, #if it's not NA, use SGER data
@@ -187,6 +210,9 @@ load("data/forecast_data.RData")
     net=ctax_cost-oba_val
 
   )# %>% select(-oba_sger)
+  
+  
+  
   
   print(paste("Filled Climate Policy. Elapsed time is",time_length(interval(start_time, Sys.time()), "seconds"),"seconds"))
  
@@ -273,7 +299,8 @@ load("data/forecast_data.RData")
   #merit_store<-merit_aug
   #use this to revert to stored merit_aug so you don't have to re-load
   
-  #merit_aug<-merit_store
+  #merit_aug<-merit_store%>% filter(year(date)==2019)
+  # merit_aug<-merit_store%>% filter(date==ymd("2019-01-16"),he=="07")
   
   
   
@@ -281,25 +308,35 @@ load("data/forecast_data.RData")
   #small_testing_sample 
   #merit_small<-merit_aug%>%filter(date==ymd("2019-10-05"))
   #merit_aug<-merit_small
+  #merit_small<-merit_small%>%mutate(facility=gsub(" #","_",AESO_Name))%>% separate(facility,into = c("facility","number"), sep="_(?=[^_]+$)")
+  
   #this is by plant type
   if(synth==1){
-    merit_aug<-merit_aug %>% mutate(Plant_Type=case_when( #use synth_type 0 for a single merit order
+    merit_aug<-merit_aug %>% 
+      #create clean facility basis
+      #mutate(facility=gsub(" #","_",AESO_Name))%>% separate(facility,into = c("facility","number"), sep="_(?=[^_]+$)")%>%
+      #mutate(facility=gsub(" \\(","_",AESO_Name))%>% separate(facility,into = c("facility","symb"), sep="_(?=[^_]+$)")%>%
+      #select(-symb)%>%
+      mutate(Plant_Type=case_when( #use synth_type 0 for a single merit order
       synth_type == 0 ~ "All",
       TRUE ~ Plant_Type
     ))%>%
+        
+      
         filter(date<ymd("2020-01-01"))%>% #sample for the Shaffer paper is pre-2020
+        filter(size>0)%>%  #don't include zero-sized blocks - this helps section out issues with zero wind and solar hours too.
         #select(date,he,price,available_mw,dispatched_mw,co2_est,ctax_cost,oba_val,Plant_Type,renew_gen,offer_sum)%>%
         arrange(date,he,Plant_Type,price) %>%
         group_by(date,he,Plant_Type)%>% 
-        filter(available_mw>0)%>%
-        mutate(merit_type=cumsum(available_mw)/sum(available_mw),
-               merit_co2=cumsum(co2_est*available_mw/1000), #cumulative tonnes of emissions across the merit order
+        
+        mutate(merit_type=cumsum(size)/sum(size),
+               merit_co2=cumsum(co2_est*size/1000), #cumulative tonnes of emissions across the merit order
                merit_ctax=(ctax_cost), #marginal compliance costs, $ per mwh
                merit_oba=(oba_val),#marginal oba value, $ per mwh
                merit_net_comp=(net))%>%
         summarize(
           #place offer percentiles and prices in lists of vectors
-          available_mw=sum(available_mw),dispatched_mw=sum(dispatched_mw),renew_gen=sum(renew_gen,na.rm = T),
+          total_offers=sum(size),available_mw=sum(available_mw),dispatched_mw=sum(dispatched_mw),renew_gen=sum(renew_gen,na.rm = T),
           merit=list(merit_type*100),price=list(price),co2_est=list(merit_co2),ctax_cost=list(merit_ctax),oba_val=list(merit_oba),net_comp=list(merit_net_comp)
         )%>%
         group_by(date,he,Plant_Type) %>% #re-group the summarized data
@@ -400,7 +437,7 @@ load("data/forecast_data.RData")
     #turn these into the appropriate format for later analysis
     
     
-    merit_aug<-merit_aug %>% pivot_longer(cols = -c(date,he,Plant_Type,available_mw,dispatched_mw,renew_gen,import_export))%>%
+    merit_aug<-merit_aug %>% pivot_longer(cols = -c(date,he,Plant_Type,available_mw,dispatched_mw,total_offers,renew_gen,import_export))%>%
     #split name at underscore
     separate(name,"_",into = c("data_point","percentile"))%>%
     mutate(percentile=as.numeric(percentile))%>%
