@@ -50,18 +50,43 @@ glanced<-glance(full_model)
 
 
 
-resid<-resid %>% bind_cols(data_set %>% select(time))
+resid<-resid %>% bind_cols(data_set %>% select(time,wday))
 
-resid<-resid%>% select(time,err=.resid)
+resid<-resid%>% select(time,wday,err=.resid)
 
 
-ggplot(resid) +geom_line(aes(time,err,color="original"))+
+ggplot(resid) +geom_line(aes(time,err,color="original"))
 
-resid<-resid %>% mutate(year=year(time))
+#resid<-resid %>% mutate(year=year(time))
+
+resid <- resid %>% mutate(start  = (wday=="Mon" 
+                                 & yday(resid$time)<=7 
+                                 & hour(time)==0), # logical variable for first hour of year
+                          hour   = row_number(), 
+                          starthour  = start*hour,
+                          finishhour = start*(hour+8951))
+
+indices <- resid[resid$start==TRUE,c("year","starthour","finishhour")] # indices of start and finish hours
+yrs   <- as.character(unique(resid$year[resid$year<2021]))
+
+# initialize vector with first year
+  aurora_resid <- data.frame(resid[indices$starthour[indices$year==years[1]]:indices$finishhour[indices$year==years[1]],"err"]) 
+
+# loop through to add remaining years
+for (val in 2:length(yrs)){
+   aurora_resid <- aurora_resid %>% cbind(resid[indices$starthour[indices$year==years[val]]:indices$finishhour[indices$year==years[val]],"err"])
+}
+
+# rename columns
+colnames(aurora_resid) <- yrs
+
+
+
+test <- resid[indices$starthour[indices$year==years[num]]:indices$finishhour[indices$year==years[num]],"err"]
 
 wider<-resid %>% ungroup() %>% select(-time) %>% mutate(year=factor(year)) %>%
   group_by(year) %>% mutate(hour=row_number()) %>% ungroup()%>%
-  pivot_wider(id_cols=hour,names_from=year,values_from = err)
+  pivot_wider(id_cols=hour,names_from=c(year,wday),values_from = err)
 
 
 ggplot(resid) +geom_line(aes(time,err,color="original"))+
