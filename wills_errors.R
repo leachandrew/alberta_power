@@ -62,7 +62,7 @@ random_error <- arima.sim(n = 8760, list(ar = c(error_arima$coef[["ar1"]],
                                         sd = error_arima$sigma2)) %>% exp()-1
 ts.plot(random_error)
 
-
+ts.plot(price_season[1:1000])
 
 #adjust for both data and forecasts for observeables
 
