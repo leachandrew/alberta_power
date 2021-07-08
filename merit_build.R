@@ -153,7 +153,7 @@ load("data/emissions_data_merge.Rdata")
 merit_aug<-merit_aug %>% mutate(year=year(date))%>%
   left_join(plant_data(),by=c("asset_id"="ID")) %>% #here, co2_est is in kg/MWh
   #left_join(sger_emissions_data(),by=c("asset_id"))
-  left_join(sger_data,by=c("year","asset_id"))
+  left_join(sger_data%>%select(-co2_est),by=c("year","asset_id"))
   
  
 ## merge_test<-merit_small %>% 
