@@ -119,9 +119,6 @@ update_vols <- function(data_sent) {
   rbind(data_sent,process_data(data_store))
 }
 
-
-
-
 process_data <- function(data_sent) {
   #function to process all AESO data into useful load and trade volumes
   #testing

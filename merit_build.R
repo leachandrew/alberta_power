@@ -10,7 +10,7 @@ start_time<-Sys.time()
 options(scipen=999)
 
 update<-0 #add new data
-save<-0 #save files at the end
+save<-1 #save files at the end
 synth<-0 #synthetic plants?
   synth_type<-1 # 2 is by facility,1 is by plant_type, 0 is full merit as synthetic plant
 
@@ -74,9 +74,10 @@ load("data/forecast_data.RData")
   if(update==1)
    {
    load(file="data/metered_vols_data.Rdata" ) 
-    update_vols(all_vols)
+    #all_vols<-all_vols %>% filter(year<2019)
+    all_vols<-update_vols(all_vols)
     save(all_vols,file="data/metered_vols_data.Rdata" ) 
-    #isolate renewable volumes from metered volumes
+    #isolate renewable (non-hydro and biomass) volumes from metered volumes - the ones that default bid to zero
     renew_vols<- all_vols %>% 
     filter(Plant_Type=="WIND"| Plant_Type=="SOLAR") %>% select(date,he,asset_id,dispatched_mw=vol,pool_participant_id,effective_date_time=time)%>%
     #switch so that we have same data format as merit data
@@ -145,34 +146,15 @@ load("data/forecast_data.RData")
 #merit_aug<-merit_small
   
 #merit_aug<-merit_store  
+#merit_aug<-merit_small
 
-  
-#get sger info 
-load("data/emissions_data_merge.Rdata")
   
 merit_aug<-merit_aug %>% mutate(year=year(date))%>%
-  left_join(plant_data(),by=c("asset_id"="ID")) %>% #here, co2_est is in kg/MWh
-  #left_join(sger_emissions_data(),by=c("asset_id"))
-  left_join(sger_data%>%select(-co2_est),by=c("year","asset_id"))
-  
- 
-## merge_test<-merit_small %>% 
-#left_join(plant_data(),by=c("asset_id"="ID")) %>% #here, co2_est is in kg/MWh
-#  #left_join(sger_emissions_data(),by=c("asset_id"))
-#  left_join(sger_data,by=c("year","asset_id"))
-
- 
- 
- #sger data is t/mwh
-
-  #build sger allocations for 2010-2015,2016,2017
-  #allocations of zero and carbon tax of zero for pre-2017 firms outside of sger
-  #allocations of 0.37 for all facilities in 2018 and 2019
-  
-  merit_aug<-merit_aug %>% #filter(year(date)>=2012) %>%
-    mutate(oba=oba_type(Plant_Type,year(date),co2_est/1000),
-           ctax=ctax_year(year(date)),
-           policy=case_when(year(date)<2018 ~ "SGER",
+  left_join(ghg_data(),by=c("year","asset_id"="ID"))%>%
+  rename(co2_est=ei)%>% #use old naming covention
+  mutate(policy=case_when( year(date)<2017 ~ "SGER_15",
+                           year(date)==2017 ~ "SGER_20",
+                           year(date)==2018 ~ "SGER_30",
                             TRUE ~ "CCIR")
     )
   
@@ -180,36 +162,15 @@ merit_aug<-merit_aug %>% mutate(year=year(date))%>%
   fossils<-c("SCGT","NGCC","COAL")
   
   merit_aug <-merit_aug %>% mutate(
-    #if we have SGER data (t/MWh), use that to fill in the values for the co2 emissions
-    co2_est=case_when(!is.na(sger_2016_adj_ei) ~ sger_2016_adj_ei*1000, #if it's not NA, use SGER data
-                          TRUE                      ~  co2_est #otherwise, use what we have from the plant data in t/MWh
-    ),
-    oba_sger=case_when(year(date)<2016 ~ SGER_baseline*0.88, #12% below benchmark
-                       year(date)==2016 ~ SGER_baseline*0.85, #15% below benchmark
-                       year(date)==2017 ~ SGER_baseline*0.8, #20% below
-                       year(date)>=2018 ~ 0.37,#set to .37 for all regulated firms
-                       TRUE                      ~  0 #otherwise no OBA
-    ),
-    oba=case_when((is.na(oba_sger)& (policy=="SGER") & (Plant_Type %in% fossils) )~ 0, #12% below benchmark
-                  (is.na(oba_sger)& (policy=="SGER") & (!Plant_Type %in% fossils) )~ oba, #12% below benchmark
-                  (is.na(oba_sger)& (policy=="CCIR"))~ oba, #12% below benchmark
-                  Plant_Type=="COGEN"~oba,
-                  TRUE ~ oba_sger),
-    
-    ctax=case_when((is.na(oba_sger)& (policy=="SGER") & (Plant_Type %in% fossils) )~ 0, #12% below benchmark
-                   (is.na(oba_sger)& (policy=="CCIR"))~ ctax, #12% below benchmark
-                   TRUE ~ ctax),
-    
-    oba=case_when(import_export!="" ~ 0, #no oba for imports and exports
-                  TRUE ~ oba),
-    
+    oba_rate=case_when(import_export!="" ~ 0, #no oba for imports and exports
+                  TRUE ~ oba_rate),
     ctax=case_when(import_export!="" ~ 0, #no carbon tax for imports and exports
                    TRUE ~ ctax),
-    oba_val=oba*ctax,
-    ctax_cost=ctax*co2_est/1000, #adjust co2est to tonnes
-    net=ctax_cost-oba_val
-
-  )# %>% select(-oba_sger)
+    compliance_cost=case_when(import_export!="" ~ 0, #no carbon tax for imports and exports
+                   TRUE ~ compliance_cost),
+    oba_val=oba_rate*ctax,
+    ctax_cost=co2_est*ctax
+    )
   
   
   
@@ -333,7 +294,7 @@ merit_aug<-merit_aug %>% mutate(year=year(date))%>%
                merit_co2=cumsum(co2_est*size/1000), #cumulative tonnes of emissions across the merit order
                merit_ctax=(ctax_cost), #marginal compliance costs, $ per mwh
                merit_oba=(oba_val),#marginal oba value, $ per mwh
-               merit_net_comp=(net))%>%
+               merit_net_comp=(compliance_cost))%>%
         summarize(
           #place offer percentiles and prices in lists of vectors
           total_offers=sum(size),available_mw=sum(available_mw),dispatched_mw=sum(dispatched_mw),renew_gen=sum(renew_gen,na.rm = T),
@@ -456,8 +417,7 @@ merit_aug<-merit_aug %>% mutate(year=year(date))%>%
   
 # merge in companion market data and NIT gas prices
   
-  merit_aug<-merit_aug %>% left_join(mkt_data,by=c("date","he")) 
-  
+  merit_aug<-merit_aug %>% left_join(mkt_data,by=c("date","he","year")) 
   merit_aug<-merit_aug %>% left_join(ngx_data_read(),by=c("date")) %>%
   mutate(nit_settle_cad_gj=na.locf(nit_settle_cad_gj))
   
@@ -491,6 +451,8 @@ if(save==1)
             file.path(format(Sys.time(),format="data/student_data_%Y_%b_%d_%H_%M.csv.gz",sep="")))
   }
 }
+
+
 paste("Built and saved merit data set, elapsed time is",time_length(interval(start_time, Sys.time()), "seconds"),"seconds")
 
 ggplot(filter(merit_aug,time>=ymd_h("2019-06-21 18",tz="America/Denver") & time<=ymd_h("2019-06-21 23",tz="America/Denver")))+

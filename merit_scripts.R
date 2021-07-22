@@ -74,6 +74,12 @@ ngx_data_read<-function(){
 }
 
 
+ghg_data<-function(){
+  load(file = "data/plant_data_merge.RData")
+  paper_data %>% select(ID,AESO_Name,Plant_Type,Plant_Fuel,Capacity,year,ei,oba_rate,ctax,sger_first_year,compliance_cost)
+}
+
+
 
 sger_emissions_data<-function(){
   keep_columns<-
@@ -180,30 +186,13 @@ plant_data<-function(){
   plant_info<-arrange(plant_info,NRG_Stream)
   
   #bring in ghg data
-  ghg_rates <- read.xlsx(xlsxFile = "data/AB_Plant_Info_New.xlsx", sheet = "GHG_Rates", startRow = 1,skipEmptyRows = TRUE,detectDates = TRUE)
-  #ghg_rates<-dcast(ghg_rates, formula = GHG_ID ~ ...,value.var = "Poln_rate")
-  ghg_rates<-ghg_rates %>% spread(Pollutant,Poln_rate) %>% select(GHG_ID,CO2)
+  #get sger info 
+  load("data/emissions_data_merge.Rdata")
+  plant_info<-plant_info%>% left_join(sger_data,by=c("ID"="asset_id"))
   
   
-  #bring in heat rates
-  heat_rates <- read.xlsx(xlsxFile = "data/AB_Plant_Info_New.xlsx", sheet = "Heat_Rates", startRow = 1,skipEmptyRows = TRUE,detectDates = TRUE) %>%
-    select(GHG_ID,Aurora_ID,Heat.Rate)
-  #combine all plant info, heat rates, and GHGs by plant ID
-  combined<-merge(ghg_rates,heat_rates,by="GHG_ID",all.y = T) # NA's match
-  coal_co2_btu<-100.4  #coal fuel factor GHGs/MMBTU
-  gas_co2_btu<-53.077752 #gas fuel factor GHGs/MMBTU
-  combined<-merge(plant_info,combined,suffixes = c(".info",".rates"),all.x=TRUE,by="Aurora_ID") # NA's match
-  combined$co2_est<-combined$CO2/2.20462*combined$Heat.Rate #convert to kg/mmbtu
-  combined$co2_est<-ifelse(combined$Plant_Fuel=="COAL",coal_co2_btu*combined$Heat.Rate,combined$co2_est)
-  combined$co2_est<-ifelse(combined$Plant_Fuel=="GAS",gas_co2_btu*combined$Heat.Rate,combined$co2_est)
-  combined$co2_est<-combined$co2_est/1000 #adjust from kg to tonnes
-  
-  #merit_sent<-merit_sent %>% group_by(date,he) %>%
-  #  mutate(hourly_exports=sum((import_export=="E")*size),hourly_imports=sum((import_export=="I")*size))  %>% ungroup()
-  
-  
-  combined %>%
-    select(-Latitude,-Longitude,-Aurora_Name,-NRG_Stream,GHG_ID)
+  plant_info %>%
+    select(-Latitude,-Longitude,-Aurora_Name,-NRG_Stream,-Aurora_ID)
   
   
 }
