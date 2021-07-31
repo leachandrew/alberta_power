@@ -76,7 +76,7 @@ ngx_data_read<-function(){
 
 ghg_data<-function(){
   load(file = "data/plant_data_merge.RData")
-  paper_data %>% select(ID,AESO_Name,Plant_Type,Plant_Fuel,Capacity,year,ei,oba_rate,ctax,sger_first_year,compliance_cost)
+  paper_data %>% select(ID,year,ei,oba_rate,ctax,sger_first_year,compliance_cost)
 }
 
 
@@ -185,17 +185,12 @@ plant_data<-function(){
     mutate(NRG_Stream = ifelse(grepl("AB - NPC1 Denis St Pierre Hr Avg MW",NRG_Stream),"AB - NPC1 Denis St  Pierre Hr Avg MW",NRG_Stream))  
   plant_info<-arrange(plant_info,NRG_Stream)
   
-  #bring in ghg data
-  #get sger info 
-  load("data/emissions_data_merge.Rdata")
-  plant_info<-plant_info%>% left_join(sger_data,by=c("ID"="asset_id"))
-  
   
   plant_info %>%
     select(-Latitude,-Longitude,-Aurora_Name,-NRG_Stream,-Aurora_ID)
   
-  
 }
+
 
 
 

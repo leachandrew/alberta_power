@@ -363,6 +363,7 @@ gen_plain <- df2 %>% mutate(Plant_Type=factor(Plant_Type,levels=AB_plant_order))
     )%>% filter(file_date==max(file_date))
   
   load(file = paste("data/",bids_files$value,sep=""))
+  paste("loaded file=data/",bids_files$value,sep="")
   merit_bids<-merit_aug
   
   
@@ -373,8 +374,8 @@ data_files<- list.files("data/") %>% as_tibble() %>% filter(grepl("merit_data",v
   mutate(file_date=gsub("merit_data_","",value),
          file_date=ymd_hm(gsub(".RData","",file_date))
          )%>% filter(file_date==max(file_date))
-
 load(file = paste("data/",data_files$value,sep=""))
+paste("loaded file=data/",data_files$value,sep="")
 
 #merit_aug<-merit_aug %>% filter(year==2019,Plant_Type=="COAL")%>% filter(actual_posted_pool_price>200)
 
@@ -498,10 +499,11 @@ merit_bids %>% filter(date==ymd("2019-02-04"),he=="19",Plant_Type=="COAL")%>% re
   scale_fill_grey("",end = .5,start=.5)+   
   scale_x_continuous(breaks=pretty_breaks(), expand=c(0,0))+
   scale_y_continuous(breaks=pretty_breaks(), expand=c(0,0))+
+  expand_limits(y=1000)+
   #scale_colour_manual(labe ls=c("Brent","WTI"),values=c("#41ae76","#238b45","#006d2c","#00441b","Black","Black","Black","Black"))
   paper_theme()+
   theme(
-    legend.position = c(.1,.8),
+    legend.position = c(.2,.9),
     legend.margin=margin(c(0,0,0,0),unit="cm"),
     legend.text = element_text(colour="black", size = 12),
     plot.caption = element_text(size = 16, face = "italic"),
