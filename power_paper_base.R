@@ -37,6 +37,7 @@ paper_theme<-function(caption_align=1){
     legend.position = "bottom",
     legend.text=element_text(size=12),
     legend.margin=margin(c(0,0,-0.25,0),unit="cm"),
+    plot.margin=margin(c(.5,.5,0.5,0.5),unit="cm"),
     plot.caption = element_text(size = 9, color = "gray40",hjust=1),
     plot.title = element_text(face = "bold"),
     plot.subtitle = element_text(size = 10, color = "gray40"),

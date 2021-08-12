@@ -641,7 +641,7 @@ get_AS_merit_report <- function(start_date, end_date,key_firms=NULL) {
 #clean_data<-get_AS_merit_report(start_date,end_date)
 
 all_as_merit<- function(){
-  years<-seq(2013,2018)
+  years<-seq(2018,2021)
   for(year_id in years){
     days<-seq.Date(as.Date(paste(year_id,"-01-01",sep="")),as.Date(paste(year_id,"-12-31",sep="")),by="1 day")
     if(year_id=="2012")
@@ -664,7 +664,7 @@ all_as_merit<- function(){
   }
 }
 
-
+#all_as_merit()
 
 
 year_as_merit<- function(year_id){

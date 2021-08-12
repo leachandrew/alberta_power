@@ -456,34 +456,8 @@ merit_aug %>% filter(year(date)==2019,he=="19",Plant_Type=="COAL")%>%
 ggsave("images/all_coal_merit.png",dpi=300,width = 14,height = 10)
 
 
-
-merit_aug %>% filter(date==ymd("2019-02-04"),hour==19,asset_id=="BR5" )%>% arrange(price,AESO_Name)%>%
-  mutate(merit=cumsum(size))%>%
-  ggplot(aes(merit,price,color=AESO_Name))+
-  geom_rect(mapping=aes(xmin=merit-size,xmax=merit,ymin=-5,ymax=price),fill=NA)+
-  scale_color_grey("Unit Name")+   
-  scale_x_continuous(breaks=pretty_breaks(), expand=c(0,0))+
-  scale_y_continuous(breaks=pretty_breaks(), expand=c(0,0))+
-  #scale_colour_manual(labe ls=c("Brent","WTI"),values=c("#41ae76","#238b45","#006d2c","#00441b","Black","Black","Black","Black"))
-  paper_theme()+
-  theme(
-    legend.position = "right",
-    legend.margin=margin(c(0,0,0,0),unit="cm"),
-    legend.text = element_text(colour="black", size = 12),
-    plot.caption = element_text(size = 16, face = "italic"),
-    plot.title = element_text(face = "bold"),
-    plot.subtitle = element_text(size = 16, face = "italic"),
-    panel.grid.minor = element_blank(),
-    text = element_text(size = 16,face = "bold"),
-    axis.text.y =element_text(size = 16,face = "bold", colour="black"),
-    axis.text.x=element_text(size = 16,face = "bold", colour="black",angle=0, hjust=1),
-  )+
-  labs(x=paste("Offered Generation (MW)"),y="Price ($/MWh)",
-       #title=paste("Alberta Energy Merit Order, Feb 4, 2019 at hour ending 7pm"),
-       #caption="Source: AESO Data, graph by Andrew Leach."
-  )
-
 #test_bids<-merit_bids %>% filter(date==ymd("2019-02-04"),he=="19",Plant_Type=="COAL")%>% rename(price=bid)
+
 
 merit_bids %>% filter(date==ymd("2019-02-04"),he=="19",Plant_Type=="COAL")%>% rename(price=bid)%>%
   mutate(merit=percentile/100*total_offers,size=merit-lag(merit,n=1),size=ifelse(is.na(size),merit[1],size))%>%
@@ -622,6 +596,106 @@ ggsave("images/all_synth_2019.png",dpi=300,width = 14,height = 7)
 
   
 
+#BR3 focus data
+
+br3_files<- list.files("data/") %>% as_tibble() %>% filter(grepl("synth_focus",value))%>% 
+  mutate(file_date=gsub("synth_focus_","",value),
+         file_date=ymd_hm(gsub(".RData","",file_date))
+  )%>% filter(file_date==max(file_date))
+
+load(file = paste("data/",br3_files$value,sep=""))
+paste("loaded file=data/",br3_files$value,sep="")
+merit_bids<-merit_aug
+
+
+
+
+focus<-merit_bids %>% filter(year<2020)%>% 
+  rename(price=bid)%>%
+  mutate(merit=percentile/100*total_offers,size=merit-lag(merit,n=1),size=ifelse(is.na(size),merit[1],size))%>%
+  mutate(offer_det=case_when(
+    date<ymd("2016-07-13")~"2009-2016: PPA (ATCO, ENMAX)",
+    date>=ymd("2018-10-01")~"2018-2019: Merchant (ATCO)",
+    TRUE~"2016-2018: PPA (Balancing Pool)"
+  ))%>%
+  group_by(percentile,on_peak,offer_det)%>%
+  summarize(price=mean(price),min_off=min(total_offers),max_off=max(total_offers))%>%
   
   
+  ggplot()+
+  geom_rect(aes(xmin=merit-size,xmax=merit,ymin=-20,ymax=price,fill="Synthetic offer block"),color="black")+
+  geom_point(aes(x=merit,y=price),color="black",size=2)+
   
+  #geom_vline(aes(xintercept=max(dispatched_mw)))+
+  #annotate("text",3950,y=815,label="All offers to the\nleft of this line\nwere dispatched",size=4,hjust=1,vjust=0)+
+  #geom_label_repel(aes(merit-size/2,y=price,label=facility))+
+  scale_fill_grey("",end = .5,start=.5)+   
+  scale_x_continuous(breaks=pretty_breaks(), expand=c(0,0))+
+  scale_y_continuous(breaks=pretty_breaks(), expand=c(0,0))+
+  expand_limits(y=1000)+
+  #scale_colour_manual(labe ls=c("Brent","WTI"),values=c("#41ae76","#238b45","#006d2c","#00441b","Black","Black","Black","Black"))
+  paper_theme()+
+  theme(
+    legend.position = c(.2,.9),
+    legend.margin=margin(c(0,0,0,0),unit="cm"),
+    legend.text = element_text(colour="black", size = 12),
+    plot.caption = element_text(size = 16, face = "italic"),
+    plot.title = element_text(face = "bold"),
+    plot.subtitle = element_text(size = 16, face = "italic"),
+    panel.grid.minor = element_blank(),
+    text = element_text(size = 16,face = "bold"),
+    axis.text.y =element_text(size = 16,face = "bold", colour="black"),
+    axis.text.x=element_text(size = 16,face = "bold", colour="black",angle=0, hjust=1),
+  )+
+  labs(x=paste("Offered Generation (MW)"),y="Price ($/MWh)",
+       #title=paste("Alberta Energy Merit Order, Feb 4, 2019 at hour ending 7pm"),
+       #caption="Source: AESO Data, graph by Andrew Leach."
+  )
+ggsave("images/br3.png",dpi=300,width = 14,height = 10)
+
+  
+  
+
+bids_files<- list.files("data/") %>% as_tibble() %>% filter(grepl("synth_offer_type",value))%>% #filter(!grepl("type",value))%>% 
+  mutate(file_date=gsub("synth_offer_type_","",value),
+         file_date=ymd_hm(gsub(".RData","",file_date))
+  )%>% filter(file_date==max(file_date))
+
+load(file = paste("data/",bids_files$value,sep=""))
+paste("loaded file=data/",bids_files$value,sep="")
+merit_offer<-merit_aug
+
+
+bid_summary<-merit_offer %>% filter(Plant_Type=="COAL")%>% rename(price=bid)%>%
+  group_by(percentile,offer_gen,year,on_peak) %>% summarize(price=mean(price),total_offers=mean(total_offers))%>% ungroup()%>%
+  mutate(merit=percentile/100*total_offers,size=merit-lag(merit,n=1),size=ifelse(is.na(size),merit[1],size))
+
+
+
+bid_summary%>%
+  ggplot()+
+  geom_line(aes(x=percentile,y=price,color=offer_gen,group=offer_gen),size=.5)+
+  facet_grid(rows=vars(on_peak),cols = vars(year))+
+  #scale_color_manual("",values=c("black","grey80"))+   
+  #scale_x_continuous(breaks=pretty_breaks(), expand=c(0,0))+
+  expand_limits(y=1000)+
+  scale_y_continuous(breaks=pretty_breaks(), expand=c(0,0))+
+  #scale_colour_manual(labe ls=c("Brent","WTI"),values=c("#41ae76","#238b45","#006d2c","#00441b","Black","Black","Black","Black"))
+  paper_theme()+
+  theme(
+    legend.position = c(.15,.9),
+    legend.margin=margin(c(0,0,0,0),unit="cm"),
+    legend.text = element_text(colour="black", size = 12),
+    plot.caption = element_text(size = 16, face = "italic"),
+    plot.title = element_text(face = "bold"),
+    plot.subtitle = element_text(size = 16, face = "italic"),
+    panel.grid.minor = element_blank(),
+    text = element_text(size = 16,face = "bold"),
+    axis.text.y =element_text(size = 16,face = "bold", colour="black"),
+    axis.text.x=element_text(size = 16,face = "bold", colour="black",angle=0, hjust=1),
+  )+
+  labs(x=paste("Offered Generation (MW)"),y="Price ($/MWh)",
+       #title=paste("Alberta Energy Merit Order, Feb 4, 2019 at hour ending 7pm"),
+       #caption="Source: AESO Data, graph by Andrew Leach."
+  )
+ggsave("images/coal_synth_2019.png",dpi=300,width = 14,height = 10)
