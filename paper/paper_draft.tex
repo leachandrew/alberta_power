@@ -274,27 +274,38 @@ Our results, shown in Figure \ref{fig:decomp_all_hours}, mostly reflect an intui
     \label{fig:decomp_all_hours}
 \end{figure}
 
-
-
-
+These results are consistent if a decomposition by peak- vs. off-peak hours is introduced, as shown in Figure \ref{fig:decomp_peaks}. The impact of carbon pricing is always statistically greater than or equal to zero, with a maximum pass-through of approximately 40\% of average carbon costs in the mid-merit, and less elsewhere. In peak hours, the pass-through is smaller in the 50th to 60th percentiles, and larger in the 60th to 75th percentiles, with a similar 40\% maximum pass-through. Carbon price pass-through remains low in the 80th percentile, and increases in the upper merit during peak hours, while being close to zero in off-peak hours except at the extreme top of the merit order. The upper-merit impacts of OBAs are counter-intuitive, especially at peak hours, with estimates suggesting that higher offers have occurred with more valuable OBAs in the 85th to 95th percentiles of power offers in peak hours. 
 
 
 \begin{figure}[!htb]
     \centering
      \includegraphics[width=.9\textwidth]{../images/all_plants.png}
-    \caption{Estimated marginal effect of net carbon charges on power offers, all plant types and all hours. Error bars denote 95\% confidence intervals}
+    \caption{Estimated marginal effect of net carbon charges on power offers, all plant types. Error bars denote 95\% confidence intervals}
     \label{fig:decomp_peaks}
 \end{figure}
 
 
-
-
-
 \subsection{Impacts By Generator Type}
-We know that different generator types tend to offer their power into the market in different ways, and so our most detailed results are based on a decomposition of the market-wide impacts into impacts by type of plant. Here, we find that...
+We know that different generator types tend to offer their power into the market in different ways, and we decompose our key results by plant type, concentrating on the fossil fuel generators, with the exception of the combined heat and power plants for whom we do not observe external drivers for power offers. The results by plant type are, in many cases, counter-intuitive. We find first that coal plants do not consistently pass-through carbon costs to their offers. In fact, in the mid-merit, they tend to shade their offers a bit, actually reducing their offers as carbon prices are increased. This is likely as a result of their direct competition with gas-fired power plants which have lower emissions-intensity. In order to remain in the market at their maximum efficiency, it appears that coal plants are not passing through any carbon costs and are, in fact, reducing their offers despite an increase in costs. In the upper ranges of the merit order, coal plants have higher than full pass through, indicating that their offers over the last megawatts of their portfolio increased by more than their net carbon costs during the sample period. This indicates a change in operating stategy, perhaps, from one of \textit{base load} to more peaking behaviour, only operating plants at full capacity when the market price is very high. This is also, likely, an artefact of our assumption of constant emissions intensity of output. If the marginal emissions-intensity of output at the 90th percentile of installed capacity is much higher than in the mid-range of capacity, we would expect our pass-through estimates to appear as though more than 100\% of these costs were being passed-through, although that alone is insufficient to explain offers increasing by 1-3 times the increase in net carbon costs.
+
+\begin{figure}[!htb]
+    \centering
+     \includegraphics[width=.9\textwidth]{../images/by_type.png}
+    \caption{Estimated marginal effect of net carbon charges on power offers, all plant types. Error bars denote 95\% confidence intervals}
+    \label{fig:decomp_peaks}
+\end{figure}
+
+The natural gas, combined cycle power plants respond as we would have expected, at least qualitatively, with limited pass-through in the lower part of the merit order, where plants are generally offering in a minimum capacity at a lower strike price, an then with more pass-through in the mid- and upper-merit up to the 95th and 100th percentiles, where other strategic factors drive offers. Here, however, the quantitative effects are strikingly small. Natural gas power plants passed through less than 20\% of the net costs of carbon policies to their offers.
+
+For the simple-cycle plants, the results are the reverse of what we might expect. For these plants, some of which operate as peaking plants, we would expect to see a near-perfect pass through or, at the very least, something similar. Instead, we see almost all sampling points in the offers from simple cycle plants showing a negative relationship with net carbon costs: higher carbon prices were equated with not only lower offers but quantitatively significant reductions in the offered price level with increases in the carbon cost.
+
+There are a few factors at play that may explain this counter-intuitive result: first, some of the simple-cycle gas turbines are relatively new, so we do not observe all plants over the entire sample space. In and of itself, this would not be important given our sampling technique, but many of the newer simple-cycle plants have been added as a consequence of emissions policies, as alternatives to venting or flaring of methane from oil field operations. Additionally, many simple-cycle plants operate in the ancillary services market, capturing value as spinning reserves rather than when generating, and so this will skew our estimated emissions intensities since these plants would report emissions for periods in which they are burning fuel but not generating power. Finally, as coal plants have retired and/or shifted to higher offers, some simple-cycle plants would see an advantage to producing in more hours of the day, such that strategic considerations would lead them to lower their offers despite an increase in carbon costs in order to ensure a higher annual capacity factor. These plants will also be most sensitive to the hourly opportunity costs of natural gas and, while we observe hourly spot prices, individual entities may face different gas costs on an hourly basis than what we observe, in particular if facilities have long-term contracts for delivery in place.
+
 
 \subsection{Impacts By Offer Control}
 We can also use the data post-2013 to assess the degree to which different market participants might offer their power into the merit order and how they have passed through carbon policy values to power offers. We only use data after 2013 for this analysis because, prior to that time, the AESO did not provide offer control records along with their merit order data. The remains a sufficient sample, since we have three full years of data (2013-2015) in the initial \SGER pricing program, along with at least one full year under each of the altered policy regimes over which to assess changed in offers by different market participants.
+
+
 
 PPA explanation...
 
