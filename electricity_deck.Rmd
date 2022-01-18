@@ -1,0 +1,285 @@
+---
+title: Alberta's Electricity Market
+subtitle: Energy Industries and Markets Slide Pack
+author: 
+  - Andrew Leach 
+institution: 
+- Alberta School of Business and CABREE
+fontsize: 10pt
+output:
+ beamer_presentation:
+   #template: "C:/Users/aleach/Google Drive/default_beamer.tex"
+   #Mac
+   template: "ajl-latex-beamer.tex"
+    #PC
+   #template: "C:/Users/aleach/Google Drive/ajl-latex-beamer.tex"
+
+   
+   theme: "Darmstadt"  
+   incremental: false
+   slide_level: 2
+    #keep_tex: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(cache=TRUE)
+
+library(ggplot2)
+library(lubridate)
+library(dplyr)
+library(viridis)
+library(zoo)
+```
+
+#Introduction
+
+## Why should electricity interest you?
+
+Price volatility:
+
+- Electricity prices are an order of magnitude more volatile than oil or gas prices
+
+- Both supply and demand in Alberta affect us more than global or regional supplies and demands in oil and gas markets
+
+New technology:
+
+- Electricity is, arguably, changing faster than any other energy market
+
+- Alberta's electricity market is entering a period of market- and regulatory-driven transition
+
+Economics 101 in action
+
+- Nowhere else will you see supply and demand curves actually mapped out in real time determining prices as clearly as in Alberta's power market
+
+
+
+```{r plotit, echo=FALSE,results=FALSE,message=FALSE}
+options(warn=-1) #suppress warnings in Markdown
+
+slide_theme<-function(){
+  return( theme(panel.border = element_blank(),
+        panel.grid = element_blank(),
+        panel.grid.major.y = element_line(color = "gray",linetype="dotted"),
+        axis.line.x = element_line(color = "gray"),
+        axis.line.y = element_line(color = "gray"),
+        axis.text = element_text(size = 20),
+        axis.text.x = element_text(margin = margin(t = 10)),
+        axis.title = element_text(size = 20),
+        #axis.label.x = element_text(size=20,vjust=+5),
+        plot.subtitle = element_text(size = 20,hjust=0.5),
+        plot.caption = element_text(face="italic",size = 16,hjust=0),
+        legend.key.width=unit(2,"line"),
+        legend.position = "bottom",
+        #legend.direction = "horizontal",
+        #legend.box = "horizontal",
+        legend.title = element_text(size = 20),
+        legend.text = element_text(size = 20),
+        plot.title = element_text(hjust=0.5,size = 24)))
+}
+
+```
+
+```{r gendata, echo=FALSE,results=FALSE,message=FALSE}
+
+
+load("gen.RData") ## which is here *equivalent* to
+
+
+gen_data<-gen_data[-is.na(gen_data$gen),] 
+
+gen_data$AIL<-as.numeric(gen_data$AIL)
+gen_data$Price<-as.numeric(gen_data$Price)
+gen_data$Demand<-as.numeric(gen_data$Demand)
+
+
+```
+
+```{r, echo=FALSE,warnings=FALSE,results=FALSE,message=FALSE}
+filename<-paste("forecast_data",".RData",sep = "")
+#save(data_store, file= filename) 
+load(file = filename)
+
+load("all_merit.RData")  #load merit order data
+
+
+#hourly prices  
+forecast_data$day_ahead_forecasted_ail<-gsub(",","",forecast_data$day_ahead_forecasted_ail)
+forecast_data$actual_ail<-gsub(",","",forecast_data$actual_ail)
+forecast_data$forecasted_actual_ail_difference<-gsub(",","",forecast_data$forecasted_actual_ail_difference)
+forecast_data$Year<-year(forecast_data$date)
+forecast_data$actual_posted_pool_price<-as.numeric(forecast_data$actual_posted_pool_price)
+forecast_data$forecast_pool_price<-as.numeric(forecast_data$forecast_pool_price)
+forecast_data$actual_ail<-as.numeric(forecast_data$actual_ail)
+forecast_data$day_ahead_forecasted_ail<-as.numeric(forecast_data$day_ahead_forecasted_ail)
+sub_samp<-forecast_data
+sub_samp$time<-NULL
+sub_samp<-sub_samp[!is.na(sub_samp$actual_posted_pool_price),]
+df1 <- sub_samp %>% group_by(he,Year) %>% summarise(AIL=mean(actual_ail),p_mean=mean(actual_posted_pool_price))
+
+#png(file="hourly-prices.png", width = 1400, height = 750)
+```
+
+
+## Price volatility
+```{r, fig.width=16,fig.height=11, echo=FALSE,warnings=FALSE,results=FALSE,message=FALSE}
+p<-ggplot(df1, aes(he,p_mean,group=as.factor(Year),colour=as.factor(Year))) +
+  geom_line(data=df1,size=1.5) +
+  geom_line(data=subset(df1,Year==2017),size=3) +
+  #geom_point(size=1.5) +
+  labs(colour="Year") +
+  scale_color_viridis(discrete=TRUE)+   
+  theme_classic() +
+  theme(panel.border = element_blank(),
+        panel.grid = element_blank(),
+        panel.grid.major.y = element_line(color = "gray",linetype="dotted"),
+        axis.line.x = element_line(color = "gray"),
+        axis.line.y = element_line(color = "gray"),
+        axis.text = element_text(size = 20),
+        axis.text.x = element_text(margin = margin(t = 10)),
+        axis.title = element_text(size = 20),
+        #axis.label.x = element_text(size=20,vjust=+5),
+        plot.subtitle = element_text(size = 20,hjust=0.5),
+        plot.caption = element_text(face="italic",size = 16,hjust=0),
+        legend.key.width=unit(2,"line"),
+        legend.position = "bottom",
+        #legend.direction = "horizontal",
+        #legend.box = "horizontal",
+        legend.text = element_text(size = 20),
+        plot.title = element_text(hjust=0.5,size = 24))+
+  labs(y="Hourly Average Power Price ($/MWh)",x="Hour",
+             title="Hourly Average Energy Prices ($/MWh, 2000-2018)",
+             caption="Source: AESO Data, Accessed via NRGStream, Graph by Andrew Leach")
+
+print(p)
+```
+
+
+## Price volatility
+```{r, fig.width=16,fig.height=11, echo=FALSE,warnings=FALSE,results=FALSE,message=FALSE}
+sub_samp$month<-month(sub_samp$date)
+sub_samp$Date_ID = as.yearmon(sub_samp$date)
+df1 <- sub_samp %>% group_by(Date_ID) %>% summarise(cons =sum(actual_ail)/1000,AIL =mean(actual_ail),Peak_AIL =max(actual_ail), p_mean=sum(actual_posted_pool_price*actual_ail)/sum(actual_ail))
+df1$Date<-as.Date(df1$Date_ID)
+df1$m12_avg<-as.numeric(rollapply(df1$p_mean,12,mean,fill=NA,align = c("right")))
+df1$m12_ail_avg<-as.numeric(rollapply(df1$AIL,12,mean,fill=NA,align = c("right")))
+
+lims=c(min(df1$Date)+years(1),max(df1$Date)+months(3))
+p<-ggplot(data=subset(df1,Date>="2001-01-01"), aes(Date,p_mean,colour="A"),size=2.5) +
+  geom_line(size=1.5) +
+  geom_line(data=subset(df1,Date>="2001-01-01"),aes(Date,m12_avg,colour="B"),size=2.5) +
+  scale_color_viridis("",labels=c("Monthly Average Prices","12 Month Rolling Average Prices"),discrete=TRUE)+   
+  scale_x_date(name=NULL,date_breaks = "1 year", date_labels =  "%b\n%Y",limits=lims,expand=c(0,0)) +
+  theme_classic() +
+  slide_theme()+
+      labs(y="Monthly/Annual Average Power Price ($/MWh)",x="\nMonth",
+             title="Load-Weighted Monthly Average Energy Prices ($/MWh, 2005-2017)",
+             caption="Source: AESO Data, Accessed via NRGStream, Graph by Andrew Leach")
+
+print(p)
+```
+
+
+## Supply and Demand
+
+```{r, fig.width=16,fig.height=11, echo=FALSE,warnings=FALSE,results=FALSE,message=FALSE}
+
+
+df1<-subset(merit_data, he==18 & date==as.Date("2017-10-05"))
+
+p<-ggplot(df1,aes(merit,price,fill=offer_sum)) +
+  geom_rect(mapping=aes(xmin=merit-size,xmax=merit,ymin=-20,ymax=price))+
+  scale_fill_viridis("Offer\nControl",discrete = TRUE)+   
+  theme_classic() +
+  slide_theme()+
+  labs(x=paste("Offered Generation (MW)"),y="Price ($/MWh)",
+       title=paste("Alberta Energy Merit Order, ",max(df1$date)," ",max(df1$he),":00",sep = ""),
+       caption="Source: AESO Data, graph by Andrew Leach.")
+print(p)
+
+```
+
+## New Technology
+
+```{r,echo=FALSE,message=FALSE, out.width = "320px"}
+knitr::include_graphics("/Users/aleach/Google Drive/eclipse.png")
+
+```
+
+
+#The Market
+
+
+## The Grid 2.0
+```{r,echo=FALSE,message=FALSE, out.width = "320px"}
+knitr::include_graphics("grid_ess.png")
+```
+
+
+
+## Market Participants
+\begin{itemize}
+\setlength\itemsep{2em}
+\item Generation
+
+\item Transmission
+
+\item Distribution
+
+\item Ancillary Services
+
+\item Load
+
+\item Storage
+\end{itemize}
+
+
+## Energy units - electricity 
+Watts: measure of capacity (instantaneous production, installed capacity, or instantaneous demand)
+
+- Alberta system demand: 7,200-10,700 MW (million watts)
+
+- Capital Power's Genessee 3 power plant is: 450 MW
+
+
+Watt hours: measure of energy (production or demand during a given period of time; i.e. flow through)
+    -Production over a day, week, month, year
+
+Volts are a measure of the electrical potential - the ability to convert charge to power: Watts=amps x volts
+    -Transmission lines: 150-765 kV
+    -Distribution lines: 13,800 Volts
+    -Household wiring: 120-240 Volts
+
+# Prices
+## Energy Prices
+Electricity prices are expressed in power delivered over time
+Cents/kilowatt-hour (c/kWh)
+Dollars per megawatt-hour ($/MWh)
+Capacity costs are expressed in a cost per megawatt or cost of capacity
+Genessee 3 cost approximately $1.5 million/MW or $1.50 per watt to build
+Solar panel prices have declined to now lie under $1/W of capacity
+Balance of system costs imply that a solar system costs $2-3/W of installed capacity
+Levelized costs of electricity (supply costs) in $/MWh
+
+## Other Prices
+Other prices matter for electricity markets as well
+Renewable energy credits (usually prices in $/MWh)
+Emissions credits or permits ($/tonne)
+Capacity payments ($/MW)
+Air emissions permits or credits ($/tonne)
+
+#Market Participants
+
+## Test
+
+
+#Generation Sources
+
+## Test
+
+#GHG Emissions
+
+## Test
+
+#Etc
+
+## Test

@@ -1,0 +1,7 @@
+\babel@toc {english}{}
+\beamer@sectionintoc {1}{Introduction}{2}{0}{1}
+\beamer@sectionintoc {2}{Units}{6}{0}{2}
+\beamer@sectionintoc {3}{Power Markets}{8}{0}{3}
+\beamer@sectionintoc {4}{Wholesale Market}{11}{0}{4}
+\beamer@sectionintoc {5}{PPAs and the Balancing Pool}{20}{0}{5}
+\beamer@sectionintoc {6}{Alberta Market Evolution}{21}{0}{6}
