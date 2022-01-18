@@ -12,8 +12,10 @@ options(scipen=999)
 update<-0 #add new data
 save<-1 #save files at the end
 synth<-1 #synthetic plants?
-  synth_type<-4  #4 is facility,3 is offer control by type, 2 is by offer_control,1 is by plant_type, 0 is full merit as synthetic plant
+  synth_type<-3  #5 is a target facility, focus_id,4 is facility,3 is offer control by type, 2 is by offer_control,1 is by plant_type, 0 is full merit as synthetic plant
 
+  if(synth_type==5)
+    focus_id<-"BR3"
 
 load("data/all_merit.RData")  
 if(update==1){
@@ -285,7 +287,7 @@ merit_aug<-merit_aug %>% left_join(plant_data(),by=c("asset_id"="ID"))%>%
     group_by(Plant_Type) %>% arrange(Plant_Type,-Capacity)%>% 
       mutate(rank=row_number())%>%
     ungroup() %>% 
-      filter(rank<=5)%>%
+      filter(rank<=3)%>%
     select(asset_id)
   
   
@@ -300,7 +302,7 @@ merit_aug<-merit_aug %>% left_join(plant_data(),by=c("asset_id"="ID"))%>%
   #merit_small<-merit_small%>%mutate(facility=gsub(" #","_",AESO_Name))%>% separate(facility,into = c("facility","number"), sep="_(?=[^_]+$)")
   
   #convert to synthetic plants here if synth==1
-  
+`  
   #merit_aug<-merit_small
   if(synth==1){
     #here, we are going to use Plant_Type and offer_gen to be our core pieces of information that gets passed on
@@ -308,9 +310,16 @@ merit_aug<-merit_aug %>% left_join(plant_data(),by=c("asset_id"="ID"))%>%
     #synth_type 4 is facility,3 is offer control by type, 2 is by offer_control, 1 is by plant_type, 0 is full merit as synthetic plant
     
     
+    if(synth_type==5){ #if we're doing a specific unit
+      merit_aug <- merit_aug%>% filter(asset_id==focus_id)%>%
+        mutate(offer_sum=as_factor(asset_id)
+        )
+    }
+    
     if(synth_type==4){ #if we're doing by unit, we need the largest fossil units
-      merit_aug <- merit_aug%>% filter(asset_id %in% large_plants$asset_id)%>%
+      merit_aug <- merit_aug%>% #filter(asset_id %in% large_plants$asset_id)%>%
         mutate(offer_sum=as_factor(asset_id),
+               offer_sum=fct_other(offer_sum,keep=large_plants$asset_id)
                )
     }
     
@@ -339,11 +348,12 @@ merit_aug<-merit_aug %>% left_join(plant_data(),by=c("asset_id"="ID"))%>%
              merit_co2=cumsum(co2_est*size/1000), #cumulative tonnes of emissions across the merit order
              merit_ctax=(ctax_cost), #marginal compliance costs, $ per mwh
              merit_oba=(oba_val),#marginal oba value, $ per mwh
-             merit_net_comp=(compliance_cost))%>%
+             #merit_net_comp=(compliance_cost)
+             )%>%
       summarize(
         #place offer percentiles and prices in lists of vectors
         total_offers=sum(size),available_mw=sum(available_mw),dispatched_mw=sum(dispatched_mw),renew_gen=sum(renew_gen,na.rm = T),
-        merit=list(merit_type*100),price=list(price),co2_est=list(merit_co2),ctax_cost=list(merit_ctax),oba_val=list(merit_oba),net_comp=list(merit_net_comp)
+        merit=list(merit_type*100),price=list(price),co2_est=list(merit_co2),ctax_cost=list(merit_ctax),oba_val=list(merit_oba)
       )%>%
       group_by(date,he,Plant_Type,offer_gen) %>% #re-group the summarized data
       #get and store the bid function
@@ -351,7 +361,7 @@ merit_aug<-merit_aug %>% left_join(plant_data(),by=c("asset_id"="ID"))%>%
              ghg_func=list(bid_func(merit[[1]],co2_est[[1]])), #cumulative emissions in tonnes
              ctax_func=list(bid_func(merit[[1]],ctax_cost[[1]])),#marginal ctax
              oba_func=list(bid_func(merit[[1]],oba_val[[1]])), #marginal oba
-             net_comp_func=list(bid_func(merit[[1]],net_comp[[1]])),
+             #net_comp_func=list(bid_func(merit[[1]],net_comp[[1]])),
              import_export=case_when(
                Plant_Type=="IMPORT" ~ "I",
                TRUE                      ~  "")
@@ -361,8 +371,7 @@ merit_aug<-merit_aug %>% left_join(plant_data(),by=c("asset_id"="ID"))%>%
     print(paste("Built step functions. Elapsed time is",time_length(interval(start_time, Sys.time()), "seconds"),"seconds"))
     
     merit_aug<-merit_aug%>% group_by(date,he,Plant_Type,offer_gen) %>%
-      mutate(bid_10=merit_func[[1]](10),
-             bid_20=merit_func[[1]](20),
+      mutate(bid_15=merit_func[[1]](15),
              bid_30=merit_func[[1]](30),
              bid_40=merit_func[[1]](40),
              bid_50=merit_func[[1]](50),
@@ -376,8 +385,7 @@ merit_aug<-merit_aug %>% left_join(plant_data(),by=c("asset_id"="ID"))%>%
              bid_90=merit_func[[1]](90),
              bid_95=merit_func[[1]](95),
              bid_100=merit_func[[1]](100))%>%
-      mutate(ghg_10=ghg_func[[1]](10),
-             ghg_20=ghg_func[[1]](20),
+      mutate(ghg_15=ghg_func[[1]](15),
              ghg_30=ghg_func[[1]](30),
              ghg_40=ghg_func[[1]](40),
              ghg_50=ghg_func[[1]](50),
@@ -391,8 +399,7 @@ merit_aug<-merit_aug %>% left_join(plant_data(),by=c("asset_id"="ID"))%>%
              ghg_90=ghg_func[[1]](90),
              ghg_95=ghg_func[[1]](95),
              ghg_100=ghg_func[[1]](100)) %>%
-      mutate(ctax_10=ctax_func[[1]](10),
-             ctax_20=ctax_func[[1]](20),
+      mutate(ctax_15=ctax_func[[1]](15),
              ctax_30=ctax_func[[1]](30),
              ctax_40=ctax_func[[1]](40),
              ctax_50=ctax_func[[1]](50),
@@ -406,8 +413,7 @@ merit_aug<-merit_aug %>% left_join(plant_data(),by=c("asset_id"="ID"))%>%
              ctax_90=ctax_func[[1]](90),
              ctax_95=ctax_func[[1]](95),
              ctax_100=ctax_func[[1]](100)) %>%
-      mutate(oba_10=oba_func[[1]](10),
-             oba_20=oba_func[[1]](20),
+      mutate(oba_15=oba_func[[1]](15),
              oba_30=oba_func[[1]](30),
              oba_40=oba_func[[1]](40),
              oba_50=oba_func[[1]](50),
@@ -421,23 +427,8 @@ merit_aug<-merit_aug %>% left_join(plant_data(),by=c("asset_id"="ID"))%>%
              oba_90=oba_func[[1]](90),
              oba_95=oba_func[[1]](95),
              oba_100=oba_func[[1]](100)) %>%
-      mutate(net_10=net_comp_func[[1]](10),
-             net_20=net_comp_func[[1]](20),
-             net_30=net_comp_func[[1]](30),
-             net_40=net_comp_func[[1]](40),
-             net_50=net_comp_func[[1]](50),
-             net_55=net_comp_func[[1]](55),
-             net_60=net_comp_func[[1]](60),
-             net_65=net_comp_func[[1]](65),
-             net_70=net_comp_func[[1]](70),
-             net_75=net_comp_func[[1]](75),
-             net_80=net_comp_func[[1]](80),
-             net_85=net_comp_func[[1]](85),
-             net_90=net_comp_func[[1]](90),
-             net_95=net_comp_func[[1]](95),
-             net_100=net_comp_func[[1]](100)) %>%
       ungroup() %>% select(-merit,-price,-co2_est,-merit_func,-ghg_func,-ctax_func,-oba_func,
-                           -oba_val,-ctax_cost,-net_comp_func,-net_comp)
+                           -oba_val,-ctax_cost)
     print(paste("Build bids, cleaned data frame, elapsed time is",time_length(interval(start_time, Sys.time()), "seconds"),"seconds"))
     
     #turn these into the appropriate format for later analysis
@@ -458,7 +449,7 @@ merit_aug<-merit_aug %>% left_join(plant_data(),by=c("asset_id"="ID"))%>%
     
   } # end of synth plants
   
-  
+`  
   
   # merge in companion market data and NIT gas prices
   
@@ -467,7 +458,7 @@ merit_aug<-merit_aug %>% left_join(plant_data(),by=c("asset_id"="ID"))%>%
     mutate(nit_settle_cad_gj=na.locf(nit_settle_cad_gj))
   
   #clean up memory
-  rm(mkt_data)
+  #rm(mkt_data)
   gc()
   
   
@@ -498,6 +489,10 @@ merit_aug<-merit_aug %>% left_join(plant_data(),by=c("asset_id"="ID"))%>%
       if(synth_type==4){
         save(merit_aug,file=format(Sys.time(),format="data/synth_unit_%Y_%b_%d_%H_%M.RData"))
       print(paste("Saved synthetic merit by unit file. Elapsed time is",time_length(interval(start_time, Sys.time()), "seconds"),"seconds"))
+      }
+      if(synth_type==5){
+        save(merit_aug,file=format(Sys.time(),format="data/synth_focus_%Y_%b_%d_%H_%M.RData"))
+        print(paste("Saved synthetic merit by unit file. Elapsed time is",time_length(interval(start_time, Sys.time()), "seconds"),"seconds"))
       }
     }
     if(synth==0) #saving the processed merit data
