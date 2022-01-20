@@ -159,7 +159,6 @@ data_update <- function(data_sent,fix_year=0) {
   file_name<-paste("nrgstream/hourly",sprintf('%02d', max_year %% 100),".csv",sep="")
   print(paste("data file is ",file_name))
   new_data <- read.csv(file_name,check.names = FALSE,stringsAsFactors = F)
-  #new_data<-checking
   new_data[,-1] <- sapply(new_data[,-1], as.numeric )
   #take out periods
   colnames(new_data)<-gsub("\\.", " ", colnames(new_data)) 
@@ -240,7 +239,7 @@ data_update <- function(data_sent,fix_year=0) {
     new_melt$he[new_melt$he==hour]<-paste(0,hour,sep="")
   }
   new_melt$date<-date(new_melt$Time)
-  #kick_to_global<<-new_melt
+  
   data_new<-rbind(data_sent,subset(new_melt,Time>max(data_sent$Time)))
   return(data_new)
 }
