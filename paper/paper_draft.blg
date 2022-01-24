@@ -1,7 +1,7 @@
 This is BibTeX, Version 0.99dThe top-level auxiliary file: paper_draft.aux
 The style file: chicago.bst
 I couldn't open database file ../env.bib
----line 58 of file paper_draft.aux
+---line 60 of file paper_draft.aux
  : \bibdata{../env
  :                }
 I'm skipping whatever remains of this command
