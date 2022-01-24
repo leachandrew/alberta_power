@@ -274,14 +274,17 @@ process_data <- function(data_sent) {
 
 #load and price data
 
-get_forecast_report <- function(start_date, end_date) {
+get_forecast_report <- function(start_date,end_date) {
   #testing below here
-    #start_date<-as.Date("2018-03-11",format="%Y-%m-%d")
+    #start_date<-as.Date("2022-01-11",format="%Y-%m-%d")
     #end_date <- min(as.Date(start_date+months(1)),Sys.Date()-days(1)) #31 days of data
     #end testing - above should be commented if you're not testing
   
   start_date <- as.Date(start_date)
   end_date <- min(as.Date(start_date+months(1)),as.Date(end_date)) #31 days of data
+  print(start_date)
+  print(end_date)
+  
   GET(
     url = "http://ets.aeso.ca/ets_web/ip/Market/Reports/ActualForecastWMRQHReportServlet",
     query = list(
@@ -298,6 +301,8 @@ get_forecast_report <- function(start_date, end_date) {
   forecast_data<-read.csv(text=test,header = TRUE, stringsAsFactors=FALSE)
   clean_data<-janitor::clean_names(forecast_data) %>% 
     as_tibble()
+  
+  globals<<-clean_data
   #date formats from AESO are date and he as : 03/11/2018 01
   #process dates
   clean_data$time<-as.POSIXct(clean_data$date, format="%m/%d/%Y %H",tz="America/Denver")
@@ -308,7 +313,7 @@ get_forecast_report <- function(start_date, end_date) {
   clean_data$start_date<-mdy(date_he[,1])
   #date at end of hour
   clean_data$date<-as_date(clean_data$time)
-  clean_data$day_ahead_forecasted_ail<- gsub("\\,", "", clean_data$day_ahead_forecasted_ail)
+  clean_data$forecast_ail<- gsub("\\,", "", clean_data$forecast_ail)
   clean_data$actual_ail<- gsub("\\,", "", clean_data$actual_ail)
   #clean_data<-clean_data %>% select(-he) %>% mutate_if(is.character,as.numeric)
   #clean_data<-clean_data %>% select(-he)%>% mutate_if(is.integer,as.numeric)
@@ -319,8 +324,8 @@ get_forecast_report <- function(start_date, end_date) {
 
 
 #sample code to use this scraper
-#day<-as.Date(Sys.Date())
-#xdf<-get_forecast_report(as.Date(day), as.Date(day)-months(1))
+day<-as.Date(Sys.Date()-years(1))
+xdf<-get_forecast_report(as.Date(day), as.Date(day)+months(1))
 
 all_forecasts<-function() {
   years<-seq(2000,year(Sys.Date()))
@@ -373,11 +378,12 @@ update_forecasts<-function() {
 
 #code to use this scraper
 
-#forecast_data<-forecast_data%>%filter(time<ymd_hm("2017-01-01 8:00"))
-#filename<-paste("forecast_data",".RData",sep = "")
+forecast_data<-forecast_data%>%rename(#forecast_ail=day_ahead_forecasted_ail,
+  forecast_ail_actual_ail_difference= forecast_actual_ail_difference)
+#filename<-paste("data/forecast_data",".RData",sep = "")
 #save(forecast_data, file= filename) 
 #update_forecasts()
-#load("forecast_data.Rdata")
+load("data/forecast_data.Rdata")
 
 
 
