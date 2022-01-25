@@ -98,7 +98,6 @@ sub_samp$Year<-year(sub_samp$time)
 df1 <- sub_samp %>% group_by(Plant_Type,time,Year) %>% summarise(sumcap = sum(Capacity),total_gen=sum(gen),p_mean=mean(Price))
 df1$Year_ID=as.character(df1$Year)
 # Histogram of Generation Densities
-set_png(file="images/wind_cdf.png")
 ggplot(df1,aes(total_gen))+
   #geom_density(aes(fill="Wind Power Generation",colour=year(time)),alpha=0.5)+
   #stat_density(geom="line",position="identity",aes(group=Year_ID,colour=Year_ID),size=1.5)+
@@ -110,7 +109,7 @@ ggplot(df1,aes(total_gen))+
   labs(x="Wind Generation (MW)",y="% of hours generation < X MW",
        title="Cumulative Density Function, Wind Energy (2010-2017 Avg)",
        caption="Source: AESO Data, Accessed via NRGStream, Graph by Andrew Leach")
-dev.off()
+ggsave(file="images/wind_cdf.png")
 
 
 
@@ -140,7 +139,7 @@ gen_set<-c("COAL","COGEN","HYDRO","NGCC", "OTHER", "SCGT","SOLAR","IMPORT","EXPO
 #test_samp2<-test_samp %>% filter(Plant_Type %in% gen_set,! NRG_Stream %in% trade_excl)
 
 
-df2 <- df1 %>% filter(Plant_Type %in% gen_set,year(time)<2021) %>%
+df2 <- df1 %>% filter(Plant_Type %in% gen_set,year(time)<2022) %>%
        group_by(Plant_Type,Year) %>% summarise(capture = sum(total_rev)/sum(total_gen),avg_rev = sum(total_rev)/sum(total_gen),p_mean=mean(p_mean))
 
 
@@ -203,7 +202,7 @@ ggplot(df2,aes(Year,capture/p_mean*100-100,colour=Plant_Type,fill=Plant_Type),al
 dev.off()
 
 
-df3 <- df1 %>% filter(Plant_Type %in% gen_set,year(time)<2021) %>%
+df3 <- df1 %>% filter(Plant_Type %in% gen_set,year(time)<2022) %>%
   group_by(Year) %>% summarise(capture = sum(total_rev)/sum(total_gen),avg_rev = sum(total_rev)/sum(total_gen),p_mean=mean(p_mean))%>%
   mutate(Plant_Type="MARKET",Plant_Type=as_factor(Plant_Type))
 
@@ -211,23 +210,61 @@ df2<-df2 %>% bind_rows(df3)
 df2$Plant_Type<-fct_relevel(df2$Plant_Type, "MARKET",after=0)
 
 
+df4<-tibble(Year=seq(2010,2016),Plant_Type="SOLAR",capture=0)%>%mutate(Year=as_factor(Year),
+                                                                       Plant_Type=as_factor(Plant_Type))
+df2<-df2 %>% bind_rows(df4)
+
 
 my_palette<-c("black",colors_tableau10()[8],colors_tableau10_medium()[4],colors_tableau10()[4],colors_tableau10_light()[4],colors_tableau10()[7],colors_tableau10()[1],colors_tableau10()[3],colors_tableau10()[2],colors_tableau10()[9],colors_tableau10_light()[9])
-set_png(file="images/price_capture.png", width = 1400, height = 750)
-plot_a<-ggplot(df2,aes(Year,capture,fill=Plant_Type),alpha=0.5)+
-  geom_col(aes(Year,capture,colour=Plant_Type,fill=Plant_Type),size=1,position = position_dodge(width = .9),width = .6)+
+my_palette<-c("black",grey.colors(10,start=0.2,end = .95))
+
+plot_a<-ggplot(df2,aes(Year,capture,fill=Plant_Type))+
+  geom_col(aes(Year,capture,fill=Plant_Type),position = position_dodge(width = .9),width = .6,color="black",size=.5)+
+  #geom_text(aes(y=-10,label=Plant_Type),angle=90,size=2)+
   #  scale_color_viridis("Plant Type",discrete=TRUE)+
 #  scale_fill_viridis("Plant Type",discrete=TRUE)+
   #scale_color_manual("",values=colors_tableau10())+
   #scale_fill_manual("",values=colors_tableau10())+
   scale_color_manual("",values=my_palette)+
   scale_fill_manual("",values=my_palette)+
-    slide_theme()+
-labs(x="Year",y="Average Revenue ($/MWh)",
-     title="Energy Price Capture ($/MWh, 2007-2019)",
-     caption="Source: AESO Data, accessed via NRGStream\nGraph by @andrew_leach")
+  blake_theme()+theme(plot.margin =unit(c(1,1,1,1),"cm"),
+                      legend.position = "bottom")+
+  guides(fill=guide_legend(nrow = 1,label.position = "bottom",keywidth = 5))+
+labs(x="",y="Average Revenue ($/MWh)",
+     #title="Energy Price Capture ($/MWh, 2010-2021)",
+     #caption="Source: AESO Data, accessed via NRGStream\nGraph by @andrew_leach"
+     )
 plot_a
-dev.off()
+ggsave(file="images/price_capture.png", width = 14, height = 8)
+
+
+
+capture_new<-
+  ggplot(df2,aes(y=capture,x=Plant_Type))+
+  geom_bar(stat="identity",alpha=0.5,width=.9, position = "dodge",color="black")+
+  facet_wrap(~Year,nrow = 1)+
+  #coord_flip()+
+  geom_text(aes(y=capture+.5,label=Plant_Type),angle=90,size=1.6,hjust=0,vjust=0.35)+
+  #  scale_color_viridis("Plant Type",discrete=TRUE)+
+  #  scale_fill_viridis("Plant Type",discrete=TRUE)+
+  #scale_color_manual("",values=colors_tableau10())+
+  #scale_fill_manual("",values=colors_tableau10())+
+  #scale_color_manual("",values=my_palette)+
+  #scale_fill_manual("",values=my_palette)+
+  theme_minimal()+
+  theme(axis.text.x = element_blank(),
+        panel.grid = element_blank())+
+  expand_limits(y=0)+
+  labs(x="",y="Average Revenue ($/MWh)",
+       #title="Energy Price Capture ($/MWh, 2010-2021)",
+       #caption="Source: AESO Data, accessed via NRGStream\nGraph by @andrew_leach"
+       )
+capture_new
+ggsave(file="images/capture_test.png",width=14,height = 8,dpi=150)
+
+
+
+
 
 df2 <-df2 %>% filter(!Plant_Type %in% c("OTHER", "TRADE","IMPORT","EXPORT","MARKET"))
 #set_png(file="images/price_capture_tax.png", width = 1400, height = 750)
