@@ -220,6 +220,8 @@ my_palette<-c("black",grey.colors(10,start=0.2,end = .95))
 
 plot_a<-ggplot(df2,aes(Year,capture,fill=Plant_Type))+
   geom_col(aes(Year,capture,fill=Plant_Type),position = position_dodge(width = .9),width = .6,color="black",size=.5)+
+  #geom_col(aes(Year,p_mean),position = "identity",fill=NA,color="black")+
+  #geom_line(dataaes(Year,capture,fill=Plant_Type),position = position_dodge(width = .9),width = .6,color="black",size=.5)+
   #geom_text(aes(y=-10,label=Plant_Type),angle=90,size=2)+
   #  scale_color_viridis("Plant Type",discrete=TRUE)+
 #  scale_fill_viridis("Plant Type",discrete=TRUE)+

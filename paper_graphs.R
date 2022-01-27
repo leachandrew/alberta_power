@@ -163,7 +163,7 @@ gen_plain <- df2 %>% mutate(Plant_Type=factor(Plant_Type,levels=AB_plant_order))
     #scale_shape_manual("",values=c(15,16,17,18,0,1,2,3))+
     blake_theme()+theme(plot.margin =unit(c(1,1,1,1),"cm"))+
     scale_x_date(date_labels = "%b\n%Y",date_breaks = "24 months",expand=c(0,0))+
-    expand_limits(x = as.Date(c("2004-01-01", "2023-11-30")))+
+    expand_limits(x = as.Date(c("2004-01-01", "2022-1-30")))+
     expand_limits(y =-500)+
     scale_y_continuous(expand = c(0,0),breaks=pretty_breaks())+
     

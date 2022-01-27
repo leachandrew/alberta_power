@@ -87,57 +87,62 @@ ctax_all<-all_plants_reg %>%
 
 #library(hrbrthemes)
 #hrbrthemes::import_roboto_condensed()
-ctax_all%>% filter(percentile<=90 & percentile>=40)%>%
-  filter(grepl("ctax",term)|grepl("oba",term))%>%ggplot(aes(x=percentile, y=estimate, ymin=conf.low, ymax=conf.high,group=term,color=term)) +
+ctax_all%>% filter(percentile<=100 & percentile>=0)%>%
+  filter(grepl("ctax",term)|grepl("oba",term))%>%
+  mutate(term=gsub("peak_facFALSE:","",term))%>%
+  mutate(term=gsub("peak_facTRUE:","",term))%>%
+  mutate(peak2=fct_relevel(peak,"Peak Hours"))%>%
+  ggplot(aes(x=percentile, y=estimate, ymin=conf.low, ymax=conf.high,group=term,color=term)) +
   #geom_pointrange() +
   #geom_line(size=1.25)+
-  geom_point()+
+  geom_point(size=1.25)+
   #geom_errorbar(width=2.85)+
-  geom_errorbar(width=rel(.5))+
-  scale_x_continuous(expand=c(0,0),breaks=pretty_breaks())+
-  #expand_limits(x=0)+
-  expand_limits(y=c(-.55,.55))+
+  geom_errorbar(width=rel(.75),size=.85)+
   scale_y_continuous(expand=c(0,0),breaks=pretty_breaks())+
-  facet_grid(cols=vars(Plant_Type),rows = vars(peak))+
-  geom_hline(yintercept = 0, col = "orange") +
+  expand_limits(y=c(-.5,.5))+
+  scale_x_continuous(expand=c(0,0),breaks=pretty_breaks())+
+  expand_limits(x=c(0,100))+
+  facet_grid(rows = vars(peak2))+
+  #facet_grid(rows=fct_relevel(peak,"Peak Hours"))+
+  geom_hline(yintercept = 0, col = "black") +
   labs(
     x = "Percentile of total offered power (%)", y = "Marginal effect (Δ in offer : Δ in $/MWh in cost or value)",
-    title = "Marginal effect of carbon tax cost and output-based allocation values on power offers by plant type" 
+    #title = "Marginal effect of carbon tax cost and output-based allocation values on power offers by plant type" 
     #subtitle = "Conditional on plant type"
   ) +
   paper_theme()+
   #theme_ipsum() + theme(legend.position = "bottom")+
-  scale_color_manual("",values=c(colors_tableau10_light()[1:2],colors_tableau10()[1:2]),labels=c("Marginal effect of carbon tax cost, off-peak hours","Marginal effect of OBA value, off-peak hours",
-                                                                                                 "Marginal effect of carbon tax cost, peak hours","Marginal effect of OBA value, peak hours"))+
-  guides(color= guide_legend(nrow = 2,byrow = F))+
+  scale_color_manual("",values=c("black","grey50"),labels=c("Marginal effect of carbon tax cost","Marginal effect of OBA value"))+
+  #scale_shape_manual("",values=c(6,7),labels=c("Marginal effect of carbon tax cost","Marginal effect of OBA value"))+
+  guides(color= guide_legend(nrow = 1,byrow = F))+
   NULL
-ggsave(filename = "images/all_plants_mid.png",dpi=150,width = 14, height=8)  
+ggsave(filename = "images/all_plants_1.png",dpi=150,width = 14, height=9)  
 
-ctax_all%>% #filter(percentile<=90 & percentile>=40)%>%
-  filter(grepl("ctax",term)|grepl("oba",term))%>%ggplot(aes(x=percentile, y=estimate, ymin=conf.low, ymax=conf.high,group=term,color=term)) +
-  #geom_pointrange() +
-  #geom_line(size=1.25)+
-  geom_point()+
-  #geom_errorbar(width=2.85)+
-  geom_errorbar(width=rel(.5))+
-  scale_x_continuous(expand=c(0,0),breaks=pretty_breaks())+
-  #expand_limits(x=0)+
-  expand_limits(y=c(-.55,.55))+
-  scale_y_continuous(expand=c(0,0),breaks=pretty_breaks())+
-  facet_grid(cols=vars(Plant_Type),rows = vars(peak))+
-  geom_hline(yintercept = 0, col = "orange") +
-  labs(
-    x = "Percentile of total offered power (%)", y = "Marginal effect (Δ in offer : Δ in $/MWh in cost or value)",
-    title = "Marginal effect of carbon tax cost and output-based allocation values on power offers by plant type" 
-    #subtitle = "Conditional on plant type"
-  ) +
-  paper_theme()+
-  #theme_ipsum() + theme(legend.position = "bottom")+
-  scale_color_manual("",values=c(colors_tableau10_light()[1:2],colors_tableau10()[1:2]),labels=c("Marginal effect of carbon tax cost, off-peak hours","Marginal effect of OBA value, off-peak hours",
-                                                                                                 "Marginal effect of carbon tax cost, peak hours","Marginal effect of OBA value, peak hours"))+
-  guides(color= guide_legend(nrow = 2,byrow = F))+
-  NULL
-ggsave(filename = "images/all_plants.png",dpi=150,width = 14, height=8)  
+# ctax_all%>% #filter(percentile<=90 & percentile>=40)%>%
+#   filter(grepl("ctax",term)|grepl("oba",term))%>%ggplot(aes(x=percentile, y=estimate, ymin=conf.low, ymax=conf.high,group=term,color=term)) +
+#   #geom_pointrange() +
+#   #geom_line(size=1.25)+
+#   geom_point()+
+#   #geom_errorbar(width=2.85)+
+#   geom_errorbar(width=rel(.5))+
+#   scale_x_continuous(expand=c(0,0),breaks=pretty_breaks())+
+#   #expand_limits(x=0)+
+#   expand_limits(y=c(-.55,.55))+
+#   scale_y_continuous(expand=c(0,0),breaks=pretty_breaks())+
+#   facet_grid(cols=vars(Plant_Type),rows = vars(peak))+
+#   geom_hline(yintercept = 0, col = "orange") +
+#   labs(
+#     x = "Percentile of total offered power (%)", y = "Marginal effect (Δ in offer : Δ in $/MWh in cost or value)",
+#     title = "Marginal effect of carbon tax cost and output-based allocation values on power offers by plant type" 
+#     #subtitle = "Conditional on plant type"
+#   ) +
+#   paper_theme()+
+#   #theme_ipsum() + theme(legend.position = "bottom")+
+#   scale_color_manual("",values=c(colors_tableau10_light()[1:2],colors_tableau10()[1:2]),labels=c("Marginal effect of carbon tax cost, off-peak hours","Marginal effect of OBA value, off-peak hours",
+#                                                                                                  "Marginal effect of carbon tax cost, peak hours","Marginal effect of OBA value, peak hours"))+
+#   guides(color= guide_legend(nrow = 2,byrow = F))+
+#   NULL
+# ggsave(filename = "images/all_plants.png",dpi=150,width = 14, height=8)  
 
 #no peaks
 
@@ -182,23 +187,22 @@ ctax_all_no_peaks%>% #filter(percentile<=90 & percentile>=40)%>%
   #geom_line(size=1.25)+
   geom_point()+
   #geom_errorbar(width=2.85)+
-  geom_errorbar(width=rel(.5))+
+  geom_errorbar(width=rel(.75),size=.85)+
   scale_x_continuous(expand=c(0,0),breaks=pretty_breaks())+
   #expand_limits(x=0)+
   expand_limits(y=c(-.55,.55))+
   scale_y_continuous(expand=c(0,0),breaks=pretty_breaks())+
-  facet_grid(cols=vars(Plant_Type),rows = vars(peak))+
-  geom_hline(yintercept = 0, col = "orange") +
+  #facet_grid(cols=vars(Plant_Type),rows = vars(peak))+
+  geom_hline(yintercept = 0, col = "black") +
   labs(
     x = "Percentile of total offered power (%)", y = "Marginal effect (Δ in offer : Δ in $/MWh in cost or value)",
-    title = "Marginal effect of carbon tax cost and output-based allocation values on power offers by plant type" 
+    #title = "Marginal effect of carbon tax cost and output-based allocation values on power offers by plant type" 
     #subtitle = "Conditional on plant type"
   ) +
   paper_theme()+
   #theme_ipsum() + theme(legend.position = "bottom")+
-  scale_color_manual("",values=c(colors_tableau10_light()[1:2],colors_tableau10()[1:2]),labels=c("Marginal effect of carbon tax cost, off-peak hours","Marginal effect of OBA value, off-peak hours",
-                                                                                                 "Marginal effect of carbon tax cost, peak hours","Marginal effect of OBA value, peak hours"))+
-  guides(color= guide_legend(nrow = 2,byrow = F))+
+  scale_color_manual("",values=c("black","grey50"),labels=c("Marginal effect of carbon tax cost","Marginal effect of OBA value"))+
+  guides(color= guide_legend(nrow = 1,byrow = F))+
   NULL
 ggsave(filename = "images/all_plants_no_peaks.png",dpi=150,width = 14, height=8)  
 
@@ -208,7 +212,7 @@ ctax_all%>% #filter(percentile<=90 & percentile>=40)%>%
   #geom_line(size=1.25)+
   geom_point()+
   #geom_errorbar(width=2.85)+
-  geom_errorbar(width=rel(.5))+
+  geom_errorbar(width=rel(.75),size=.85)+
   scale_x_continuous(expand=c(0,0),breaks=pretty_breaks())+
   #expand_limits(x=0)+
   expand_limits(y=c(-.55,.55))+
@@ -267,27 +271,30 @@ net_all<-all_plants_net %>%
 #library(hrbrthemes)
 #hrbrthemes::import_roboto_condensed()
 net_all%>% #filter(percentile<=95 & percentile>=40)%>%
+  mutate(term=gsub("peak_facFALSE:","",term))%>%
+  mutate(term=gsub("peak_facTRUE:","",term))%>%
   filter(grepl("net",term))%>%ggplot(aes(x=percentile, y=estimate, ymin=conf.low, ymax=conf.high,group=term,color=term)) +
   #geom_pointrange() +
   #geom_line(size=1.25)+
   geom_point()+
   #geom_errorbar(width=2.85)+
-  geom_errorbar(width=rel(.5))+
+  geom_errorbar(width=rel(.75),size=.85)+
   scale_x_continuous(expand=c(0,0),breaks=pretty_breaks())+
   #expand_limits(x=0)+
   expand_limits(y=c(-.55,.55))+
   scale_y_continuous(expand=c(0,0),breaks=pretty_breaks())+
-  facet_grid(cols=vars(Plant_Type),rows = vars(peak))+
-  geom_hline(yintercept = 0, col = "orange") +
+  facet_grid(rows = vars(peak))+
+  geom_hline(yintercept = 0, col = "black") +
   labs(
     x = "Percentile of total offered power (%)", y = "Marginal effect (Δ in offer : Δ in $/MWh in cost or value)",
-    title = "Marginal effect of carbon tax cost and output-based allocation values on power offers by plant type" 
+    #title = "Marginal effect of carbon tax cost and output-based allocation values on power offers by plant type" 
     #subtitle = "Conditional on plant type"
   ) +
   paper_theme()+
   #theme_ipsum() + theme(legend.position = "bottom")+
-  scale_color_manual("",values=c(colors_tableau10_light()[2],colors_tableau10()[2]),labels=c("Marginal effect of net carbon pricing cost, off-peak hours","Marginal effect of net carbon pricing cost, peak hours"))+
-  guides(color= guide_legend(nrow = 2,byrow = F))+
+  scale_color_manual("",values=c("black"),labels=c("Marginal effect of net carbon pricing cost, off-peak hours","Marginal effect of net carbon pricing cost, peak hours"))+
+  #guides(color= guide_legend(nrow = 2,byrow = F))+
+  guides(color= "none")+
   NULL
 ggsave(filename = "images/all_plants_net_peak.png",dpi=150,width = 14, height=8)  
 
@@ -335,13 +342,13 @@ net_base%>% #filter(percentile<=95 & percentile>=0)%>%
   #geom_line(size=1.25)+
   geom_point()+
   #geom_errorbar(width=2.85)+
-  geom_errorbar(width=rel(.5))+
+  geom_errorbar(width=rel(.75),size=.85)+
   scale_x_continuous(expand=c(0,0),breaks=pretty_breaks())+
   #expand_limits(x=0)+
   expand_limits(y=c(-.55,.55))+
   scale_y_continuous(expand=c(0,0),breaks=pretty_breaks())+
   #facet_grid(cols=vars(Plant_Type),rows = vars(peak))+
-  geom_hline(yintercept = 0, col = "orange") +
+  geom_hline(yintercept = 0, col = "black") +
   labs(
     x = "Percentile of total offered power (%)", y = "Marginal effect (Δ in offer : Δ in $/MWh in net carbon carbon pricing cost)",
     #title = "Marginal effect of net carbon pricing costs, all hours and plant types", 
@@ -350,7 +357,7 @@ net_base%>% #filter(percentile<=95 & percentile>=0)%>%
   ) +
   paper_theme()+
   #theme_ipsum() + theme(legend.position = "bottom")+
-  scale_color_manual("",values=c(colors_tableau10_light()[2],colors_tableau10()[2]),labels=c("Marginal effect of net carbon pricing cost, off-peak hours","Marginal effect of net carbon pricing cost, peak hours"))+
+  scale_color_manual("",values=c("black"),labels=c("Marginal effect of net carbon pricing cost, off-peak hours","Marginal effect of net carbon pricing cost, peak hours"))+
   #guides(color= guide_legend(nrow = 2,byrow = F))+
   guides(color= "none")+
   NULL
@@ -432,24 +439,25 @@ ctax_type%>% filter(percentile<=95) %>% mutate(Plant_Type=case_when(
   #geom_pointrange() +
   #geom_line(size=1.25)+
   geom_point()+
-  geom_errorbar(width=2.85)+
+  geom_errorbar(width=rel(.75),size=.85)+
   scale_x_continuous(expand=c(0,0),breaks=pretty_breaks())+
   expand_limits(x=c(0,100))+
-  #expand_limits(y=c(-100,100))+
   scale_y_continuous(expand=c(0,0),breaks=pretty_breaks())+
-  facet_wrap(~Plant_Type,scales = "free_y",nrow = 3)+
-  geom_hline(yintercept = 0, col = "orange") +
+  expand_limits(y=c(-6,6))+
+  facet_grid(rows=vars(Plant_Type))+
+  geom_hline(yintercept = 0, col = "black") +
   labs(
     x = "Percentile of total offered power (%)", y = "Marginal effect (Δ in offer : Δ in $/MWh of carbon policy cost)",
-    title = "Marginal effect of carbon tax cost and output-based allocation values on power offers by plant type" 
+    #title = "Marginal effect of carbon tax cost and output-based allocation values on power offers by plant type" 
     #subtitle = "Conditional on plant type"
   ) +
   paper_theme()+
+  theme(panel.spacing = unit(3, "lines"))+
   #theme_ipsum() + theme(legend.position = "bottom")+
-  scale_color_manual("",values=c(colors_tableau10()[1]),labels=c("Marginal effect of net carbon policy cost"))+
+  scale_color_manual("",values=c("black"),labels=c("Marginal effect of net carbon policy cost"))+
   guides(color= "none")+
   NULL
-ggsave(filename = "images/by_type_net.png",dpi=150,width = 14, height=8)  
+ggsave(filename = "images/by_type_net.png",dpi=120,width = 14, height=14)  
 
 
 
@@ -573,7 +581,7 @@ merit_bids_unit<-merit_aug
 #merit_bids_unit<-merit_bids_unit%>% sample_n(nrow(.)*sample_share, replace = F) #no replacement - don't duplicate
 
 # regression on all the plants
-by_unit <- merit_bids_unit %>%  filter(offer_gen %in% c("ENC2","ENC3"))%>%
+by_unit <- merit_bids_unit %>%  filter(offer_gen %in% c("GN3"))%>%
   select(bid,percentile,offer_gen,ctax,oba,supply_cushion,hourly_renewables,hour,on_peak,supply_cushion,day_ahead_forecasted_ail,forecast_pool_price,
          day_ahead_forecasted_ail,total_export_capability,total_import_capability,nit_settle_cad_gj,hdd_YEG,hdd_YMM,hdd_YYC,
          cdd_YEG,cdd_YMM,cdd_YYC,year,month_fac,he)%>%
@@ -586,9 +594,8 @@ by_unit <- merit_bids_unit %>%  filter(offer_gen %in% c("ENC2","ENC3"))%>%
 
 
 unit_reg<-by_unit %>% #filter(Plant_Type %in%fossils) %>%
-  #filter(percentile<=95)%>%
-  nest(data = -c(percentile,offer_gen)) %>% 
-  mutate(fit = map(data, ~ lm(bid ~ #pctl_fac+
+  nest(data = -c(percentile)) %>% 
+  mutate(fit = map(data, ~ lm(bid ~ 
                                 poly(hourly_renewables,3,raw=TRUE)+
                                 #peak_fac/ctax+
                                 #peak_fac/oba+
@@ -610,6 +617,40 @@ unit_reg<-by_unit %>% #filter(Plant_Type %in%fossils) %>%
          glanced = map(fit, glance),
          #augmented = map(fit, augment)
   )
+
+unit_reg_data<-unit_reg %>% unnest(tidied)%>%
+  select(-data,-fit)%>%
+  filter(grepl("net",term)) %>%
+  mutate(peak="All Hours")
+
+
+
+  unit_reg_data%>% filter(percentile<=95)%>%
+    ggplot(aes(x=percentile, y=estimate, ymin=conf.low, ymax=conf.high,group=term,color=term)) +
+    #geom_pointrange() +
+    #geom_line(size=1.25)+
+    geom_point()+
+    geom_errorbar(width=rel(.75),size=.85)+
+    scale_x_continuous(expand=c(0,0),breaks=pretty_breaks())+
+    expand_limits(x=c(0,100))+
+    scale_y_continuous(expand=c(0,0),breaks=pretty_breaks())+
+    #expand_limits(y=c(-6,6))+
+    #facet_grid(rows=vars(offer_gen))+
+    geom_hline(yintercept = 0, col = "black") +
+    labs(
+      x = "Percentile of total offered power (%)", y = "Marginal effect (Δ in offer : Δ in $/MWh of carbon policy cost)",
+      #title = "Marginal effect of carbon tax cost and output-based allocation values on power offers by plant type" 
+      #subtitle = "Conditional on plant type"
+    ) +
+    paper_theme()+
+    theme(panel.spacing = unit(3, "lines"))+
+    #theme_ipsum() + theme(legend.position = "bottom")+
+    scale_color_manual("",values=c("black"),labels=c("Marginal effect of net carbon policy cost"))+
+    guides(color= "none")+
+    NULL
+  ggsave(filename = "images/by_unit.png",dpi=120,width = 14, height=14)  
+
+
 
 
 unit_co_gas<-unit_reg %>% 
@@ -1447,75 +1488,6 @@ ggplot(data=supply_cushion) +
        title="Monthly Incidents of Tight Supply Cushions, 2012-2019)",
        caption="Source: AESO Data, Graph by Andrew Leach")
 
-
-#geom_col(aes(date,n_250,linetype="Supply Cushion < 250 MW"),size=1.5,colour="grey50") +
-#  geom_col(aes(date,n_500,linetype="Supply Cushion < 500 MW"),size=1.5,colour="black") +
-  
-
-# Histogram of Exports
-set_png(file="exports_cdf.png")
-ggplot(filter(hourly_summary,Year<2019),aes(hourly_exports))+
-  #geom_density(aes(fill="Wind Power Generation",colour=year(Time)),alpha=0.5)+
-  #stat_density(geom="line",position="identity",aes(group=Year_ID,colour=Year_ID),size=1.5)+
-  stat_ecdf(geom = "step",aes(group=as.factor(Year),colour=as.factor(Year)),size=1.5)+
-  scale_x_continuous(limits=range(renew_vols$renew_gen),expand=c(0,0))+
-  scale_y_continuous()+
-  scale_color_viridis("",discrete=TRUE)+
-  ajl_line()+
-  labs(x="Exports (MW)",y="Share of time exports less than X MW",
-       title="Cumulative Density Function, Hourly Exports (2010-2018 Avg)",
-       caption="Source: AESO Data, Graph by Andrew Leach")
-dev.off()
-
-
-
-# Histogram of Net Imports
-set_png(file="net_imports_cdf.png")
-ggplot(filter(hourly_summary,Year<2019),aes(hourly_imports))+
-  #geom_density(aes(fill="Wind Power Generation",colour=year(Time)),alpha=0.5)+
-  #stat_density(geom="line",position="identity",aes(group=Year_ID,colour=Year_ID),size=1.5)+
-  stat_ecdf(geom = "step",aes(group=as.factor(Year),colour=as.factor(Year)),size=1.5)+
-  scale_x_continuous(limits=range(renew_vols$renew_gen),expand=c(0,0))+
-  scale_y_continuous()+
-  scale_color_viridis("",discrete=TRUE)+
-  ajl_line()+
-  labs(x="Imports (MW)",y="Share of time exports less than X MW",
-       title="Cumulative Density Function, Hourly Imports (2010-2018 Avg)",
-       caption="Source: AESO Data, Graph by Andrew Leach")
-dev.off()
-
-
-# Histogram of Generation Densities
-set_png(file="net_imports_cdf.png")
-ggplot(filter(hourly_summary,Year<2019),aes(net_imports))+
-  #geom_density(aes(fill="Wind Power Generation",colour=year(Time)),alpha=0.5)+
-  #stat_density(geom="line",position="identity",aes(group=Year_ID,colour=Year_ID),size=1.5)+
-  stat_ecdf(geom = "step",aes(group=as.factor(Year),colour=as.factor(Year)),size=1.5)+
-  scale_x_continuous(limits=range(renew_vols$renew_gen),expand=c(0,0))+
-  scale_y_continuous()+
-  scale_color_viridis("",discrete=TRUE)+
-  ajl_line()+
-  labs(x="Net Imports (MW)",y="Share of time net imports less than X MW",
-       title="Cumulative Density Function, Hourly Net Imports (2010-2018 Avg)",
-       caption="Source: AESO Data, Graph by Andrew Leach")
-dev.off()
-
-
-
-# Histogram of Generation Densities
-set_png(file="suuply_cushion_cdf.png")
-ggplot(filter(hourly_summary,Year<2019),aes(supply_cushion))+
-  #geom_density(aes(fill="Wind Power Generation",colour=year(Time)),alpha=0.5)+
-  #stat_density(geom="line",position="identity",aes(group=Year_ID,colour=Year_ID),size=1.5)+
-  stat_ecdf(geom = "step",aes(group=as.factor(Year),colour=as.factor(Year)),size=1.5)+
-  scale_x_continuous(expand=c(0,0))+
-  scale_y_continuous()+
-  scale_color_viridis("",discrete=TRUE)+
-  ajl_line()+
-  labs(x="Imports (MW)",y="Share of time imports less than X MW",
-       title="Cumulative Density Function, Hourly Imports (2010-2018 Avg)",
-       caption="Source: AESO Data, Graph by Andrew Leach")
-dev.off()
 
 
 
