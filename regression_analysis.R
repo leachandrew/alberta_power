@@ -40,7 +40,7 @@ all_plants <- merit_bids_all %>%
                                   year(date)==2019 ~ "CCIR_30",
                                   year(date)==2020 ~ "TIER_30",
                                   year(date)==2021 ~ "TIER_40",
-                                  TRUE ~ "TIER_40")
+                                  TRUE ~ "TIER_50")
     )
   
 
@@ -59,7 +59,6 @@ all_plants_reg<-all_plants %>% filter(percentile<=95)%>%
                            poly(hourly_renewables,3,raw=TRUE)+
                            peak_fac/ctax+
                            peak_fac/oba+
-                           
                            poly(out_mkt,3,raw=TRUE)+
                            peak_fac/as.factor(yearmonth)+
                            peak_fac/poly(supply_cushion,3,raw=TRUE)+
@@ -78,7 +77,231 @@ all_plants_reg<-all_plants %>% filter(percentile<=95)%>%
     )
 
 
-ctax_all<-all_plants_reg %>% 
+
+test<-all_plants %>% group_by(percentile)%>% summarize(min=min(bid),max=max(bid))
+
+
+library(AER)
+#tobit test
+all_plants_reg<-all_plants %>% 
+  filter(percentile %in% c(50,55,60,65,70,75,80))%>%
+  #filter(percentile %in% c(50))%>%
+  #group_by(percentile)%>% sample_n(n()/10)%>% #20% subsample
+  nest(data = -c(percentile)) %>% 
+  mutate(fit = map(data, ~ tobit(bid ~
+  #mutate(fit = map(data, ~ lm(bid ~ 
+                                #policy+
+                                #hourly_renewables+
+                                
+                                peak_fac/ctax+
+                                peak_fac/oba+
+                                #as.factor(he)+
+                                peak_fac/as.factor(yearmonth)+
+                                #poly(hourly_renewables,2)+                            
+                                #poly(supply_cushion,3,raw=TRUE)+
+                                #forecast_pool_price+
+                                #day_ahead_forecasted_ail+
+                                #total_import_capability+
+                                #total_export_capability+
+                                #peak_fac/nit_settle_cad_gj+
+                                #hdd_YEG+hdd_YYC+hdd_YMM+cdd_YEG+cdd_YMM+cdd_YYC+ 
+                                NULL,
+                                #right = 999,
+                                left = 0,
+                                iter.max=100,
+                                data = .x)),
+         #key_marginals = map2(fit, data, ~margins_summary(.x, data = .y,variables=c("ctax","oba"))),
+         #tidied = map(fit, tidy,conf.int = T),
+         #tidied = map(fit, tidy,conf.int = T),
+         #glanced = map(fit, glance),
+         #augmented = map(fit, augment)
+  )
+
+
+#library(hrbrthemes)
+#hrbrthemes::import_roboto_condensed()
+ctax_all_no_peaks%>% #filter(percentile<=90 & percentile>=40)%>%
+  filter(grepl("ctax",term)|grepl("oba",term))%>%ggplot(aes(x=percentile, y=estimate, ymin=conf.low, ymax=conf.high,group=term,color=term)) +
+  #geom_pointrange() +
+  #geom_line(size=1.25)+
+  geom_point()+
+  #geom_errorbar(width=2.85)+
+  geom_errorbar(width=rel(.75),size=.85)+
+  scale_x_continuous(expand=c(0,0),breaks=pretty_breaks())+
+  #expand_limits(x=0)+
+  expand_limits(y=c(-.55,.55))+
+  scale_y_continuous(expand=c(0,0),breaks=pretty_breaks())+
+  #facet_grid(cols=vars(Plant_Type),rows = vars(peak))+
+  geom_hline(yintercept = 0, col = "black") +
+  labs(
+    x = "Percentile of total offered power (%)", y = "Marginal effect (Δ in offer : Δ in $/MWh in cost or value)",
+    #title = "Marginal effect of carbon tax cost and output-based allocation values on power offers by plant type" 
+    #subtitle = "Conditional on plant type"
+  ) +
+  paper_theme()+
+  #theme_ipsum() + theme(legend.position = "bottom")+
+  scale_color_manual("",values=c("black","grey50"),labels=c("Marginal effect of carbon tax cost","Marginal effect of OBA value"))+
+  guides(color= guide_legend(nrow = 1,byrow = F))+
+  NULL
+ggsave(filename = "images/all_plants_no_peaks.png",dpi=150,width = 14, height=8)  
+
+
+
+#testing a Tobit model w censoring adjustment
+library(AER)
+
+
+chunk<-all_plants %>% filter(percentile==95) %>% mutate(year_mon=as_factor(yearmonth))%>%
+  mutate(bid=pmin(bid,999), #fix trunc at 999 flat
+        bid_fac=as_factor(bid),
+        bid_fac=fct_other(bid_fac,keep = c("0","999")))
+
+table(chunk$bid_fac)
+
+
+#using Tobit model from https://m-clark.github.io/models-by-example/tobit.html
+
+initmod = lm(bid ~  
+               peak_fac/oba+
+               peak_fac/ctax+
+               poly(hourly_renewables,2,raw=TRUE)+
+               #poly(out_mkt,3,raw=TRUE)+
+               peak_fac/as.factor(yearmonth)+
+               #peak_fac/poly(supply_cushion,3,raw=TRUE)+
+               #forecast_pool_price+
+               #day_ahead_forecasted_ail+
+               total_import_capability+
+               total_export_capability+
+               peak_fac/nit_settle_cad_gj+
+               hdd_YEG+hdd_YYC+hdd_YMM+cdd_YEG+cdd_YMM+cdd_YYC+
+               NULL,
+             data=chunk)
+  X = model.matrix(initmod)
+  init = c(coef(initmod), log_sigma = log(summary(initmod)$sigma))
+
+  tobit_ll_mod <- function(par, X, y, ul = -Inf, ll = Inf) {
+    
+    # modified function for upper and lower limit data
+    
+    # parameters
+    sigma = exp(par[length(par)]) 
+    beta  = par[-length(par)]
+    
+    # update relevant limit and censoring indicators
+    
+    limit= ((!is.infinite(ul))&(y>ul))*ul+((!is.infinite(ll))&(y<=ll))*ll
+    
+    censored<- (!((y<ul)&(y>ll))) *1
+    h_censor<- (y>=ul)*1
+    l_censor<- (y<=ll)*1
+    
+    
+    #uncensored if:
+    #indicator<- h_indicator & l_indicator
+    
+    
+    # linear predictor
+    lp = X %*% beta
+    
+    
+    #need to transform this or else the unexplained deviations may get too big
+    
+    #y=y/10
+    #lp=lp/10
+   
+    
+    #likelihood contributions
+    lt1=(1-censored) * log((1/sigma)*dnorm((y-lp)/sigma)+.1)
+    lt2=(l_censor) * log(pnorm((lp-limit)/sigma, lower = 0)+.1)
+    lt3=(h_censor) * log(pnorm((lp-limit)/sigma, lower = 1)+.1)
+    
+    #lt1=(1-censored) * ((1/sigma)*dnorm((y-lp)/sigma))
+    #lt2=(l_censor) * (pnorm((lp-limit)/sigma, lower = 0))
+    #lt3=(h_censor) * (pnorm((lp-limit)/sigma, lower = 1))
+    
+    
+    #indicator_tbl<<-as_tibble(y)%>%cbind(lp,ul,ll,censored,h_censor,l_censor,limit,lt1,lt2,lt3)
+    
+    ll=sum(lt1)+sum(lt2)+sum(lt3)
+    
+    #print(paste("log likelihood ",ll))
+    
+    # return negative log likelihood
+    
+    -ll
+  }
+      
+
+  sv<-tobit_ll_mod(init,X=X,y=chunk$bid,ul=999,ll=0)
+  
+  
+  
+  
+  fit_tobit = optim(
+    par = init,
+    tobit_ll_mod,
+    y  = chunk$bid,
+    X  = X,
+    ll = 0,
+    ul = 999,
+    method  = 'BFGS',
+    control = list(maxit = 2000, reltol = 1e-15,trace=1)
+  )
+  
+  options(scipen=999)
+  
+  test<-rbind(
+    tobit = c(
+      fit_tobit$par[1:(NROW(fit_tobit$par)-1)],
+      sigma = exp(fit_tobit$par[NROW(fit_tobit$par)]),
+      logLike = -fit_tobit$value
+    ),
+    ols=c(init,sv))%>% t() %>% as_tibble(rownames = NA)%>% rownames_to_column(var="measure") %>%mutate(diff=tobit-ols)
+    
+  
+  numDeriv::hessian(tobit_ll_mod, fit_tobit$par,y=chunk$bid, method="Richardson")
+  
+  
+  
+  
+  tobit<-all_plants_reg %>%
+    #mutate(tidied = map(fit, tidy,conf.int = T))
+    select(fit)%>%
+    #unnest(coefficients)%>%
+    filter(grepl("ctax",term)|grepl("oba",term)) %>%
+    mutate(peak="All Hours",
+           Plant_Type="All Plants")
+  
+  
+
+
+
+estResult <- tobit(bid ~        hourly_renewables+
+                                #ctax+
+                                #oba+
+                                peak_fac/ctax+
+                                peak_fac/oba+
+                                poly(out_mkt,3,raw=TRUE)+
+                                peak_fac/as.factor(yearmonth)+
+                     
+                                peak_fac/poly(supply_cushion,3,raw=TRUE)+
+                                forecast_pool_price+
+                                day_ahead_forecasted_ail+
+                                total_import_capability+
+                                total_export_capability+
+                                peak_fac/nit_settle_cad_gj+
+                                hdd_YEG+hdd_YYC+hdd_YMM+
+                                cdd_YEG+cdd_YMM+cdd_YYC+
+                                NULL,
+                   right = 999,
+                   left = 0,
+                   iter.max=50,
+                     data = chunk)
+                              
+
+
+         
+         ctax_all<-all_plants_reg %>% 
   unnest(tidied)%>%
   select(-data,-fit)%>%
   filter(grepl("ctax",term)|grepl("oba",term)) %>%
