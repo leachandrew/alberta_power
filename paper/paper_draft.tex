@@ -178,6 +178,58 @@ Alberta's wholesale market is such that different generators will derive differe
 \label{fig:capture_prices}
 \end{figure}
 
+Finally, Alberta's market is highly concentrated, with a market structure that has evolved in ways relevant to our analysis during the relevant time period. When the market was restructured in 2000, a system of power purchase arrangements (PPAs) were used as an alternative to divestment. Large coal-fired plants owned by legacy generators were covered by these PPAs which approximated the conditions for plant owners which had been present under regulation, while auctioning off the rights to offer control over these facilities to other entities. PPAs not sold in the auction were held by an entity known as the Balancing Pool. The PPAs included a cumbersomely-worded change-of-law clause which was interpreted to imply a option for PPA owners to exit these arrangements should they become unprofitable or ``more unprofitable" due to a change in law, and several PPA owners exercised this right during our period of study, specifically in response to the changes in carbon pricing policy announced in June of 2015. As detailed in Leach and Tombe (2016)
+
+As shown in Table \ref{tab:PPA}, a substantial amount of Alberta's generating capacity (5066 MW) was offered into the market under these PPAs during our study period, and the majority (3866 MW) of that was transferred back to the Balancing Pool in early 2016. The reason for this change was the erosion in the profitability of the PPAs contributed to by changes in carbon pricing. But, the coincidence of changes in offer control with changes in carbon pricing in early 2016 have the potential to confound our inference.
+
+\begin{table}
+\begin{tabular}{lccccc}
+  \hline\\[-1.75ex]
+Facility&Plant&Unit& Capacity& End of& Returned to\\
+&Owner&         ID   &  (MW) &  PPA Term &Balancing\\
+&&                 &    &      & Pool\\[+0.5ex]
+\hline \\[-1.5ex]
+Battle River& ATCO& BR3 &147& Dec-31-2013&NA\\
+&&BR4 &147& Dec-31-2013&NA\\
+&&BR5 &368& Dec-31-2020&Jan-1-2016\\[+0.75ex]
+Genesee &Capital Power &GN1 &381 &Dec-31-2020&NA\\
+&&GN2 &381 &Dec-31-2020&NA\\[+0.75ex]
+HR Milner &ATCO& HRM& 144& Jan-01-2013&NA\\[+0.75ex]
+Keephills& TransAlta & KH1 &383& Dec-31-2020&May-5-2016\\
+&&KH2& 383& Dec-31-2020&May-5-2016\\[+0.75ex]
+Sheerness &ATCO (50\%) & SH1& 378& Dec-31-2020&Mar-7-2016\\
+&TransAlta (50\%)&SH2& 378& Dec-31-20200&Mar-7-2016\\[+0.75ex]
+Sundance A &TransAlta&  SD1 &280& Dec-31-2020&Mar-7-2016\\
+&&SD2 &280& Dec-31-20200&Mar-7-2016\\[+0.75ex]
+Sundance B &TransAlta & SD3& 353& Dec-31-2020&Mar-7-2016\\
+&&SD4 &353 &Dec-31-20200&Mar-7-2016\\[+0.75ex]
+Sundance C &TransAlta& SD5& 353& Dec-31-2020&Mar-24-2016\\
+&&SD6& 357& Dec-31-20200&Mar-7-2016\\[+0.75ex]
+  \hline
+\end{tabular}
+\caption{Alberta coal-fired plant Power Purchase Arrangement (PPA) expiry dates and dates of return to the Balancing Pool}\label{tab:PPA}
+\end{table}
+
+
+
+
+
+\begin{figure}[t]
+    \centering
+    \begin{minipage}{\textwidth}
+        \centering
+        \includegraphics[width=.9\textwidth]{../images/mkt_power.png}
+        \caption{Share of offer control and share of non-zero offers from key firms including and not including the Balancing Pool government-owned corporation. Key firms include TransAlta, Capital Power, ENMAX, ATCO, Heartland Generation, and TransCanada, with the addition of the Balancing Pool in the left-hand panel.}
+    \label{fig:synth_illust}
+        %\caption{$dt=0.1$}
+        %\label{fig:prob1_6_2}
+    \end{minipage}%
+\end{figure}
+
+
+
+
+
 
 \section{The Impact of Carbon Pricing Policy Changes}
 
@@ -192,11 +244,29 @@ Alberta's three carbon pricing regimes each affected generating facilities in tw
 As Figure \ref{fig:sector_compliance_cost} shows, changes in facility compliance costs were not all coincident with increased marginal carbon prices. In fact, the compliance cost changes are mostly determined  by the changes in output-based allocations which occurred subsequent to the adoption of the \emph{CCIR} in 2018 rather than the initial increase carbon prices from \$15 to \$30 per tonne \coe in 2016 and 2017. The largest cost increases were experienced by coal-fired power plants and some simple-cycle generators, while limited effects were felt by combined heat and power plants (not shown). Compliance costs for natural gas combined-cycle plants dropped between 2017 and 2019 as a result of a change in the formula by which output-based allocations were calculated. These changes in compliance costs, across and within generators, provide the variation through which we identify pass-through to power offers.
 
 \section{Estimation Strategy}
-There are two factors which confound our ability to draw inference from the merit order data. The first is that plants of the same type (e.g. coal or combined-cycle natural gas plants) may be of different sizes (e.g. a 350MW plant vs a 200MW plant) while facing similar optimization constraints, and they may be jointly dispatched by the same operator. In particular for coal plants, plant-level minimum-must-run constraints imply that facilities will always offer some portion of their generation into the market at a \$0/MWh price, effectively acting as price takers for an endogenously-determined share of their generation. They may offer marginal blocks of power, for capacity above their minimum-must-run level, at higher prices. However, given that plants are of different sizes, and blocks are endogenously determined, it's challenging to identify a change in offers looking only at block offers. The second issue is that the strategy space for each facility is very large, given that they may decide both on the break-points for each of up to 7 blocks of power, and then decide on a price for the first block and an adder for each subsequent block offered into the market. For each hour, then, the optimization problem consists of 12 choice variables and we have data on these choices for almost 20 million facility-hour-block pairs. Finally, since multiple plants may be controlled by a single entity, the observed data are the product of a complex portfolio optimization problem and the offers of any individual plant may not reveal an overall portfolio-level attempt to pass through the costs of carbon prices to wholesale prices. We avoid these problems by constructing synthetic offer curves either by plant-type and by controlling entity, thus estimating the impact of policy changes on the supply behaviour of the aggregate fleet rather than on any individual plant. We then use the synthetic merit order data we construct to examine how power has been offered into the system over time as climate policies have varied.
+The focus of our estimation strategy is to identify the magnitude of the vertical shift in the electricity supply curves for the market as a whole or aggregated by generator fuel or controlling entity in response to changes in carbon pricing policies.
 
-Our empirical strategy is best understood visually through a series of figures. Consider Figure \ref{fig:synth_merit}. In the left-hand panel, we show the merit order for a particular hour for all of the coal facilities in the province, with offers from multi-unit facilities combined for ease of visualization. We see facilities bidding some of their power at \$0, ensuring they are in the market, with marginal generation blocks offered at increasing marginal prices. In this particular hour, the price was such that most of the offered coal generation was dispatched, with only blocks offered above the \$802/MWh market clearing price not being dispatched. In the right hand panel, we show our synthetic merit order which summarizes all of the coal power offered into the market in a given hour using the 15 points shown in the Figure, which correspond to the value of the merit order at prescribed percentiles of the total offered power in that hour.\footnote{We store the 10th through 40th percentiles in 10\% intervals and the 50th percentile and above in 5\% intervals to better capture the curvature of the merit order.} Summarizing the data this way reduces our stored information by a factor of three, but more importantly it allows us to answer the relevant question in our study - by how much did the supply curve shift in response to changes in the value of carbon pricing costs and output-based allocation revenue - by looking at changes in the value of our sampling points across the portfolio of offered power. Or, visually, we want to ask how, on average, each of the points in the right-hand panel of Figure \ref{fig:synth_merit} change when carbon prices are increased or when output-based allocations of emissions credits change.
+There are multiple factors which confound our ability to draw inference from the merit order data. The first is that plants of the same type (e.g. coal or combined-cycle natural gas plants) may be of different sizes (e.g. a 350MW plant vs a 200MW plant) while facing similar optimization constraints, and they may be jointly dispatched by the same operator. In particular for coal plants, plant-level minimum-must-run constraints imply that facilities will always offer some portion of their generation into the market at a \$0/MWh price, effectively acting as price takers for an endogenously-determined share of their generation. Given that shutting down in any given hour would imply multiple hours out of the market, the true marginal opportunity cost of this power is negative. They may offer marginal blocks of power, for capacity above their minimum-must-run level, at higher prices. However, given that plants are of different sizes, and blocks are endogenously determined, it's challenging to identify a change in offers looking only at block offers. The second issue is that the strategy space for each facility is very large, given that they may decide both on the break-points for each of up to 7 blocks of power, and then decide on a price for the first block and an adder for each subsequent block offered into the market. For each hour, then, the optimization problem consists of 12 choice variables and we have data on these choices for almost 20 million facility-hour-block pairs. Finally, since multiple plants may be controlled by a single entity, the observed data are the product of a complex portfolio optimization problem and the offers of any individual plant may not reveal an overall portfolio-level attempt to pass through the costs of carbon prices to wholesale prices. We avoid these problems by constructing synthetic offer curves either by plant-type and by controlling entity, or for the market as a whole, thus estimating the impact of policy changes on the supply behaviour of the aggregate fleet rather than on any individual plant. We then use the synthetic merit order data we construct to examine how power has been offered into the system over time as climate policies have varied.
+
+To understand our approach, consider the traditional textbook treatment of carbon pricing or output-based allocations, which would imply a vertical shift in the supply curve corresponding to the increased marginal cost or the carbon tax, with a negative shift in the case of output-based allocations which reduce net costs of generation. The horizontal summation of all of the individual firm supply curves should imply that, all else equal, the vertical shift in the market supply curve at any point is equal to the marginal cost impact of the carbon policy on the firm which would supply that particular marginal unit of power. We have data on these horizontally-summed supply curves and, by sampling specific points on the supply curve over time, we identify the magnitude of pass-through.
 
 \begin{figure}[t]
+    \centering
+    \begin{minipage}{\textwidth}
+        \centering
+        \includegraphics[width=.9\textwidth]{../images/sampling.png}
+        \caption{Illustration of two firms' (thicker and thinner lines) offers of power in no-, high-, and low-carbon-tax scenarios, with lighter grey lines indicating a higher carbon price.}
+    \label{fig:synth_illust}
+        %\caption{$dt=0.1$}
+        %\label{fig:prob1_6_2}
+    \end{minipage}%
+\end{figure}
+
+To measure this effect, we look at hourly merit orders and sample at multiple percentile points, using more sampling points at the upper end of the merit order. The variation in carbon pricing over time, as well as variation in which firms are participating in the market at different times allows us to develop a sample of offer values at each of our chosen percentile nodes over our entire sample. For each sampled point, we identify facility and market conditions, as well as carbon policy compliance costs, which we use to explain changes in the level offer levels over time. Consider the illustrative example in Figure \ref{fig:synth_illust} which shows shifts in a hypothetical two-firm supply curve in response to increasing carbon prices. At the 55th percentile, the first sampling point shown, the vertical shift is driven entirely by pass-through from Firm 2 of their marginal carbon costs over-and-above the base case. At the 80th percentile, the second sampling point shown, the increase under the low-tax scenario is caused by the pass-through from Firm 2, but in the higher carbon tax scenario, the vertical shift is a smaller than would be the case for a pure pass-through by Firm 2 since there is also a shift in the ordering of offered blocks such that a different firm is providing the 80th percentile supply into the market with the high carbon tax.
+
+To show what this implies for actual data, consider Figure \ref{fig:synth_merit}. In the left-hand panel, we show the merit order for one hour for all of the coal-powered facilities in the province, with offers from multi-unit facilities combined for ease of visualization. We see facilities bidding some of their power at \$0, ensuring they are in the market, with marginal generation blocks offered at increasing marginal prices. In this particular hour, the price was such that most of the offered coal generation was dispatched, with only blocks offered above the \$802/MWh market clearing price not being dispatched. In the right hand panel, we show our sampling of the merit order which summarizes all of the coal power offered into the market in a given hour using the 15 points shown in the Figure, which correspond to the value of the merit order at prescribed percentiles of the total offered power in that hour.\footnote{We store the 10th through 40th percentiles in 10\% intervals and the 50th percentile and above in 5\% intervals to better capture the curvature of the merit order.} Summarizing the data this way reduces our stored information by a factor of three, but more importantly it allows us to answer the relevant question in our study - by how much did the supply curve shift in response to changes in the value of carbon pricing costs and output-based allocation revenue - by looking at changes in the value of our sampling points across the portfolio of offered power. Or, visually, we want to ask how, on average, each of the points in the right-hand panel of Figure \ref{fig:synth_merit} change when carbon prices are increased or when output-based allocations of emissions credits change. For each of these sampled points, we include relevant facility- and market-level data as well as carbon tax compliance costs for that facility on that date.
+
+\begin{figure}[tb]
     \centering
     \begin{minipage}{.5\textwidth}
         \centering
@@ -214,7 +284,7 @@ Our empirical strategy is best understood visually through a series of figures. 
     \label{fig:synth_merit}
 \end{figure}
 
-There is a lot of day-to-day and hour-to-hour variability in how coal units are offered into the market. Figure \ref{fig:synth_coal_2019}, which shows all of the 7pm merit orders (left panel) and their synthetic equivalents, along with the average synthetic merit order for the last year of our sample (right panel), provides a sense of the variability in our sample. Similar variability exists in the offers of generation from other dispatchable sources.\footnote{See online graphical appendix, Figure A1, for a similar Figure for all dispatchable generating source types.} Figure \ref{fig:synth_coal_2019} shows the degree to which changes in total offered capacity would skew our results if we attempted to base our analysis on offered megawatts. Instead, by using percentiles of offered capacity as our units of measure, we can more cleanly ask how different segments of the supply curve shift vertically in response to different events, while implicitly assuming that the total offered power available in the market in a given hour is independent of the carbon pricing policy on offer at the time.
+There is a lot of day-to-day and hour-to-hour variability in how coal units are offered into the market. Figure \ref{fig:synth_coal_2019}, which shows all of the 7pm merit orders (left panel) and their synthetic equivalents based only on the sample points, along with the average synthetic merit order for the last year of our sample (right panel), provides a sense of the variability in our sample. Similar variability exists in the offers of generation from other dispatchable sources.\footnote{See online graphical appendix, Figure A1, for a similar Figure for all dispatchable generating source types.} Figure \ref{fig:synth_coal_2019} shows the degree to which changes in total offered capacity would skew our results if we attempted to base our analysis on offered megawatts. Instead, by using percentiles of offered capacity as our units of measure, we can more cleanly ask how different segments of the supply curve shift vertically in response to different events, while implicitly assuming that the total offered power available in the market in a given hour is independent of the carbon pricing policy on offer at the time.
 
 \begin{figure}[!htb]
     \centering
@@ -234,15 +304,12 @@ There is a lot of day-to-day and hour-to-hour variability in how coal units are 
     \label{fig:synth_coal_2019}
 \end{figure}
 
+For our analysis sample, we create four types of synthetic merit orders. First, for very general results, we characterize the entire merit order using the methodology outlined above. Next, we decompose the results for dispatchable generation types (coal and natural gas plants). We also use the fact that, from 2013 through 2019, the AESO provides offer control by unit as part of their merit order releases. We use this information to construct synthetic supply curves for each of the major participants in the Alberta power market. We also look at the behaviour of some of the largest facilities in the province. This means that we have facility-level, firm- or portfolio-level and market-level synthetic merit orders to analyze.
 
-The next stage in our analysis is to transfer our information on facility compliance costs to the synthetic merit orders. Recall that, for the major emitters, we have facility-year-specific information on their emissions-intensity and their output-based allocations of emissions credits which determines their net emissions pricing liabilities. Since we are interested in the separate effects of both components of emissions policies, and since both vary at the facility level through our sample, we can separately identify the impacts of each on price pass-through behaviour. As such, for each of the synthetic merit orders we create for analysis purposes, we also capture and store both the marginal emissions charge and the marginal output-based allocation at each percentile support point.
+For parts of our sample, censoring is also an issue. In the Alberta market, negative price offers are not allowed, and offers are capped at \$1000/MWh. This implies that we may under-estimate pass-through where either power offers have a less negative implied value below zero or where the carbon tax leads to a higher true costs of offer above \$1000, as we would not observe either of these effects. To correct for this, we augment our ordinary least squares estimates of pass-through with Tobit estimates with two-sided censoring, estimated via maximum likelihood. We do not find the censoring to have a marked effect on our estimates.
 
-For our analysis sample, we create three other types of synthetic merit orders. First, for very general results, we characterize the entire merit order using the methodology outlined above. We also use the fact that, from 2013 through 2019, the AESO provides offer control by unit as part of their merit order releases. We use this information to construct synthetic supply curves for each of the major participants in the Alberta power market. This means that we have facility-level, firm- or portfolio-level and market-level synthetic merit orders to analyze.
-
-To these, synthetic merit orders, we add our hourly data on market status, weather, and fuel prices specified above. This then allows us to build regression equations for each percentile support point of each synthetic merit order, asking the degree to which carbon price and output-based allocation changes impact the level of each step of the supply curves by facility, plant-type, by owner, or for the complete market.
 
 \section{Results and Discussion}
-
 
 \subsection{Market-wide impacts}
 The most general results derive from the analysis of the market as a whole. Here, we are calculating, for each hour of our sample, the supply curve of power offered into the market which we summarize using a step function with 15 points of support mapping offers at given percentiles of total power offers. At each of these points of support, we also track the marginal carbon pricing cost and marginal output-based allocation value along with other market and environmental variables. When we consider only the net marginal cost of carbon pricing (the hourly carbon charge net the hourly output-based allocation of credits), we find a pattern that will be familiar through the remainder of the results in this paper. As shown in Figure \ref{fig:net_all}, there is no impact of carbon pricing on offers at the low end of the merit, as this range is characterized by zero dollar offers in all hours of the year. The mid-merit range is where we see most of the impacts, and these are intuitive although smaller than might be expected. Our study design is such that, if the costs of carbon pricing were fully passed-through to offers, and if we measured we would expect to see an estimated coefficient exactly equal to 1 on the impact of carbon pricing. The maximum carbon price pass-through appears at the 60th through 70th percentile of offered power, with the maximum share of net carbon costs passed through to offered prices at just less than 40\%. In this formulation, there is no statistical support for the contention that carbon prices are, on average, fully passed-through at the margin in electricity markets.
@@ -293,7 +360,7 @@ We know that different generator types tend to offer their power into the market
 
 \begin{figure}[!htb]
     \centering
-     \includegraphics[width=.9\textwidth]{../images/by_type.png}
+     \includegraphics[width=.9\textwidth]{../images/by_type_net.png}
     \caption{Estimated marginal effect of net carbon charges on power offers, all plant types. Error bars denote 95\% confidence intervals}
     \label{fig:decomp_peaks}
 \end{figure}
@@ -319,7 +386,12 @@ Return of PPAs to the Balancing Pool
 Declining ability to identify TransCanada impacts because of changes in resources.
 
 
-
+\begin{figure}[!htb]
+    \centering
+     \includegraphics[width=.9\textwidth]{../images/offer.png}
+    \caption{Estimated marginal effect of net carbon charges on power offers, all plant types, by controlling entity. Error bars denote 95\% confidence intervals}
+    \label{fig:offer}
+\end{figure}
 
 
 \section{Conclusion}

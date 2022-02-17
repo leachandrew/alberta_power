@@ -326,8 +326,8 @@ get_forecast_report <- function(start_date,end_date) {
 
 
 #sample code to use this scraper
-day<-as.Date(Sys.Date()-years(1))
-xdf<-get_forecast_report(as.Date(day), as.Date(day)+months(1))
+#day<-as.Date(Sys.Date()-years(1))
+#xdf<-get_forecast_report(as.Date(day), as.Date(day)+months(1))
 
 all_forecasts<-function() {
   years<-seq(2000,year(Sys.Date()))
@@ -382,12 +382,12 @@ update_forecasts<-function() {
 
 #code to use this scraper
 
-forecast_data<-forecast_data%>%rename(#forecast_ail=day_ahead_forecasted_ail,
-  forecast_ail_actual_ail_difference= forecast_actual_ail_difference)
+#forecast_data<-forecast_data%>%rename(#forecast_ail=day_ahead_forecasted_ail,
+#  forecast_ail_actual_ail_difference= forecast_actual_ail_difference)
 #filename<-paste("data/forecast_data",".RData",sep = "")
 #save(forecast_data, file= filename) 
 #update_forecasts()
-load("data/forecast_data.Rdata")
+#load("data/forecast_data.Rdata")
 
 
 
