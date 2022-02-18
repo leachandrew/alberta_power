@@ -12,7 +12,7 @@ options(scipen=999)
 update<-0 #add new data
 save<-1 #save files at the end
 synth<-1 #synthetic plants?
-  synth_type<-0  #5 is a target facility, focus_id,4 is facility,3 is offer control by type, 2 is by offer_control,1 is by plant_fuel, 0 is full merit as synthetic plant
+  synth_type<-1  #5 is a target facility, focus_id,4 is facility,3 is offer control by type, 2 is by offer_control,1 is by plant_fuel, 0 is full merit as synthetic plant
 
   if(synth_type==5)
     focus_id<-c("SH1","SH2")
@@ -118,6 +118,7 @@ load("data/forecast_data.RData")
   renew_vols<-renew_vols %>% mutate(offer_sum=case_when(
    grepl("TransAlta",offer_control)~"TransAlta",
    grepl("TransCanada",offer_control)~"TransCanada",
+   grepl("Heartland",offer_control)~"Heartland",
    grepl("ENMAX",offer_control)~"ENMAX",
    grepl("Capital Power",offer_control)~'Capital Power',
    grepl("ATCO",offer_control)~"ATCO",
@@ -354,10 +355,12 @@ merit_aug<-merit_aug %>% left_join(plant_data(),by=c("asset_id"="ID"))%>%
     
      #feb 16, 2022 - adding carry-through of plant offer control measure
       merit_aug <- merit_aug%>% 
-        mutate(offer_store=factor(offer_sum))
+        mutate(offer_store=factor(offer_sum),
+               plant_store=factor(Plant_Type))
         
       
       offer_levels<-levels(merit_aug$offer_store)
+      plant_levels<-levels(merit_aug$plant_store)
                #use offer-store as the carry-through for offer control at a given point
       if(synth_type==5){ #if we're doing a specific unit or PPA
         merit_aug <- merit_aug%>% filter(asset_id %in% focus_id)%>%
@@ -400,7 +403,7 @@ merit_aug<-merit_aug %>% left_join(plant_data(),by=c("asset_id"="ID"))%>%
                )%>%
         summarize(
           #place offer percentiles and prices in lists of vectors
-          offers=list(offer_store),
+          offers=list(offer_store),plants=list(plant_store),
           total_offers=sum(size),available_mw=sum(available_mw),dispatched_mw=sum(dispatched_mw),renew_gen=sum(renew_gen,na.rm = T),
           merit=list(merit_type*100),price=list(price),co2_est=list(merit_co2),ctax_cost=list(merit_ctax),oba_val=list(merit_oba)
         )%>%
@@ -411,6 +414,7 @@ merit_aug<-merit_aug %>% left_join(plant_data(),by=c("asset_id"="ID"))%>%
                ctax_func=list(bid_func(merit[[1]],ctax_cost[[1]])),#marginal ctax
                oba_func=list(bid_func(merit[[1]],oba_val[[1]])), #marginal oba
                offer_func=list(bid_func(merit[[1]],offers[[1]])), #marginal oba
+               plant_func=list(bid_func(merit[[1]],plants[[1]])), #marginal oba
                #net_comp_func=list(bid_func(merit[[1]],net_comp[[1]])),
                import_export=case_when(
                  Plant_Type=="IMPORT" ~ "I",
@@ -492,10 +496,25 @@ merit_aug<-merit_aug %>% left_join(plant_data(),by=c("asset_id"="ID"))%>%
                offer_90=offer_func[[1]](90),
                offer_95=offer_func[[1]](95),
                offer_100=offer_func[[1]](100)) %>%
+        mutate(plant_15=plant_func[[1]](15),
+               plant_30=plant_func[[1]](30),
+               plant_40=plant_func[[1]](40),
+               plant_50=plant_func[[1]](50),
+               plant_55=plant_func[[1]](55),
+               plant_60=plant_func[[1]](60),
+               plant_65=plant_func[[1]](65),
+               plant_70=plant_func[[1]](70),
+               plant_75=plant_func[[1]](75),
+               plant_80=plant_func[[1]](80),
+               plant_85=plant_func[[1]](85),
+               plant_90=plant_func[[1]](90),
+               plant_95=plant_func[[1]](95),
+               plant_100=plant_func[[1]](100)) %>%
         
         
         
         ungroup() %>% select(-merit,-price,-co2_est,-merit_func,-ghg_func,-ctax_func,-oba_func,-offer_func,-offers,
+                             -plant_func,-plants,
                              -oba_val,-ctax_cost)
       print(paste("Build bids, cleaned data frame, elapsed time is",time_length(interval(start_time, Sys.time()), "seconds"),"seconds"))
       
@@ -508,7 +527,8 @@ merit_aug<-merit_aug %>% left_join(plant_data(),by=c("asset_id"="ID"))%>%
         mutate(percentile=as.numeric(percentile))%>%
         #make it wider again
         pivot_wider(names_from = data_point,values_from=value)%>%
-        mutate(offer=as_factor(offer_levels[offer]))
+        mutate(offer=as_factor(offer_levels[offer]),
+               plant=as_factor(plant_levels[plant]))
         
       print(paste("Pivoted data frame, elapsed time is",time_length(interval(start_time, Sys.time()), "seconds"),"seconds"))
       
