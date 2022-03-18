@@ -314,6 +314,8 @@ get_forecast_report <- function(start_date,end_date) {
   clean_data$date<-as_date(clean_data$time)
   clean_data$forecast_ail<- gsub("\\,", "", clean_data$forecast_ail)
   clean_data$actual_ail<- gsub("\\,", "", clean_data$actual_ail)
+  clean_data <-clean_data %>% rename(day_ahead_forecasted_ail=forecast_ail)
+  clean_data <-clean_data %>% rename(forecasted_actual_ail_difference=forecast_ail_actual_ail_difference)
   #clean_data<-clean_data %>% select(-he) %>% mutate_if(is.character,as.numeric)
   #clean_data<-clean_data %>% select(-he)%>% mutate_if(is.integer,as.numeric)
   #set numeric columns to numeric
@@ -323,8 +325,8 @@ get_forecast_report <- function(start_date,end_date) {
 
 
 #sample code to use this scraper
-day<-as.Date(Sys.Date()-years(1))
-xdf<-get_forecast_report(as.Date(day), as.Date(day)+months(1))
+#day<-as.Date(Sys.Date()-years(1))
+#xdf<-get_forecast_report(as.Date(day), as.Date(day)+months(1))
 
 all_forecasts<-function() {
   years<-seq(2000,year(Sys.Date()))
@@ -349,7 +351,9 @@ all_forecasts<-function() {
 
 #all_forecasts()
 #load("forecast_data.Rdata")
-#save(forecast_data, file= filename) 
+#forecast_data <-forecast_data %>% rename(day_ahead_forecasted_ail=forecast_ail)
+#forecast_data <-forecast_data %>% rename(forecasted_actual_ail_difference=forecast_ail_actual_ail_difference)
+#save(forecast_data, file= "forecast_data.Rdata") 
 
 update_forecasts<-function() {
   #load the existing file
@@ -377,12 +381,12 @@ update_forecasts<-function() {
 
 #code to use this scraper
 
-forecast_data<-forecast_data%>%rename(#forecast_ail=day_ahead_forecasted_ail,
-  forecast_ail_actual_ail_difference= forecast_actual_ail_difference)
+#forecast_data<-forecast_data%>%rename(#forecast_ail=day_ahead_forecasted_ail,
+#  forecast_ail_actual_ail_difference= forecast_actual_ail_difference)
 #filename<-paste("data/forecast_data",".RData",sep = "")
 #save(forecast_data, file= filename) 
 #update_forecasts()
-load("data/forecast_data.Rdata")
+#load("data/forecast_data.Rdata")
 
 
 

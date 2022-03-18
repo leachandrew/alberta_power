@@ -134,34 +134,41 @@ gen_plain <- df2 %>% mutate(Plant_Type=factor(Plant_Type,levels=AB_plant_order))
   
   
   
+  AB_palette<- c("black","black","grey50","grey50")
+  
     
   gen_fuel <- df2 %>% mutate(Plant_Type=factor(Plant_Type,levels=AB_plant_order))%>%
     #filter(date<ymd("2020-09-01"))%>%
     mutate(Plant_Type=fct_collapse(Plant_Type,
-     #"OTHER"=c("WIND","OTHER","HYDRO"),
+     "RENEWABLES"=c("WIND","OTHER","HYDRO"),
      "NATURAL GAS"=c("SCGT","COGEN","NGCC"),
      "NET IMPORTS"="TRADE"
      ))%>% 
-    group_by(date,month,year,Plant_Type) %>% summarise(gen=sum(gen,na.rm = T))%>% 
+    group_by(date,month,year,Plant_Type) %>% summarise(gen=sum(gen,na.rm = T),
+                                                      )%>%
     ungroup() %>%
+    group_by(Plant_Type) %>%
+    mutate(gen12m=zoo::rollmean(gen,12,fill=NA))%>%
     #filter(date>ymd("2014-12-31"))%>%
-    ggplot(aes(date,gen, col = Plant_Type,fill = Plant_Type,shape=Plant_Type)) +
+    ggplot(aes(date,gen, col = Plant_Type,lty=Plant_Type)) +
     geom_line(size=1.25)+
-    geom_point(aes(date,gen*ifelse(month%%2==0,1,NA)),size=2.5)+
-    geom_dl(aes(label=Plant_Type),method=list("last.bumpup",dl.trans(x=x+0.3),cex = .85))+
+    #geom_line(aes(y=gen12m),size=1.25)+
+    #geom_point(aes(date,gen*ifelse(month%%2==0,1,NA)),size=2.5)+
+    #geom_dl(aes(label=Plant_Type),method=list("last.bumpup",dl.trans(x=x+0.3),cex = .85))+
     scale_color_manual("",values= AB_palette)+
-    scale_fill_manual("",values= AB_palette)+
-    
+    #scale_fill_manual("",values= AB_palette)+
+    scale_linetype_manual("",values= c("solid","1131","11","solid"))+
     #scale_color_manual("",values=grey.colors(9,start=0,end=.8))+
     #scale_fill_manual("",values=grey.colors(9,start=0,end=.8))+
-    scale_shape_manual("",values=c(15,16,17,18,0,1,2,3))+
+    #scale_shape_manual("",values=c(15,16,17,18,0,1,2,3))+
     blake_theme()+theme(plot.margin =unit(c(1,1,1,1),"cm"))+
     scale_x_date(date_labels = "%b\n%Y",date_breaks = "24 months",expand=c(0,0))+
-    expand_limits(x = as.Date(c("2004-01-01", "2023-11-30")))+
-    expand_limits(y =c(-500,7000))+
+    expand_limits(x = as.Date(c("2004-01-01", "2022-1-30")))+
+    expand_limits(y =-500)+
     scale_y_continuous(expand = c(0,0),breaks=pretty_breaks())+
     
-    theme(legend.position = "none")+
+    theme(legend.position = "bottom",
+          legend.key.width = unit(3.7,"line"))+
     labs(x="",y="Monthly Average Hourly Generation or Net Imports (MW)",
          #title="Coal and Gas Generation and Carbon Prices (MW, 2007-2015)",
          #title="Alberta Power Generation by Plant Type (MW, 2015-2020)",
@@ -178,13 +185,13 @@ gen_plain <- df2 %>% mutate(Plant_Type=factor(Plant_Type,levels=AB_plant_order))
     #annotate("text", x = covid_mid_lag, y =4500, label = "COVID\nperiod\nlast year",size=3.25,hjust=0.5,vjust=0.5)  
     NULL
   gen_fuel
-  ggsave(file="images/gen_fuel.png", width = 14,dpi = 300)
+  ggsave(file="images/gen_fuel.png", width = 14, height=8,dpi = 300)
 
   
   AB_palette<- c("black","grey50",ptol_pal()(6)[3],ptol_pal()(6)[1],ptol_pal()(6)[5],ptol_pal()(6)[6])
   gen_fuel+
     scale_color_manual("",values= AB_palette)
-  ggsave(file="images/gen_fuel_col.png", width = 14,dpi = 600)
+  ggsave(file="images/gen_fuel_col.png", width = 14,height=9,dpi = 600)
     
   
   AB_palette<- c("black","grey50",ptol_pal()(6)[3],ptol_pal()(6)[1],ptol_pal()(6)[5],ptol_pal()(6)[6])
@@ -235,7 +242,7 @@ gen_plain <- df2 %>% mutate(Plant_Type=factor(Plant_Type,levels=AB_plant_order))
   AB_palette<- c("black","grey80","grey30","grey40","grey20","grey50","grey70","grey60")
   capacity_fuel+
     scale_color_manual("",values= AB_palette)
-  ggsave(file="images/cap_fuel.png", width = 14,dpi = 600)
+  ggsave(file="images/cap_fuel.png", width = 14,height=9,dpi = 600)
   
   
   
@@ -389,7 +396,7 @@ merit_aug %>% filter(date==ymd("2019-02-04"),he=="19",Plant_Type=="COAL")%>%
   ggplot()+
   geom_rect(aes(xmin=merit-size,xmax=merit,ymin=-20,ymax=price,fill=facility),color="black")+
   geom_vline(aes(xintercept=max(dispatch_limit)))+
-  annotate("text",3950,y=815,label="All offers to the\nleft of this line\nwere dispatched",size=4,hjust=1,vjust=0)+
+  annotate("text",3950,y=815,label="All offers to the\nleft of this line\nwere dispatched",size=rel(6),hjust=1,vjust=0)+
   #geom_label_repel(aes(merit-size/2,y=price,label=facility))+
   scale_fill_grey("",end = 1,start=0)+   
   scale_x_continuous(breaks=pretty_breaks(), expand=c(0,0))+
@@ -399,15 +406,16 @@ merit_aug %>% filter(date==ymd("2019-02-04"),he=="19",Plant_Type=="COAL")%>%
   theme(
     legend.position = c(.1,.8),
     legend.margin=margin(c(0,0,0,0),unit="cm"),
-    legend.text = element_text(colour="black", size = 12),
+    legend.text = element_text(colour="black", size = 18),
     plot.caption = element_text(size = 16, face = "italic"),
     plot.title = element_text(face = "bold"),
     plot.subtitle = element_text(size = 16, face = "italic"),
     panel.grid.minor = element_blank(),
-    text = element_text(size = 16,face = "bold"),
-    axis.text.y =element_text(size = 16,face = "bold", colour="black"),
-    axis.text.x=element_text(size = 16,face = "bold", colour="black",angle=0, hjust=1),
-  )+
+    axis.title.x = element_text(size = 24,face = "bold"),
+    axis.title.y = element_text(size = 24,face = "bold"),
+    axis.text.x = element_text(size = 24,face = "bold"),
+    axis.text.y = element_text(size = 24,face = "bold"),
+    )+
   labs(x=paste("Offered Generation (MW)"),y="Price ($/MWh)",
        #title=paste("Alberta Energy Merit Order, Feb 4, 2019 at hour ending 7pm"),
        #caption="Source: AESO Data, graph by Andrew Leach."
@@ -426,11 +434,11 @@ merit_aug %>% filter(year(date)==2019,he=="19",Plant_Type=="COAL")%>%
   ggplot()+
   #geom_rect(aes(xmin=merit-size,xmax=merit,ymin=-20,ymax=price,fill=facility),color="black")+
   #geom_vline(aes(xintercept=max(dispatch_limit)))+
-  geom_line(aes(x=merit,y=price,group=date,color="2019 daily 7pm coal facility merit orders"))+
+  geom_line(aes(x=merit,y=price,group=date,color="2019 daily 7pm coal facility merit orders"),size=.5)+
   #geom_point(aes(x=merit,y=price,group=date,color="2019 daily 7pm coal facility merit orders"))+
   #annotate("text",3950,y=815,label="All offers to the\nleft of this line\nwere dispatched",size=4,hjust=1,vjust=0)+
   #geom_label_repel(aes(merit-size/2,y=price,label=facility))+
-  scale_color_grey("",end = 0.5,start=0.5)+   
+  scale_color_grey("",end = 0.7,start=0.7)+   
   #scale_fill_grey("",end = 1,start=0)+   
   scale_x_continuous(breaks=pretty_breaks(), expand=c(0,0))+
   scale_y_continuous(breaks=pretty_breaks(), expand=c(0,0))+
@@ -438,16 +446,17 @@ merit_aug %>% filter(year(date)==2019,he=="19",Plant_Type=="COAL")%>%
   #scale_colour_manual(labe ls=c("Brent","WTI"),values=c("#41ae76","#238b45","#006d2c","#00441b","Black","Black","Black","Black"))
   paper_theme()+
   theme(
-    legend.position = c(.15,.9),
+    legend.position = "bottom",
     legend.margin=margin(c(0,0,0,0),unit="cm"),
-    legend.text = element_text(colour="black", size = 12),
+    legend.text = element_text(colour="black", size = 18),
     plot.caption = element_text(size = 16, face = "italic"),
     plot.title = element_text(face = "bold"),
     plot.subtitle = element_text(size = 16, face = "italic"),
     panel.grid.minor = element_blank(),
-    text = element_text(size = 16,face = "bold"),
-    axis.text.y =element_text(size = 16,face = "bold", colour="black"),
-    axis.text.x=element_text(size = 16,face = "bold", colour="black",angle=0, hjust=1),
+    axis.title.x = element_text(size = 24,face = "bold"),
+    axis.title.y = element_text(size = 24,face = "bold"),
+    axis.text.x = element_text(size = 24,face = "bold"),
+    axis.text.y = element_text(size = 24,face = "bold"),
   )+
   labs(x=paste("Offered Generation (MW)"),y="Price ($/MWh)",
        #title=paste("Alberta Energy Merit Order, Feb 4, 2019 at hour ending 7pm"),
@@ -465,7 +474,7 @@ merit_bids %>% filter(date==ymd("2019-02-04"),he=="19",Plant_Type=="COAL")%>% re
   #mutate(merit=cumsum(size))%>%
   ggplot()+
   geom_rect(aes(xmin=merit-size,xmax=merit,ymin=-20,ymax=price,fill="Synthetic offer block"),color="black")+
-  geom_point(aes(x=merit,y=price),color="black",size=2)+
+  geom_point(aes(x=merit,y=price),color="black",size=4)+
   
   #geom_vline(aes(xintercept=max(dispatched_mw)))+
   #annotate("text",3950,y=815,label="All offers to the\nleft of this line\nwere dispatched",size=4,hjust=1,vjust=0)+
@@ -479,14 +488,15 @@ merit_bids %>% filter(date==ymd("2019-02-04"),he=="19",Plant_Type=="COAL")%>% re
   theme(
     legend.position = c(.2,.9),
     legend.margin=margin(c(0,0,0,0),unit="cm"),
-    legend.text = element_text(colour="black", size = 12),
+    legend.text = element_text(colour="black", size = 18),
     plot.caption = element_text(size = 16, face = "italic"),
     plot.title = element_text(face = "bold"),
     plot.subtitle = element_text(size = 16, face = "italic"),
     panel.grid.minor = element_blank(),
-    text = element_text(size = 16,face = "bold"),
-    axis.text.y =element_text(size = 16,face = "bold", colour="black"),
-    axis.text.x=element_text(size = 16,face = "bold", colour="black",angle=0, hjust=1),
+    axis.title.x = element_text(size = 24,face = "bold"),
+    axis.title.y = element_text(size = 24,face = "bold"),
+    axis.text.x = element_text(size = 24,face = "bold"),
+    axis.text.y = element_text(size = 24,face = "bold"),
   )+
   labs(x=paste("Offered Generation (MW)"),y="Price ($/MWh)",
        #title=paste("Alberta Energy Merit Order, Feb 4, 2019 at hour ending 7pm"),
@@ -522,29 +532,30 @@ merit_bids %>% filter(year==2019,he=="19",Plant_Type=="COAL")%>% rename(price=bi
   #mutate(merit=cumsum(size))%>%
   ggplot()+
   geom_line(aes(x=merit,y=price,color="2019 daily 7pm synthetic merit orders",group=date),size=.5)+
-  geom_point(aes(x=merit,y=price,color="2019 daily 7pm synthetic merit orders",group=date),size=.85)+
-  geom_point(data=bid_summary%>%filter(Plant_Type=="COAL"),aes(x=merit,y=price,color="2019 average 7pm synthetic merit order"),size=2)+
-  geom_line(data=bid_summary%>%filter(Plant_Type=="COAL"),aes(x=merit,y=price,color="2019 average 7pm synthetic merit order"))+
+  geom_point(aes(x=merit,y=price,color="2019 daily 7pm synthetic merit orders",group=date),size=1)+
+  geom_point(data=bid_summary%>%filter(Plant_Type=="COAL"),aes(x=merit,y=price,color="2019 average 7pm synthetic merit order"),size=5)+
+  geom_line(data=bid_summary%>%filter(Plant_Type=="COAL"),aes(x=merit,y=price,color="2019 average 7pm synthetic merit order"),size=3)+
   #geom_vline(aes(xintercept=max(dispatched_mw)))+
   #annotate("text",3950,y=815,label="All offers to the\nleft of this line\nwere dispatched",size=4,hjust=1,vjust=0)+
   #geom_label_repel(aes(merit-size/2,y=price,label=facility))+
-  scale_color_manual("",values=c("black","grey80"))+   
+  scale_color_manual("",values=c("black","grey70"))+   
   scale_x_continuous(breaks=pretty_breaks(), expand=c(0,0))+
   expand_limits(y=1000,x=5000)+
   scale_y_continuous(breaks=pretty_breaks(), expand=c(0,0))+
   #scale_colour_manual(labe ls=c("Brent","WTI"),values=c("#41ae76","#238b45","#006d2c","#00441b","Black","Black","Black","Black"))
   paper_theme()+
   theme(
-    legend.position = c(.15,.9),
+    legend.position="bottom",
     legend.margin=margin(c(0,0,0,0),unit="cm"),
-    legend.text = element_text(colour="black", size = 12),
+    legend.text = element_text(colour="black", size = 18),
     plot.caption = element_text(size = 16, face = "italic"),
     plot.title = element_text(face = "bold"),
     plot.subtitle = element_text(size = 16, face = "italic"),
     panel.grid.minor = element_blank(),
-    text = element_text(size = 16,face = "bold"),
-    axis.text.y =element_text(size = 16,face = "bold", colour="black"),
-    axis.text.x=element_text(size = 16,face = "bold", colour="black",angle=0, hjust=1),
+    axis.title.x = element_text(size = 24,face = "bold"),
+    axis.title.y = element_text(size = 24,face = "bold"),
+    axis.text.x = element_text(size = 24,face = "bold"),
+    axis.text.y = element_text(size = 24,face = "bold"),
   )+
   labs(x=paste("Offered Generation (MW)"),y="Price ($/MWh)",
        #title=paste("Alberta Energy Merit Order, Feb 4, 2019 at hour ending 7pm"),

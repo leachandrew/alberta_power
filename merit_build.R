@@ -12,10 +12,10 @@ options(scipen=999)
 update<-0 #add new data
 save<-1 #save files at the end
 synth<-1 #synthetic plants?
-  synth_type<-3  #5 is a target facility, focus_id,4 is facility,3 is offer control by type, 2 is by offer_control,1 is by plant_type, 0 is full merit as synthetic plant
+  synth_type<-1  #5 is a target facility, focus_id,4 is facility,3 is offer control by type, 2 is by offer_control,1 is by plant_fuel, 0 is full merit as synthetic plant
 
   if(synth_type==5)
-    focus_id<-"BR3"
+    focus_id<-c("SH1","SH2")
 
 load("data/all_merit.RData")  
 if(update==1){
@@ -28,6 +28,9 @@ if(update==1){
 #small_testing_sample 
 #merit_small<-merit_data%>%filter(date==ymd("2019-10-05"))
 #merit_data<-merit_small
+
+
+
 
 
 #bring in market data
@@ -115,6 +118,7 @@ load("data/forecast_data.RData")
   renew_vols<-renew_vols %>% mutate(offer_sum=case_when(
    grepl("TransAlta",offer_control)~"TransAlta",
    grepl("TransCanada",offer_control)~"TransCanada",
+   grepl("Heartland",offer_control)~"Heartland",
    grepl("ENMAX",offer_control)~"ENMAX",
    grepl("Capital Power",offer_control)~'Capital Power',
    grepl("ATCO",offer_control)~"ATCO",
@@ -271,6 +275,38 @@ merit_aug<-merit_aug %>% left_join(plant_data(),by=c("asset_id"="ID"))%>%
   
   
   
+  #Repair offer control
+  
+  key_firms<-c("ATCO","TransAlta","TransCanada","ENMAX","Capital Power","Heartland","Balancing Pool")
+  
+  merit_aug<-merit_aug%>% #filter(date<ymd("2013-06-05"))%>%
+    mutate(offer_sum=case_when(
+      grepl("TransAlta",offer_control)~"TransAlta",
+      grepl("TransCanada",offer_control)~"TransCanada",
+      grepl("ENMAX",offer_control)~"ENMAX",
+      grepl("URICA",offer_control)~"URICA",
+      grepl("Shepard",offer_control)~"ENMAX",
+      grepl("Calgary Energy",offer_control)~"ENMAX", #calgary energy centre
+      grepl("Capital Power",offer_control)~'Capital Power',
+      grepl("ATCO",offer_control)~"ATCO",
+      grepl("Heartland",offer_control)~"Heartland",
+      grepl("Balancing Pool",offer_control)~"Balancing Pool",
+      grepl("Canadian Natural",offer_control)~"CNRL",
+      grepl("Genalta",offer_control)~"Genalta",
+      grepl("Imperial Oil",offer_control)~"Imperial Oil",
+      grepl("Suncor",offer_control)~"Suncor",
+      asset_id=="WB4"~"University of Alberta", #never appears so assigned
+      asset_id=="TMR"~"Transmission Must Run", #never appears so assigned
+      asset_id=="RB2"~"ATCO", #never appears so assigned
+      TRUE~offer_control #if it's not one of these, leave it the same
+    ))%>% group_by(asset_id)%>%
+      fill(offer_sum,.direction="up")%>%  #carry offer control info backwards
+      mutate(key_firm=offer_sum %in% key_firms,
+           key_firm_no_bp=offer_sum %in%key_firms[(key_firms != "Balancing Pool")])%>%
+    mutate(offer_sum=as_factor(offer_sum),
+           offer_sum=fct_other(offer_sum,keep = key_firms),
+           #offer_sum=as.character(offer_sum))
+           NULL)
     
   #storage objects for testing purposes
   #merit_store<-merit_aug
@@ -294,6 +330,7 @@ merit_aug<-merit_aug %>% left_join(plant_data(),by=c("asset_id"="ID"))%>%
   #small_testing_sample 
   #merit_small<-merit_aug%>%filter(date==ymd("2019-10-05"))
   #merit_aug<-merit_small
+  #merit_aug<-merit_small%>%filter(date==ymd("2019-10-05"))
   #merit_small<-merit_small%>%mutate(facility=gsub(" #","_",AESO_Name))%>% separate(facility,into = c("facility","number"), sep="_(?=[^_]+$)")
 
   #small_testing_sample 
@@ -302,216 +339,273 @@ merit_aug<-merit_aug %>% left_join(plant_data(),by=c("asset_id"="ID"))%>%
   #merit_small<-merit_small%>%mutate(facility=gsub(" #","_",AESO_Name))%>% separate(facility,into = c("facility","number"), sep="_(?=[^_]+$)")
   
   #convert to synthetic plants here if synth==1
-`  
-  #merit_aug<-merit_small
-  if(synth==1){
-    #here, we are going to use Plant_Type and offer_gen to be our core pieces of information that gets passed on
-    #determined by synth_type, we will send different information through these two variables for the final analysis.
-    #synth_type 4 is facility,3 is offer control by type, 2 is by offer_control, 1 is by plant_type, 0 is full merit as synthetic plant
-    
-    
-    if(synth_type==5){ #if we're doing a specific unit
-      merit_aug <- merit_aug%>% filter(asset_id==focus_id)%>%
-        mutate(offer_sum=as_factor(asset_id)
-        )
-    }
-    
-    if(synth_type==4){ #if we're doing by unit, we need the largest fossil units
-      merit_aug <- merit_aug%>% #filter(asset_id %in% large_plants$asset_id)%>%
-        mutate(offer_sum=as_factor(asset_id),
-               offer_sum=fct_other(offer_sum,keep=large_plants$asset_id)
-               )
-    }
-    
-    if(synth_type==3){ #if we're doing by unit, we need the largest fossil units
-      merit_aug <- merit_aug%>% filter(offer_sum!="Other", offer_sum!="TRADE")
-    }
-    
-    merit_aug<-merit_aug %>% 
-      mutate(Plant_Type=case_when( 
-        synth_type == 0 ~ "All",
-        synth_type == 2 ~ "All",
-        TRUE ~ Plant_Type),
-        offer_gen=as.character(offer_sum),
-        offer_gen=case_when( 
-          synth_type == 0 ~ "All",
-          synth_type == 1 ~ "All",
-          TRUE ~ offer_gen),
-        offer_gen=factor(offer_gen)
-        )%>%
-      filter(date<ymd("2020-01-01"))%>% #sample for the Shaffer paper is pre-2020
-      filter(size>0)%>%  #don't include zero-sized blocks - this helps section out issues with zero wind and solar hours too.
-      #select(date,he,price,available_mw,dispatched_mw,co2_est,ctax_cost,oba_val,Plant_Type,renew_gen,offer_sum)%>%
-      arrange(date,he,Plant_Type,price) %>%
-      group_by(date,he,Plant_Type,offer_gen)%>% 
-      mutate(merit_type=cumsum(size)/sum(size),
-             merit_co2=cumsum(co2_est*size/1000), #cumulative tonnes of emissions across the merit order
-             merit_ctax=(ctax_cost), #marginal compliance costs, $ per mwh
-             merit_oba=(oba_val),#marginal oba value, $ per mwh
-             #merit_net_comp=(compliance_cost)
-             )%>%
-      summarize(
-        #place offer percentiles and prices in lists of vectors
-        total_offers=sum(size),available_mw=sum(available_mw),dispatched_mw=sum(dispatched_mw),renew_gen=sum(renew_gen,na.rm = T),
-        merit=list(merit_type*100),price=list(price),co2_est=list(merit_co2),ctax_cost=list(merit_ctax),oba_val=list(merit_oba)
-      )%>%
-      group_by(date,he,Plant_Type,offer_gen) %>% #re-group the summarized data
-      #get and store the bid function
-      mutate(merit_func=list(bid_func(merit[[1]],price[[1]])), #bids
-             ghg_func=list(bid_func(merit[[1]],co2_est[[1]])), #cumulative emissions in tonnes
-             ctax_func=list(bid_func(merit[[1]],ctax_cost[[1]])),#marginal ctax
-             oba_func=list(bid_func(merit[[1]],oba_val[[1]])), #marginal oba
-             #net_comp_func=list(bid_func(merit[[1]],net_comp[[1]])),
-             import_export=case_when(
-               Plant_Type=="IMPORT" ~ "I",
-               TRUE                      ~  "")
-      )%>%
-      ungroup()
 
-    print(paste("Built step functions. Elapsed time is",time_length(interval(start_time, Sys.time()), "seconds"),"seconds"))
-    
-    merit_aug<-merit_aug%>% group_by(date,he,Plant_Type,offer_gen) %>%
-      mutate(bid_15=merit_func[[1]](15),
-             bid_30=merit_func[[1]](30),
-             bid_40=merit_func[[1]](40),
-             bid_50=merit_func[[1]](50),
-             bid_55=merit_func[[1]](55),
-             bid_60=merit_func[[1]](60),
-             bid_65=merit_func[[1]](65),
-             bid_70=merit_func[[1]](70),
-             bid_75=merit_func[[1]](75),
-             bid_80=merit_func[[1]](80),
-             bid_85=merit_func[[1]](85),
-             bid_90=merit_func[[1]](90),
-             bid_95=merit_func[[1]](95),
-             bid_100=merit_func[[1]](100))%>%
-      mutate(ghg_15=ghg_func[[1]](15),
-             ghg_30=ghg_func[[1]](30),
-             ghg_40=ghg_func[[1]](40),
-             ghg_50=ghg_func[[1]](50),
-             ghg_55=ghg_func[[1]](55),
-             ghg_60=ghg_func[[1]](60),
-             ghg_65=ghg_func[[1]](65),
-             ghg_70=ghg_func[[1]](70),
-             ghg_75=ghg_func[[1]](75),
-             ghg_80=ghg_func[[1]](80),
-             ghg_85=ghg_func[[1]](85),
-             ghg_90=ghg_func[[1]](90),
-             ghg_95=ghg_func[[1]](95),
-             ghg_100=ghg_func[[1]](100)) %>%
-      mutate(ctax_15=ctax_func[[1]](15),
-             ctax_30=ctax_func[[1]](30),
-             ctax_40=ctax_func[[1]](40),
-             ctax_50=ctax_func[[1]](50),
-             ctax_55=ctax_func[[1]](55),
-             ctax_60=ctax_func[[1]](60),
-             ctax_65=ctax_func[[1]](65),
-             ctax_70=ctax_func[[1]](70),
-             ctax_75=ctax_func[[1]](75),
-             ctax_80=ctax_func[[1]](80),
-             ctax_85=ctax_func[[1]](85),
-             ctax_90=ctax_func[[1]](90),
-             ctax_95=ctax_func[[1]](95),
-             ctax_100=ctax_func[[1]](100)) %>%
-      mutate(oba_15=oba_func[[1]](15),
-             oba_30=oba_func[[1]](30),
-             oba_40=oba_func[[1]](40),
-             oba_50=oba_func[[1]](50),
-             oba_55=oba_func[[1]](55),
-             oba_60=oba_func[[1]](60),
-             oba_65=oba_func[[1]](65),
-             oba_70=oba_func[[1]](70),
-             oba_75=oba_func[[1]](75),
-             oba_80=oba_func[[1]](80),
-             oba_85=oba_func[[1]](85),
-             oba_90=oba_func[[1]](90),
-             oba_95=oba_func[[1]](95),
-             oba_100=oba_func[[1]](100)) %>%
-      ungroup() %>% select(-merit,-price,-co2_est,-merit_func,-ghg_func,-ctax_func,-oba_func,
-                           -oba_val,-ctax_cost)
-    print(paste("Build bids, cleaned data frame, elapsed time is",time_length(interval(start_time, Sys.time()), "seconds"),"seconds"))
-    
-    #turn these into the appropriate format for later analysis
-    
-    
-    merit_aug<-merit_aug %>% pivot_longer(cols = -c(date,he,Plant_Type,offer_gen,available_mw,dispatched_mw,total_offers,renew_gen,import_export))%>%
-      #split name at underscore
-      separate(name,"_",into = c("data_point","percentile"))%>%
-      mutate(percentile=as.numeric(percentile))%>%
-      #make it wider again
-      pivot_wider(names_from = data_point,values_from=value)
-    
-    #now replicate the merit_aug format, but for these compressed data
-    #testing: merit_bids<-merit_bids %>% left_join(mkt_data,by=c("date","he")) 
-    
-    #merit_aug<-merit_bids    
-    
-    
-  } # end of synth plants
+  #merit_aug<-merit_small
   
-`  
-  
-  # merge in companion market data and NIT gas prices
-  
-  merit_aug<-merit_aug %>% left_join(mkt_data,by=c("date","he")) 
-  merit_aug<-merit_aug %>% left_join(ngx_data_read(),by=c("date")) %>%
-    mutate(nit_settle_cad_gj=na.locf(nit_settle_cad_gj))
-  
-  #clean up memory
-  #rm(mkt_data)
-  gc()
+  #load("data/merit_data_proc_bak.RData")  
   
   
-  print(paste("Market Data Merged. Elapsed time is",time_length(interval(start_time, Sys.time()), "seconds"),"seconds"))
+  if(synth==1){
+      #here, we are going to use Plant_Type and offer_gen to be our core pieces of information that gets passed on
+      #determined by synth_type, we will send different information through these two variables for the final analysis.
+      #synth_type 4 is facility,3 is offer control by type, 2 is by offer_control, 1 is by plant_type, 0 is full merit as synthetic plant
+      
+    merit_aug <- merit_aug%>% filter(date<=ymd("2020-03-01")) #for the pass-through paper, let's use this.
+      
+    
+     #feb 16, 2022 - adding carry-through of plant offer control measure
+      merit_aug <- merit_aug%>% 
+        mutate(offer_store=factor(offer_sum),
+               plant_store=factor(Plant_Type))
+        
+      
+      offer_levels<-levels(merit_aug$offer_store)
+      plant_levels<-levels(merit_aug$plant_store)
+               #use offer-store as the carry-through for offer control at a given point
+      if(synth_type==5){ #if we're doing a specific unit or PPA
+        merit_aug <- merit_aug%>% filter(asset_id %in% focus_id)%>%
+          mutate(offer_sum=toString(focus_id)) #do it this way so that you preserve the old offer
+          #mutate(offer_sum=as_factor(asset_id),offer_old=offer_sum) #do it this way so that you preserve the old offer
+      }
+      if(synth_type==4){ #if we're doing by unit, we need the largest fossil units
+        merit_aug <- merit_aug%>% #filter(asset_id %in% large_plants$asset_id)%>%
+          mutate(offer_sum=as_factor(asset_id),
+                 offer_sum=fct_other(offer_sum,keep=large_plants$asset_id)
+                 )
+      }
+      
+      if(synth_type==3){ #if we're doing by unit, we need the largest fossil units
+        merit_aug <- merit_aug%>% filter(offer_sum!="Other", offer_sum!="TRADE")
+      }
+      
+      merit_aug<-merit_aug %>% 
+        mutate(Plant_Type=case_when( 
+          synth_type == 0 ~ "All",
+          synth_type == 2 ~ "All",
+          TRUE ~ Plant_Fuel),
+          offer_gen=as.character(offer_sum),
+          offer_gen=case_when( 
+            synth_type == 0 ~ "All",
+            synth_type == 1 ~ "All",
+            TRUE ~ offer_gen),
+          offer_gen=factor(offer_gen)
+          )%>%
+        filter(date<ymd("2020-01-01"))%>% #sample for the Shaffer paper is pre-2020
+        filter(size>0)%>%  #don't include zero-sized blocks - this helps section out issues with zero wind and solar hours too.
+        #select(date,he,price,available_mw,dispatched_mw,co2_est,ctax_cost,oba_val,Plant_Type,renew_gen,offer_sum)%>%
+        arrange(date,he,Plant_Type,price) %>%
+        group_by(date,he,Plant_Type,offer_gen)%>% 
+        mutate(merit_type=cumsum(size)/sum(size),
+               merit_co2=cumsum(co2_est*size/1000), #cumulative tonnes of emissions across the merit order
+               merit_ctax=(ctax_cost), #marginal compliance costs, $ per mwh
+               merit_oba=(oba_val),#marginal oba value, $ per mwh
+               #merit_net_comp=(compliance_cost)
+               )%>%
+        summarize(
+          #place offer percentiles and prices in lists of vectors
+          offers=list(offer_store),plants=list(plant_store),
+          total_offers=sum(size),available_mw=sum(available_mw),dispatched_mw=sum(dispatched_mw),renew_gen=sum(renew_gen,na.rm = T),
+          merit=list(merit_type*100),price=list(price),co2_est=list(merit_co2),ctax_cost=list(merit_ctax),oba_val=list(merit_oba)
+        )%>%
+        group_by(date,he,Plant_Type,offer_gen) %>% #re-group the summarized data
+        #get and store the bid function
+        mutate(merit_func=list(bid_func(merit[[1]],price[[1]])), #bids
+               ghg_func=list(bid_func(merit[[1]],co2_est[[1]])), #cumulative emissions in tonnes
+               ctax_func=list(bid_func(merit[[1]],ctax_cost[[1]])),#marginal ctax
+               oba_func=list(bid_func(merit[[1]],oba_val[[1]])), #marginal oba
+               offer_func=list(bid_func(merit[[1]],offers[[1]])), #marginal oba
+               plant_func=list(bid_func(merit[[1]],plants[[1]])), #marginal oba
+               #net_comp_func=list(bid_func(merit[[1]],net_comp[[1]])),
+               import_export=case_when(
+                 Plant_Type=="IMPORT" ~ "I",
+                 TRUE                      ~  "")
+        )%>%
+        ungroup()
   
+      #merit_aug<-merit_aug%>% mutate(offer_func=list(bid_func(merit[[1]],oba_val[[1]])))
+      
+
+      merit_aug<-merit_aug%>% group_by(date,he,Plant_Type,offer_gen) %>%
+        mutate(bid_15=merit_func[[1]](15),
+               bid_30=merit_func[[1]](30),
+               bid_40=merit_func[[1]](40),
+               bid_50=merit_func[[1]](50),
+               bid_55=merit_func[[1]](55),
+               bid_60=merit_func[[1]](60),
+               bid_65=merit_func[[1]](65),
+               bid_70=merit_func[[1]](70),
+               bid_75=merit_func[[1]](75),
+               bid_80=merit_func[[1]](80),
+               bid_85=merit_func[[1]](85),
+               bid_90=merit_func[[1]](90),
+               bid_95=merit_func[[1]](95),
+               bid_100=merit_func[[1]](100))%>%
+        mutate(ghg_15=ghg_func[[1]](15),
+               ghg_30=ghg_func[[1]](30),
+               ghg_40=ghg_func[[1]](40),
+               ghg_50=ghg_func[[1]](50),
+               ghg_55=ghg_func[[1]](55),
+               ghg_60=ghg_func[[1]](60),
+               ghg_65=ghg_func[[1]](65),
+               ghg_70=ghg_func[[1]](70),
+               ghg_75=ghg_func[[1]](75),
+               ghg_80=ghg_func[[1]](80),
+               ghg_85=ghg_func[[1]](85),
+               ghg_90=ghg_func[[1]](90),
+               ghg_95=ghg_func[[1]](95),
+               ghg_100=ghg_func[[1]](100)) %>%
+        mutate(ctax_15=ctax_func[[1]](15),
+               ctax_30=ctax_func[[1]](30),
+               ctax_40=ctax_func[[1]](40),
+               ctax_50=ctax_func[[1]](50),
+               ctax_55=ctax_func[[1]](55),
+               ctax_60=ctax_func[[1]](60),
+               ctax_65=ctax_func[[1]](65),
+               ctax_70=ctax_func[[1]](70),
+               ctax_75=ctax_func[[1]](75),
+               ctax_80=ctax_func[[1]](80),
+               ctax_85=ctax_func[[1]](85),
+               ctax_90=ctax_func[[1]](90),
+               ctax_95=ctax_func[[1]](95),
+               ctax_100=ctax_func[[1]](100)) %>%
+        mutate(oba_15=oba_func[[1]](15),
+               oba_30=oba_func[[1]](30),
+               oba_40=oba_func[[1]](40),
+               oba_50=oba_func[[1]](50),
+               oba_55=oba_func[[1]](55),
+               oba_60=oba_func[[1]](60),
+               oba_65=oba_func[[1]](65),
+               oba_70=oba_func[[1]](70),
+               oba_75=oba_func[[1]](75),
+               oba_80=oba_func[[1]](80),
+               oba_85=oba_func[[1]](85),
+               oba_90=oba_func[[1]](90),
+               oba_95=oba_func[[1]](95),
+               oba_100=oba_func[[1]](100)) %>%
+        mutate(offer_15=offer_func[[1]](15),
+               offer_30=offer_func[[1]](30),
+               offer_40=offer_func[[1]](40),
+               offer_50=offer_func[[1]](50),
+               offer_55=offer_func[[1]](55),
+               offer_60=offer_func[[1]](60),
+               offer_65=offer_func[[1]](65),
+               offer_70=offer_func[[1]](70),
+               offer_75=offer_func[[1]](75),
+               offer_80=offer_func[[1]](80),
+               offer_85=offer_func[[1]](85),
+               offer_90=offer_func[[1]](90),
+               offer_95=offer_func[[1]](95),
+               offer_100=offer_func[[1]](100)) %>%
+        mutate(plant_15=plant_func[[1]](15),
+               plant_30=plant_func[[1]](30),
+               plant_40=plant_func[[1]](40),
+               plant_50=plant_func[[1]](50),
+               plant_55=plant_func[[1]](55),
+               plant_60=plant_func[[1]](60),
+               plant_65=plant_func[[1]](65),
+               plant_70=plant_func[[1]](70),
+               plant_75=plant_func[[1]](75),
+               plant_80=plant_func[[1]](80),
+               plant_85=plant_func[[1]](85),
+               plant_90=plant_func[[1]](90),
+               plant_95=plant_func[[1]](95),
+               plant_100=plant_func[[1]](100)) %>%
+        
+        
+        
+        ungroup() %>% select(-merit,-price,-co2_est,-merit_func,-ghg_func,-ctax_func,-oba_func,-offer_func,-offers,
+                             -plant_func,-plants,
+                             -oba_val,-ctax_cost)
+      print(paste("Build bids, cleaned data frame, elapsed time is",time_length(interval(start_time, Sys.time()), "seconds"),"seconds"))
+      
+      #turn these into the appropriate format for later analysis
+      
+      
+      merit_aug<-merit_aug %>% pivot_longer(cols = -c(date,he,Plant_Type,offer_gen,available_mw,dispatched_mw,total_offers,renew_gen,import_export))%>%
+        #split name at underscore
+        separate(name,"_",into = c("data_point","percentile"))%>%
+        mutate(percentile=as.numeric(percentile))%>%
+        #make it wider again
+        pivot_wider(names_from = data_point,values_from=value)%>%
+        mutate(offer=as_factor(offer_levels[offer]),
+               plant=as_factor(plant_levels[plant]))
+        
+      print(paste("Pivoted data frame, elapsed time is",time_length(interval(start_time, Sys.time()), "seconds"),"seconds"))
+      
   
-  if(save==1)
-  {
-    if(synth==1)
-    {
-      print(paste("Saving synthetic output. Elapsed time is",time_length(interval(start_time, Sys.time()), "seconds"),"seconds"))
-      if(synth_type==0){
-        save(merit_aug,file=format(Sys.time(),format="data/synth_all_%Y_%b_%d_%H_%M.RData"))
-        print(paste("Saved synthetic merit file. Elapsed time is",time_length(interval(start_time, Sys.time()), "seconds"),"seconds"))
+      
+      #now replicate the merit_aug format, but for these compressed data
+      #testing: merit_bids<-merit_bids %>% left_join(mkt_data,by=c("date","he")) 
+      
+      #merit_aug<-merit_bids    
+      
+      
+    } 
+    # end of synth plants
+    
+    
+      
+      # merge in companion market data and NIT gas prices
+      
+      merit_aug<-merit_aug %>% left_join(mkt_data,by=c("date","he")) 
+      merit_aug<-merit_aug %>% left_join(ngx_data_read(),by=c("date")) %>%
+        mutate(nit_settle_cad_gj=na.locf(nit_settle_cad_gj))
+      
+      #clean up memory
+      #rm(mkt_data)
+      gc()
+      
+      
+      print(paste("Market Data Merged. Elapsed time is",time_length(interval(start_time, Sys.time()), "seconds"),"seconds"))
+      
+      
+      if(save==1)
+      {
+        if(synth==1)
+        {
+          print(paste("Saving synthetic output. Elapsed time is",time_length(interval(start_time, Sys.time()), "seconds"),"seconds"))
+          if(synth_type==0){
+            save(merit_aug,file=format(Sys.time(),format="data/synth_all_%Y_%b_%d_%H_%M.RData"))
+            print(paste("Saved synthetic merit file. Elapsed time is",time_length(interval(start_time, Sys.time()), "seconds"),"seconds"))
+            }
+          if(synth_type==1){
+            save(merit_aug,file=format(Sys.time(),format="data/synth_type_%Y_%b_%d_%H_%M.RData"))
+          print(paste("Saved synthetic merit by type file. Elapsed time is",time_length(interval(start_time, Sys.time()), "seconds"),"seconds"))
+          }
+          if(synth_type==2){
+            save(merit_aug,file=format(Sys.time(),format="data/synth_offer_%Y_%b_%d_%H_%M.RData"))
+          print(paste("Saved synthetic merit by offer file. Elapsed time is",time_length(interval(start_time, Sys.time()), "seconds"),"seconds"))
+          }
+          if(synth_type==3){
+            save(merit_aug,file=format(Sys.time(),format="data/synth_offer_type_%Y_%b_%d_%H_%M.RData"))
+          print(paste("Saved synthetic merit by offer and type file. Elapsed time is",time_length(interval(start_time, Sys.time()), "seconds"),"seconds"))
+          }
+          if(synth_type==4){
+            save(merit_aug,file=format(Sys.time(),format="data/synth_unit_%Y_%b_%d_%H_%M.RData"))
+          print(paste("Saved synthetic merit by unit file. Elapsed time is",time_length(interval(start_time, Sys.time()), "seconds"),"seconds"))
+          }
+          if(synth_type==5){
+            save(merit_aug,file=format(Sys.time(),format=paste("data/synth_focus_",gsub(", ","_",toString(focus_id)),"_%Y_%b_%d_%H_%M.RData",sep="")))
+            print(paste("Saved synthetic merit by unit file. Elapsed time is",time_length(interval(start_time, Sys.time()), "seconds"),"seconds"))
+          }
         }
-      if(synth_type==1){
-        save(merit_aug,file=format(Sys.time(),format="data/synth_type_%Y_%b_%d_%H_%M.RData"))
-      print(paste("Saved synthetic merit by type file. Elapsed time is",time_length(interval(start_time, Sys.time()), "seconds"),"seconds"))
+        if(synth==0) #saving the processed merit data
+        {
+          print(paste("Saving merit file. Elapsed time is",time_length(interval(start_time, Sys.time()), "seconds"),"seconds"))
+          save(merit_aug,file=format(Sys.time(),format="data/merit_data_%Y_%b_%d_%H_%M.RData"))
+          #student csv  
+          print(paste("Saving student csv file. Elapsed time is",time_length(interval(start_time, Sys.time()), "seconds"),"seconds"))
+          write_csv(merit_aug %>% 
+                      select(date,he,asset_id,AESO_Name,Plant_Type,Plant_Fuel,co2_est,block_number,size,flexible,price,import_export,available_mw,dispatched_mw,merit,actual_posted_pool_price,actual_ail,month,day,hour,year,on_peak,temp_ymm=temp_YMM,temp_yeg=temp_YEG,temp_yyc=temp_YYC,hourly_dispatch,hourly_imports,hourly_exports,hourly_renewables), 
+                    file.path(format(Sys.time(),format="data/student_data_%Y_%b_%d_%H_%M.csv.gz",sep="")))
+        }
       }
-      if(synth_type==2){
-        save(merit_aug,file=format(Sys.time(),format="data/synth_offer_%Y_%b_%d_%H_%M.RData"))
-      print(paste("Saved synthetic merit by offer file. Elapsed time is",time_length(interval(start_time, Sys.time()), "seconds"),"seconds"))
-      }
-      if(synth_type==3){
-        save(merit_aug,file=format(Sys.time(),format="data/synth_offer_type_%Y_%b_%d_%H_%M.RData"))
-      print(paste("Saved synthetic merit by offer and type file. Elapsed time is",time_length(interval(start_time, Sys.time()), "seconds"),"seconds"))
-      }
-      if(synth_type==4){
-        save(merit_aug,file=format(Sys.time(),format="data/synth_unit_%Y_%b_%d_%H_%M.RData"))
-      print(paste("Saved synthetic merit by unit file. Elapsed time is",time_length(interval(start_time, Sys.time()), "seconds"),"seconds"))
-      }
-      if(synth_type==5){
-        save(merit_aug,file=format(Sys.time(),format="data/synth_focus_%Y_%b_%d_%H_%M.RData"))
-        print(paste("Saved synthetic merit by unit file. Elapsed time is",time_length(interval(start_time, Sys.time()), "seconds"),"seconds"))
-      }
-    }
-    if(synth==0) #saving the processed merit data
-    {
-      print(paste("Saving merit file. Elapsed time is",time_length(interval(start_time, Sys.time()), "seconds"),"seconds"))
-      save(merit_aug,file=format(Sys.time(),format="data/merit_data_%Y_%b_%d_%H_%M.RData"))
-      #student csv  
-      print(paste("Saving student csv file. Elapsed time is",time_length(interval(start_time, Sys.time()), "seconds"),"seconds"))
-      write_csv(merit_aug %>% 
-                  select(date,he,asset_id,AESO_Name,Plant_Type,Plant_Fuel,co2_est,block_number,size,flexible,price,import_export,available_mw,dispatched_mw,merit,actual_posted_pool_price,actual_ail,month,day,hour,year,on_peak,temp_ymm=temp_YMM,temp_yeg=temp_YEG,temp_yyc=temp_YYC,hourly_dispatch,hourly_imports,hourly_exports,hourly_renewables), 
-                file.path(format(Sys.time(),format="data/student_data_%Y_%b_%d_%H_%M.csv.gz",sep="")))
-    }
-  }
-  
-  
-  paste("Built and saved merit data set, elapsed time is",time_length(interval(start_time, Sys.time()), "seconds"),"seconds")  
-  
-  
-  
+      
+      
+      paste("Built and saved merit data set, elapsed time is",time_length(interval(start_time, Sys.time()), "seconds"),"seconds")  
+    
+    
+    
   
 
 
