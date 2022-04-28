@@ -12,7 +12,7 @@ options(scipen=999)
 update<-0 #add new data
 save<-1 #save files at the end
 synth<-1 #synthetic plants?
-  synth_type<-1  #5 is a target facility, focus_id,4 is facility,3 is offer control by type, 2 is by offer_control,1 is by plant_fuel, 0 is full merit as synthetic plant
+  synth_type<-2  #5 is a target facility, focus_id,4 is facility,3 is offer control by type, 2 is by offer_control,1 is by plant_fuel, 0 is full merit as synthetic plant
 
   if(synth_type==5)
     focus_id<-c("SH1","SH2")
@@ -513,10 +513,17 @@ merit_aug<-merit_aug %>% left_join(plant_data(),by=c("asset_id"="ID"))%>%
         
         
         
-        ungroup() %>% select(-merit,-price,-co2_est,-merit_func,-ghg_func,-ctax_func,-oba_func,-offer_func,-offers,
-                             -plant_func,-plants,
-                             -oba_val,-ctax_cost)
-      print(paste("Build bids, cleaned data frame, elapsed time is",time_length(interval(start_time, Sys.time()), "seconds"),"seconds"))
+        ungroup() 
+      
+      print(paste("Built bids, elapsed time is",time_length(interval(start_time, Sys.time()), "seconds"),"seconds"))
+      
+        
+      merit_aug<-merit_aug%>%
+        select(-merit,-price,-co2_est,-merit_func,-ghg_func,
+               -ctax_func,-oba_func,-offer_func,-offers,
+               -plant_func,-plants,-oba_val,-ctax_cost)
+      
+      print(paste("Cleaned data frame, elapsed time is",time_length(interval(start_time, Sys.time()), "seconds"),"seconds"))
       
       #turn these into the appropriate format for later analysis
       
@@ -557,6 +564,7 @@ merit_aug<-merit_aug %>% left_join(plant_data(),by=c("asset_id"="ID"))%>%
       
       
       print(paste("Market Data Merged. Elapsed time is",time_length(interval(start_time, Sys.time()), "seconds"),"seconds"))
+
       
       
       if(save==1)
