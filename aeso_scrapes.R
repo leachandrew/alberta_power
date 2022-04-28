@@ -279,7 +279,6 @@ get_forecast_report <- function(start_date,end_date) {
     #start_date<-as.Date("2022-01-11",format="%Y-%m-%d")
     #end_date <- min(as.Date(start_date+months(1)),Sys.Date()-days(1)) #31 days of data
     #end testing - above should be commented if you're not testing
-  
   start_date <- as.Date(start_date)
   end_date <- min(as.Date(start_date+months(1)),as.Date(end_date)) #31 days of data
   print(start_date)
