@@ -423,8 +423,10 @@ merit_aug<-merit_aug %>% left_join(plant_data(),by=c("asset_id"="ID"))%>%
         ungroup()
   
       #merit_aug<-merit_aug%>% mutate(offer_func=list(bid_func(merit[[1]],oba_val[[1]])))
-      
+      #merit_store<-merit_aug
 
+      
+      
       merit_aug<-merit_aug%>% group_by(date,he,Plant_Type,offer_gen) %>%
         mutate(bid_15=merit_func[[1]](15),
                bid_30=merit_func[[1]](30),
