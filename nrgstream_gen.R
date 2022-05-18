@@ -254,8 +254,8 @@ get_plant_info()
 #rm(gen_data)
 #if we're changing over to a new year, run both of these two lines of code:
 nrgstream_gen<-filter(nrgstream_gen,year(Time)<=2020)
-
 nrgstream_gen<-data_update(nrgstream_gen,2021)
+nrgstream_gen<-data_update(nrgstream_gen,2022)
 
 save(nrgstream_gen, file= "nrgstream/nrgstream_gen.RData")
 

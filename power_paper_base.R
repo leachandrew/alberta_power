@@ -37,6 +37,7 @@ paper_theme<-function(caption_align=1){
     #axis.text.y = element_text(size = 12,margin = margin(r = 2, l = 2)),
     legend.position = "bottom",
     legend.text=element_text(size=rel(3)),
+    strip.text=element_text(size=rel(3)),
     legend.margin=margin(c(0,0,-0.25,0),unit="cm"),
     legend.key.width = unit(rel(2),"line"),
     plot.margin=margin(c(.5,.5,0.5,0.5),unit="cm"),

@@ -9,9 +9,9 @@ start_time<-Sys.time()
 
 options(scipen=999)
 
-update<-0 #add new data
+update<-1 #add new data
 save<-1 #save files at the end
-synth<-1 #synthetic plants?
+synth<-0 #synthetic plants?
   synth_type<-2  #5 is a target facility, focus_id,4 is facility,3 is offer control by type, 2 is by offer_control,1 is by plant_fuel, 0 is full merit as synthetic plant
 
   if(synth_type==5)
@@ -84,7 +84,7 @@ load("data/forecast_data.RData")
     save(all_vols,file="data/metered_vols_data.Rdata" ) 
     #isolate renewable (non-hydro and biomass) volumes from metered volumes - the ones that default bid to zero
     renew_vols<- all_vols %>% 
-    filter(Plant_Type=="WIND"| Plant_Type=="SOLAR") %>% select(date,he,asset_id,dispatched_mw=vol,pool_participant_id,effective_date_time=time)%>%
+    filter(Plant_Type=="WIND"| Plant_Type=="SOLAR") %>% select(date,he,asset_id,Plant_Type,dispatched_mw=vol,pool_participant_id,effective_date_time=time)%>%
     #switch so that we have same data format as merit data
     mutate(import_export="",
           block_number=1,
@@ -137,7 +137,7 @@ load("data/forecast_data.RData")
   merit_aug<-merit_aug%>% #take out any asset that appears in the renewables data
     filter(! asset_id %in% unique(renew_vols$asset_id) )%>%
     #add the renewable plants
-    bind_rows(renew_vols%>%filter(date %in% unique(merit_aug$date))) 
+    bind_rows(renew_vols%>%select(-Plant_Type)%>%filter(date %in% unique(merit_aug$date))) 
     #stack them all again
   
 # test<-merit_aug %>% filter(renew_gen!=dispatched_mw) 
@@ -227,6 +227,7 @@ merit_aug<-merit_aug %>% left_join(plant_data(),by=c("asset_id"="ID"))%>%
   
   rm(exports) #no longer need to store this
   
+  
   #add updated temperature data
   load("data/ab_power_temps.RData")
   
@@ -267,6 +268,11 @@ merit_aug<-merit_aug %>% left_join(plant_data(),by=c("asset_id"="ID"))%>%
            -bc_matl_import_capability,-start_date)%>%
     #assign peaks
     assign_date_time_days()
+  
+  save(hourly_summary,file="data/hourly_summary.RData")
+  save(mkt_data,file="data/market_data.RData")
+  
+  
   
   #clean up data in memory
   rm(forecast_data,itc_data,hourly_summary)
@@ -557,7 +563,7 @@ merit_aug<-merit_aug %>% left_join(plant_data(),by=c("asset_id"="ID"))%>%
       # merge in companion market data and NIT gas prices
       
       merit_aug<-merit_aug %>% left_join(mkt_data,by=c("date","he")) 
-      merit_aug<-merit_aug %>% left_join(ngx_data_read(),by=c("date")) %>%
+      merit_aug<-merit_aug %>% ungroup()%>% left_join(ngx_data_read(),by=c("date")) %>%
         mutate(nit_settle_cad_gj=na.locf(nit_settle_cad_gj))
       
       #clean up memory
@@ -567,7 +573,7 @@ merit_aug<-merit_aug %>% left_join(plant_data(),by=c("asset_id"="ID"))%>%
       
       print(paste("Market Data Merged. Elapsed time is",time_length(interval(start_time, Sys.time()), "seconds"),"seconds"))
 
-      
+
       
       if(save==1)
       {
@@ -614,54 +620,3 @@ merit_aug<-merit_aug %>% left_join(plant_data(),by=c("asset_id"="ID"))%>%
       
       paste("Built and saved merit data set, elapsed time is",time_length(interval(start_time, Sys.time()), "seconds"),"seconds")  
     
-    
-    
-  
-
-
-ggplot(filter(merit_aug,time>=ymd_h("2019-06-21 01",tz="America/Denver") & time<=ymd_h("2019-06-21 23",tz="America/Denver") & Plant_Type %in% fossils))+
-  geom_line(aes(as.numeric(percentile)*available_mw/100,bid,group=he,color=he),size=.25)+
-  scale_y_continuous(expand=c(0,0),breaks = pretty_breaks())+
-  expand_limits(y=1001)+
-  facet_wrap(~Plant_Type,scales="free_x")+
-  labs(x="Offered Capacity",y="Offer Price")
-
-
-ggplot(filter(merit_aug))+
-  geom_line(aes(as.numeric(percentile),bid,group=he,color=he),size=.25)+
-  facet_wrap(~offer_gen)
-
-
-ggplot(filter(merit_aug,time>=ymd_h("2019-06-21 01",tz="America/Denver") & time<=ymd_h("2019-06-21 23",tz="America/Denver") & Plant_Type %in% fossils))+
-#ggplot(merit_aug %>% filter(Plant_Type %in% fossils))+
-  geom_line(aes(as.numeric(percentile),bid,group=he,color=he),size=.25)+
-  scale_y_continuous(expand=c(0,0),breaks = pretty_breaks())+
-  expand_limits(y=1001)+
-  facet_grid(cols = vars(Plant_Type),rows = vars(offer_gen),scales="free_x")+
-  labs(x="Offered Capacity",y="Offer Price")
-
-ggplot(merit_aug%>%filter(Plant_Type=="COAL"))+
-  geom_line(aes(as.numeric(percentile),bid,group=paste(date,he),color=he),size=.25)+
-  scale_y_continuous(expand=c(0,0),breaks = pretty_breaks())+
-  scale_x_continuous(expand=c(0,0),breaks = pretty_breaks())+
-  expand_limits(y=1001)+
-  facet_wrap(~offer_gen,nrow=2,scales="free_x")+
-  paper_theme()+
-  guides(color=guide_legend(nrow=2,byrow=TRUE))+
-  labs(x="Share of Offered Capacity (%)",y="Offer Price ($/MWh)",
-       title="2017 AESO Power Offers by Controlling Entity")
-ggsave(filename = "images/offer_control.png",dpi = 300,width=14,height=7)
-
-
-ggplot(merit_aug)+
-  geom_line(aes(as.numeric(percentile),bid,group=paste(date,he),color=he),size=.25)+
-  scale_y_continuous(expand=c(0,0),breaks = pretty_breaks())+
-  scale_x_continuous(expand=c(0,0),breaks = pretty_breaks())+
-  expand_limits(y=1001)+
-  facet_wrap(~offer_gen,nrow=3,scales="free_x")+
-  paper_theme()+
-  guides(color=guide_legend(nrow=2,byrow=TRUE))+
-  labs(x="Share of Offered Capacity (%)",y="Offer Price ($/MWh)",
-       title="2017 AESO Power Offers by Controlling Entity")
-
-
