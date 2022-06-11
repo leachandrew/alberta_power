@@ -67,7 +67,7 @@ offer_test<-merit_data %>%
 
 
 offer_graph<-offer_test %>% pivot_longer(-c(date,he,time,total),names_to = "measure")%>%
-  mutate(no_bp=grepl("nbp",measure)) %>%
+  mutate(no_bp=grepl("nbp",measure)) %>% 
   mutate(no_bp=as_factor(no_bp),
          no_bp=fct_recode(no_bp,"Balancing Pool Omitted"="TRUE",
                           "Balancing Pool Included"="FALSE"))%>%
@@ -80,7 +80,7 @@ offer_graph<-offer_test %>% pivot_longer(-c(date,he,time,total),names_to = "meas
 
 
 
-ggplot(offer_graph%>%filter(year(date)<2020)%>%
+ggplot(offer_graph%>%#filter(year(date)<2022)%>%
          mutate(year=year(date),month=month(date))%>%
          group_by(year,month,non_zero,no_bp)%>%
          #group_by(date,non_zero,no_bp)%>%
@@ -90,11 +90,11 @@ ggplot(offer_graph%>%filter(year(date)<2020)%>%
   facet_grid(cols = vars(no_bp))+
   scale_color_manual("",values=c("black","grey50","grey80"))+
   scale_linetype_manual("",values=c("solid","11"))+
-  expand_limits(y=c(0,100))+
-  expand_limits(x=ymd("2020-3-01"))+
+  expand_limits(y=100)+
+  expand_limits(x=ymd("2022-05-01"))+
   #guides(color="none")+
   scale_y_continuous(expand = c(0,0),breaks=pretty_breaks())+
-  scale_x_date(expand = c(0,0),breaks=pretty_breaks())+
+  scale_x_date(expand = c(0,0),breaks=pretty_breaks(n=8))+
   paper_theme()+
   theme(panel.spacing = unit(2,"lines"),
         legend.key.width = unit(3,"lines"),
@@ -106,11 +106,17 @@ ggplot(offer_graph%>%filter(year(date)<2020)%>%
   labs(x="",y=expression("Key Firms' Average Share of Hourly Offers"*phantom(1)*'(%)'),
        NULL
   )+
-  NULL
+  annotate("rect",xmin=ymd("2016-01-01"),xmax=ymd("2016-5-5"),ymin=-Inf,ymax=93.5, alpha=0.1, fill="black")+
+  annotate("text", x = ymd("2016-1-1")+days(round(125/2)), y = 94, label = "PPAs\nreturned\nto BP",size=3.5,hjust = 0.5,vjust = 0)+  
+  annotate("rect",xmin=ymd("2020-12-15"),xmax=ymd("2021-1-15"),ymin=-Inf,ymax=93.5, alpha=0.1, fill="black")+
+  annotate("text", x = ymd("2020-12-31"), y = 94, label = "PPA\nexpiration\nDec. 2020",size=3.5,hjust = 0.5,vjust = 0)+  
+  annotate("rect",xmin=ymd("2009-09-01"),xmax=ymd("2019-12-31"),ymin=-Inf,ymax=+Inf, alpha=0.1, fill="black")+
+  annotate("text",x=ymd("2009-09-01")+((ymd("2019-12-31")-ymd("2009-09-01"))/2),y=45,label = "Sample period")+
+  NULL  
 
 ggsave("images/mkt_power.png",dpi=300,width=14,height=7)
 
-save(offer_test,file=format(Sys.time(),format="data/offer_data_%Y_%b_%d_%H_%M.RData"))
+save(offer_test,file=format(Sys.time(),format="data/offer_data_%Y_%b_%d_%H_%M.RData"))  
 
 #merit all
 

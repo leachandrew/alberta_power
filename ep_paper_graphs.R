@@ -7,9 +7,9 @@ library(cowplot)
 
 
 load(file="data/metered_vols_data.Rdata")
-#load(file="nrgstream/nrgstream_gen.Rdata") 
+load(file="nrgstream/nrgstream_gen.Rdata") 
 
-#update_forecasts()
+update_forecasts()
 load(file="data/forecast_data.Rdata") 
 forecast_data <- forecast_data %>% filter (he!="02*")
 
@@ -18,78 +18,109 @@ forecast_data <- forecast_data %>% filter (he!="02*")
 
 #sample period prices and loads
 
-peak_data<-forecast_data %>%filter(!is.na(actual_posted_pool_price),!is.na(actual_ail))%>% group_by(year,month) %>% summarize(ail=mean(actual_ail,na.rm = T),peak_ail=max(actual_ail),trough_ail=min(actual_ail),
-                                                                                                                              mean_peak_price=sum(actual_posted_pool_price*actual_ail*(on_peak==TRUE),na.rm = T)/sum(actual_ail*(on_peak==TRUE),na.rm = T),
-                                                                                                                              mean_off_peak_price=sum(actual_posted_pool_price*actual_ail*(on_peak==FALSE),na.rm = T)/sum(actual_ail*(on_peak==FALSE),na.rm = T),
-                                                                                                                              mean_peak_ail=sum(actual_ail*(on_peak==TRUE),na.rm = T)/sum((on_peak==TRUE),na.rm = T),
-                                                                                                                              mean_off_peak_ail=sum(actual_ail*(on_peak==FALSE),na.rm = T)/sum((on_peak==FALSE),na.rm = T),
-                                                                                                                              mean_price=sum(actual_posted_pool_price*actual_ail,na.rm = T)/sum(actual_ail,na.rm = T),peak_price=max(actual_posted_pool_price),trough_price=min(actual_posted_pool_price)
-)%>%
+peak_data<-forecast_data %>%filter(!is.na(actual_posted_pool_price),!is.na(actual_ail))%>% 
+  assign_date_time_days()%>%
+  assign_peaks()%>%
+  group_by(year,month) %>% 
+  summarize(ail=mean(actual_ail,na.rm = T),peak_ail=max(actual_ail),trough_ail=min(actual_ail),
+            mean_peak_price=sum(actual_posted_pool_price*actual_ail*(on_peak==TRUE),na.rm = T)/sum(actual_ail*(on_peak==TRUE),na.rm = T),
+            mean_off_peak_price=sum(actual_posted_pool_price*actual_ail*(on_peak==FALSE),na.rm = T)/sum(actual_ail*(on_peak==FALSE),na.rm = T),
+            mean_peak_ail=sum(actual_ail*(on_peak==TRUE),na.rm = T)/sum((on_peak==TRUE),na.rm = T),
+            mean_off_peak_ail=sum(actual_ail*(on_peak==FALSE),na.rm = T)/sum((on_peak==FALSE),na.rm = T),
+            mean_price=sum(actual_posted_pool_price*actual_ail,na.rm = T)/sum(actual_ail,na.rm = T),peak_price=max(actual_posted_pool_price),trough_price=min(actual_posted_pool_price)
+  )%>%
   mutate(date=ymd(paste(year,month,1,sep="-")))  
 
 max_price=max(peak_data$peak_price)
 # prices
 
 top_panel<-ggplot(peak_data) +
-  geom_line(aes(date,mean_peak_price,colour="Monthly Mean Price",linetype="A"),size=1.25)+
-  geom_line(aes(date,mean_off_peak_price,colour="Monthly Mean Price",linetype="B"),size=1.25)+
+  geom_line(aes(date,mean_price,linetype="A"),size=.75,color="black")+
+  geom_line(aes(date,mean_off_peak_price,linetype="B"),size=.75,color="black")+
   geom_ribbon(aes(date,ymax=peak_price,ymin=trough_price,fill="Range of Monthly Prices"),alpha=.5)+
   #geom_col(aes(time,actual_posted_pool_price,fill=on_peak,colour=on_peak),size=.8)+
-  scale_color_manual("",values = c("black"),labels=c("Average Monthly Price"))+
+  #scale_color_manual("",values = c("black"),labels=c("Average Monthly Price"))+
   scale_fill_manual("",values = c("grey50"))+
-  scale_linetype_manual("",values = c("solid","21"),labels=c("Peak period average","Off-peak period average"))+
+  scale_linetype_manual("",values = c("solid","11"),labels=c("Peak period average","Off-peak period average"))+
   scale_x_date(expand=c(0,0),breaks="2 year",labels = date_format("%b\n%Y",tz="America/Denver"))+
-  scale_y_continuous(limits = c(0,max_price),expand=c(0,0))+
+  scale_y_continuous(expand=c(0,0))+
   paper_theme()+
-  guides(linetype = guide_legend(override.aes = list(color = c("dodgerblue","dodgerblue"))),color="none")+
+  guides(linetype = guide_legend(override.aes = list(color = c("black","black"))),color="none")+
   theme(legend.position="bottom",
         legend.margin=margin(c(0,0,0,0),unit="cm")
         #legend.text = element_text(colour="black", size = 12, face = "bold")
         #axis.title.y = element_text(margin = margin(t = 0, r = 5, b = 0, l = 0, unit = "pt")
   )+
-  labs(y="Monthly Pool Prices ($/MWh)",x="",
+  labs(y="Pool Prices ($/MWh)",x="",
        #title=paste("Alberta Hourly Wholesale Power Prices and Alberta Internal Load",sep=""),
        #subtitle=paste(month.name[month(period_start)],", ",year(period_start)," to ",month.name[month(end_date)],", ",year(end_date),sep="")
   NULL)
 bottom_panel<-ggplot(peak_data) +
   #geom_line(aes(date,ail,colour="basic"),size=1.5)+
-  geom_line(aes(date,mean_peak_ail,colour="Monthly Mean Price",linetype="A"),size=1.25)+
-  geom_line(aes(date,mean_off_peak_ail,colour="Monthly Mean Price",linetype="B"),size=1.25)+
+  geom_line(aes(date,mean_peak_ail,linetype="A"),size=.75,color="black")+
+  geom_line(aes(date,mean_off_peak_ail,linetype="B"),size=.75,color="black")+
   geom_ribbon(aes(date,ymax=peak_ail,ymin=trough_ail,fill="Range of Monthly Values"),alpha=.5)+
-  scale_color_manual("",values = c("black"),labels=c("Average Monthly Price"))+
+  #scale_color_manual("",values = c("black"),labels=c("Average Monthly Price"))+
   scale_fill_manual("",values = c("grey50"))+
-  scale_linetype_manual("",values = c("solid","21"),labels=c("Peak hours average","Off-peak hours average"))+
+  scale_linetype_manual("",values = c("solid","11"),labels=c("Peak hours average","Off-peak hours average"))+
   
   scale_x_date(expand=c(0,0),breaks="2 year",labels = date_format("%b\n%Y",tz="America/Denver"))+
   scale_y_continuous(expand=c(0,0),breaks = pretty_breaks())+
   expand_limits(y=12000)+
   guides(linetype = guide_legend(override.aes = list(color = c("black","black"))),color="none")+
   paper_theme()+
+  
   theme(legend.position="bottom",
         #axis.title.y = element_text(margin = margin(t = 0, r = 5, b = 0, l = 0, unit = "pt")),
         legend.margin=margin(c(0,0,0,0),unit="cm"),
         legend.key.width = unit(1.2,"cm"),
         #legend.text = element_text(colour="black", size = 12, face = "bold"),
-  )+    labs(y="Alberta Internal Load (MW)",x="")
+  )+    labs(y="Internal Load (MW)",x="")
 #caption="Source: SolarPeople system data via Neurio API\nGraph by Andrew Leach")
 
+# sample period September 1, 2009 - December 31, 2019
+
+
+top_panel+
+  expand_limits(y=1060)+
+  annotate("rect",xmin=ymd("2009-09-01"),xmax=ymd("2019-12-31"),ymin=-Inf,ymax=Inf, alpha=0.1, fill="black")+
+  annotate("text",x=ymd("2009-09-01")+((ymd("2019-12-31")-ymd("2009-09-01"))/2),y=1030,label = "Sample period")+
+  coord_cartesian(clip = 'off')+    # This keeps the labels from disappearing
+  theme(plot.margin = margin(t = 0.5, r = 1, b = 0, l = 1,unit= "cm"),
+        axis.text.x = element_text(vjust=-0.5))
+ggsave(file=paste("images/peak_prices.png",sep=""),width = 14,dpi=300)
+
+bottom_panel+
+  annotate("rect",xmin=ymd("2009-09-01"),xmax=ymd("2019-12-31"),ymin=-Inf,ymax=Inf, alpha=0.1, fill="black")+
+  annotate("text",x=ymd("2009-09-01")+((ymd("2019-12-31")-ymd("2009-09-01"))/2),y=11800,label = "Sample period")+
+  theme(plot.margin = margin(t = 0.5, r = 1, b = 0, l = 1,unit= "cm"),
+        axis.text.x = element_text(vjust=-0.5))
+ggsave(file=paste("images/loads_clean.png",sep=""),width = 14,dpi=300)
 
 
 p_grid<-plot_grid(
   top_panel+
+    expand_limits(y=1060)+
+    annotate("rect",xmin=ymd("2009-09-01"),xmax=ymd("2019-12-31"),ymin=-Inf,ymax=Inf, alpha=0.1, fill="black")+
+    annotate("text",x=ymd("2009-09-01")+((ymd("2019-12-31")-ymd("2009-09-01"))/2),y=1030,label = "Sample period")+
+    coord_cartesian(clip = 'off')+    # This keeps the labels from disappearing
     theme(
+      plot.margin = margin(t = .25, r = 1, b = .05, l = 1,unit= "cm"),
       legend.position = "none",
       axis.title.x = element_blank(),
       axis.text.x = element_blank(),
       NULL
     )+
     NULL,
-  bottom_panel+ 
+  bottom_panel+
+    annotate("rect",xmin=ymd("2009-09-01"),xmax=ymd("2019-12-31"),ymin=-Inf,ymax=Inf, alpha=0.1, fill="black")+
+    annotate("text",x=ymd("2009-09-01")+((ymd("2019-12-31")-ymd("2009-09-01"))/2),y=11800,label = "Sample period")+
+    theme(plot.margin = margin(t = -1.5, r = 1, b = .05, l = 1,unit= "cm"))+
     NULL,
   align = TRUE,axis="b", ncol = 1, rel_heights = c(1,.75)
 )
 p_grid
-ggsave("images/prices_and_loads.png",width = 15,height=12)
+ggsave("images/prices_and_loads.png",width = 14,height=8)
 
 
 #direct label graph with AESO data
@@ -97,7 +128,7 @@ ggsave("images/prices_and_loads.png",width = 15,height=12)
 #align variable names
 df2 <- nrgstream_gen %>% filter(date<floor_date(max(date),"month"))%>% #trim to last full month of data
   select(time=Time,vol=gen,ID,AESO_Name,Plant_Type,Plant_Fuel,Capacity) %>%
-  filter(Plant_Type %in% c("COAL","COGEN","NGCC","WIND","SCGT","TRADE","HYDRO","SOLAR","OTHER"))%>%
+  filter(Plant_Type %in% c("COAL","COGEN","NGCC","WIND","SCGT","NGCONV","TRADE","HYDRO","SOLAR","OTHER"))%>%
   #filter(year(time)>=2010) %>% 
   left_join(forecast_data) %>% filter(!is.na(date))%>%
   #strip the AB-WECC tie since it's duplicate of AB-MT and AB-BC
@@ -111,7 +142,7 @@ df2 <- nrgstream_gen %>% filter(date<floor_date(max(date),"month"))%>% #trim to 
   mutate(month=month(time),year=year(time))%>%   
   mutate(Plant_Type=as_factor(Plant_Type),
          # Relevel to the end
-         Plant_Type=fct_other(Plant_Type,keep = c("COAL","COGEN","SCGT","NGCC","WIND","HYDRO","TRADE"),other_level = "OTHER"),
+         Plant_Type=fct_other(Plant_Type,keep = c("COAL","COGEN","SCGT","NGCC","NGCONV","WIND","HYDRO","TRADE"),other_level = "OTHER"),
          Plant_Type=fct_relevel(Plant_Type, "OTHER", after = Inf),
          Plant_Type=fct_recode(Plant_Type, "NET IMPORTS"="TRADE"),
          Plant_Type=fct_relevel(Plant_Type, "NET IMPORTS", after = Inf),
@@ -125,16 +156,19 @@ df2 <- nrgstream_gen %>% filter(date<floor_date(max(date),"month"))%>% #trim to 
   mutate(date=ymd(paste(year,month,15,sep="-")))
   
   
-  AB_palette<- c("black","black","grey50","grey50")
+  AB_palette<- c("black","black","grey60","grey60","grey30","grey30")
   
-    
+  AB_plant_order<-c("COAL","NGCONV","COGEN","NGCC","WIND","HYDRO","SCGT","OTHER","NET IMPORTS")
+  
   gen_fuel <- df2 %>% mutate(Plant_Type=factor(Plant_Type,levels=AB_plant_order))%>%
     #filter(date<ymd("2020-09-01"))%>%
     mutate(Plant_Type=fct_collapse(Plant_Type,
      "RENEWABLES"=c("WIND","OTHER","HYDRO"),
-     "NATURAL GAS"=c("SCGT","COGEN","NGCC"),
+     "NATURAL GAS (CC and SC)"=c("SCGT","NGCC","NGCONV"),
+     "COGENERATION"=c("COGEN"),
      "NET IMPORTS"="TRADE"
-     ))%>% 
+     ),
+     Plant_Type=fct_relevel(Plant_Type,"COGENERATION",after = 1))%>% 
     group_by(date,month,year,Plant_Type) %>% summarise(gen=sum(gen,na.rm = T),
                                                       )%>%
     ungroup() %>%
@@ -148,18 +182,18 @@ df2 <- nrgstream_gen %>% filter(date<floor_date(max(date),"month"))%>% #trim to 
     #geom_dl(aes(label=Plant_Type),method=list("last.bumpup",dl.trans(x=x+0.3),cex = .85))+
     scale_color_manual("",values= AB_palette)+
     #scale_fill_manual("",values= AB_palette)+
-    scale_linetype_manual("",values= c("solid","1131","11","solid"))+
+    scale_linetype_manual("",values= c("solid","11","11","solid","solid"))+
     #scale_color_manual("",values=grey.colors(9,start=0,end=.8))+
     #scale_fill_manual("",values=grey.colors(9,start=0,end=.8))+
     #scale_shape_manual("",values=c(15,16,17,18,0,1,2,3))+
     paper_theme()+
-    scale_x_date(date_labels = "%b\n%Y",date_breaks = "24 months",expand=c(0,0))+
+    scale_x_date(date_labels = "%b\n%Y",date_breaks = "12 months",expand=c(0,0))+
     expand_limits(x = as.Date(c("2004-01-01", "2022-1-30")))+
     expand_limits(y =-500)+
-    scale_y_continuous(expand = c(0,0),breaks=pretty_breaks())+
+    scale_y_continuous(expand = c(0,0),breaks=pretty_breaks(6))+
     
     theme(legend.position = "bottom",
-          legend.key.width = unit(3.7,"line"))+
+          legend.key.width = unit(3.5,"line"))+
     labs(x="",y="Monthly Average Hourly Generation or Net Imports (MW)",
          #title="Coal and Gas Generation and Carbon Prices (MW, 2007-2015)",
          #title="Alberta Power Generation by Plant Type (MW, 2015-2020)",
@@ -178,6 +212,36 @@ df2 <- nrgstream_gen %>% filter(date<floor_date(max(date),"month"))%>% #trim to 
   gen_fuel
   ggsave(file="images/gen_fuel.png", width = 14, height=8,dpi = 300)
 
+  
+  label_level<-5700
+  test<-gen_fuel+
+    annotate("text", x = ymd("2007-7-1"), y = label_level, label = "SGER introduced\n OBA=88%\np=$15/t",size=3.5,hjust = 0.5)+  
+    annotate("segment",x=ymd("2007-7-1"),xend=ymd("2007-7-1"),y=-Inf,yend=label_level-350, colour="black",size=1,lty="11") +
+    annotate("text", x = ymd("2016-1-1"), y = label_level, label = "SGER\nOBA=85%\np=$20/t",size=3.5,hjust = 0.5)+  
+    annotate("segment",x=ymd("2016-1-1"),xend=ymd("2016-1-1"),y=-Inf,yend=label_level-350, colour="black",size=1,lty="11") +
+    annotate("text", x = ymd("2017-1-1"), y = label_level, label = "SGER\nOBA=80%\np=$30/t",size=3.5,hjust = 0.5)+  
+    annotate("segment",x=ymd("2017-1-1"),xend=ymd("2017-1-1"),y=-Inf,yend=label_level-350, colour="black",size=1,lty="11") +
+    annotate("text", x = ymd("2018-1-1"), y = label_level, label = "CCIR\nOBA=0.37t\np=$30/t",size=3.5,hjust = 0.5)+  
+    annotate("segment",x=ymd("2018-1-1"),xend=ymd("2018-1-1"),y=-Inf,yend=label_level-350, colour="black",size=1,lty="11") +
+    #annotate("text", x = ymd("2019-1-1"), y = 6600, label = "CCIR\nOBA=0.37t/MWh\np=$30/t",size=3.8,hjust = 0.5)+  
+    #annotate("segment",x=ymd("2019-1-1"),xend=ymd("2019-1-1"),y=-Inf,yend=6000, colour="black",size=1,lty="11") +
+    #annotate("text", x = ymd("2020-1-1"), y = 6600, label = "CCIR\nOBA=0.37t/MWh\np=$30/t",size=3.8,hjust = 0.5)+  
+    #annotate("segment",x=ymd("2020-1-1"),xend=ymd("2020-1-1"),y=-Inf,yend=6000, colour="black",size=1,lty="11") +
+    annotate("text", x = ymd("2021-1-1"), y = label_level, label = "TIER\nOBA=0.37t\np=$40/t",size=3.5,hjust = 0.5)+  
+    annotate("segment",x=ymd("2021-1-1"),xend=ymd("2021-1-1"),y=-Inf,yend=label_level-350, colour="black",size=1,lty="11") +
+    annotate("text", x = ymd("2022-1-1"), y = label_level, label = "TIER\nOBA=0.37t\np=$50/t",size=3.5,hjust = 0.5)+  
+    annotate("segment",x=ymd("2022-1-1"),xend=ymd("2022-1-1"),y=-Inf,yend=label_level-350, colour="black",size=1,lty="11") +
+    #annotate("text", x = ymd("2010-1-1"), y = 6600, label = policy_exp("SGER",15,"88%"),size=3.5,hjust = 0.5)+  
+    annotate("rect",xmin=ymd("2009-09-01"),xmax=ymd("2019-12-31"),ymin=-Inf,ymax=label_level+380, alpha=0.1, fill="black")+
+    annotate("text",x=ymd("2009-09-01")+((ymd("2019-12-31")-ymd("2009-09-01"))/2),y=label_level+500,label = "Sample period")+
+    expand_limits(y =label_level+300)+
+    expand_limits(x =ymd("2022-09-01"))+
+    coord_cartesian(clip = 'off')+    # This keeps the labels from disappearing
+    NULL
+  
+    test
+    ggsave(file="images/gen_fuel_policies.png", width = 16, height=8,dpi = 300)
+  
   
   #carve out REP projects
   
@@ -284,7 +348,7 @@ df2 <- nrgstream_gen %>% filter(date<floor_date(max(date),"month"))%>% #trim to 
     #df1<-na.omit(df1)
     #df1$Revenue <- df1$total_gen*df1$p_mean
     
-    gen_set<-c("COAL","COGEN","HYDRO","NGCC", "OTHER", "SCGT","SOLAR","IMPORT","EXPORT","WIND")
+    gen_set<-c("COAL","COGEN","HYDRO","NGCC","NGCONV", "OTHER", "SCGT","SOLAR","IMPORT","EXPORT","WIND")
     
     
     #test_samp<-nrgstream_gen %>% filter(year(time)==2019)
@@ -293,9 +357,12 @@ df2 <- nrgstream_gen %>% filter(date<floor_date(max(date),"month"))%>% #trim to 
     
     df2 <- df1 %>% filter(Plant_Type %in% gen_set,year(time)<=2022) %>%
       filter(total_gen!=0)%>%
+      mutate(Plant_Type=fct_recode(Plant_Type,"GAS"="NGCC","GAS"="SCGT","GAS"="NGCONV"))%>%
       group_by(Plant_Type,Year) %>%
+      
       mutate(avg_rev=total_rev/total_gen)%>%
-      summarise(capture = sum(total_rev)/sum(total_gen),
+      summarise(gen=sum(total_gen),
+                capture = sum(total_rev)/sum(total_gen),
                 q50=quantile(avg_rev, probs=c(.5)),
                 q75=quantile(avg_rev, probs=c(.75)),
                 q25=quantile(avg_rev, probs=c(.25)),
@@ -305,10 +372,6 @@ df2 <- nrgstream_gen %>% filter(date<floor_date(max(date),"month"))%>% #trim to 
     
     
     #make vol-weighted avg
-    
-    
-    
-    
     df2$Plant_Type<-fct_relevel(df2$Plant_Type, "OTHER",after=Inf)
     df2$Plant_Type<-fct_relevel(df2$Plant_Type, "HYDRO",after=Inf)
     df2$Plant_Type<-fct_relevel(df2$Plant_Type, "WIND",after=Inf)
@@ -321,7 +384,8 @@ df2 <- nrgstream_gen %>% filter(date<floor_date(max(date),"month"))%>% #trim to 
     df3 <- df1 %>% filter(Plant_Type %in% gen_set,year(time)<2023,
                           !is.na(p_mean)) %>%
       group_by(Year) %>% 
-      summarise(capture = sum(total_rev)/sum(total_gen),
+      summarise(gen=sum(total_gen),
+                capture = sum(total_rev)/sum(total_gen),
                 q50=quantile(p_mean, probs=c(.5)),
                 q75=quantile(p_mean, probs=c(.75)),
                 q25=quantile(p_mean, probs=c(.25)),
@@ -338,6 +402,49 @@ df2 <- nrgstream_gen %>% filter(date<floor_date(max(date),"month"))%>% #trim to 
       mutate(Year=as_factor(Year),
              Plant_Type=as_factor(Plant_Type))
     df2<-df2 %>% bind_rows(df4)
+    
+    
+    
+    alt_index<-function(n=10){
+    #n much be even
+      if(n%%2>0)
+        n<-n+1 #add one if it's odd
+    seq_1<-seq(1,n/2)
+    seq_2<-seq(n,n/2+1)
+    
+    seq_test<-vector()
+    for(i in seq(1,n/2)){
+      seq_test<-c(seq_test,seq_1[i])
+      seq_test<-c(seq_test,seq_2[i])
+    }
+    seq_test
+    }
+    
+    my_palette<-c("black",grey.colors(8,start=0.2,end = .8)[alt_index(8)])
+    
+    df2 %>% filter(!Plant_Type %in% c("EXPORT"))%>%
+      filter(Year!="2022")%>%
+      mutate(Year=fct_recode(Year,"2022\n(YTD)"="2022"))%>%
+      ggplot(aes(Year,capture,fill=Plant_Type))+
+      geom_col(aes(Year,capture,fill=Plant_Type),position = position_dodge(width = .85),width = .65,color="black",size=.25)+
+      #geom_col(aes(Year,p_mean),position = "identity",fill=NA,color="black")+
+      #geom_line(dataaes(Year,capture,fill=Plant_Type),position = position_dodge(width = .9),width = .6,color="black",size=.5)+
+      #geom_text(aes(y=-10,label=Plant_Type),angle=90,size=2)+
+      #  scale_color_viridis("Plant Type",discrete=TRUE)+
+      #  scale_fill_viridis("Plant Type",discrete=TRUE)+
+      #scale_color_manual("",values=my_palette)+
+      scale_fill_manual("",values=my_palette)+
+      scale_y_continuous(breaks = pretty_breaks(),expand=c(0,0))+
+      #expand_limits(y=150)+
+      paper_theme()+theme(legend.position = "bottom")+
+      #guides(fill=guide_legend(nrow = 1,label.position = "bottom",keywidth = 3))+
+      guides(fill=guide_legend(nrow = 1,keywidth = 1.5))+
+      labs(x="",y="Volume-Weighted Average Capture Price ($/MWh)",
+           #title="Energy Price Capture ($/MWh, 2010-2021)",
+           #caption="Source: AESO Data, accessed via NRGStream\nGraph by @andrew_leach"
+      )
+    ggsave("images/price_capture_all.png",width=14,height=7,dpi=300)
+    
     
     
     my_palette<-c("black",grey.colors(2,start=0.3,end = .8))
@@ -364,6 +471,9 @@ df2 <- nrgstream_gen %>% filter(date<floor_date(max(date),"month"))%>% #trim to 
       )
     ggsave("images/price_capture_renew.png",width=14,height=7,dpi=300)
 
+    
+    
+    
 
     my_palette<-c("black",grey.colors(2,start=0.4,end = .7))
     df2 %>% filter(Plant_Type %in% c("MARKET","WIND","SOLAR"))%>%
@@ -403,7 +513,8 @@ df2 <- nrgstream_gen %>% filter(date<floor_date(max(date),"month"))%>% #trim to 
       rename(Plant_Type=ID)%>%
       group_by(Plant_Type,Year) %>%
       mutate(avg_rev=total_rev/total_gen)%>%
-      summarise(capture = sum(total_rev)/sum(total_gen),
+      summarise(gen=sum(total_gen),
+                capture = sum(total_rev)/sum(total_gen),
                 q50=quantile(avg_rev, probs=c(.5)),
                 q75=quantile(avg_rev, probs=c(.75)),
                 q25=quantile(avg_rev, probs=c(.25)),
@@ -560,7 +671,19 @@ df2 <- nrgstream_gen %>% filter(date<floor_date(max(date),"month"))%>% #trim to 
     # 19-20 1.1125%
     #20-21 3.1857%
     #21-22* 4.8459%
+
     
+    rep<-function(id_sent){
+      ret<-case_when(
+        (id_sent=="WHT1") ~ "REP1",
+        (id_sent=="WRW1") ~ "REP3",
+        (id_sent=="RIV1") ~ "REP1",
+        (id_sent=="CRR2") ~ "REP1",
+        TRUE ~ "Not in REP")
+      ret
+    }
+    
+        
     cpi<-function(year){
       ret<-case_when(
         (as.character(year)==2019) ~ 1,
@@ -625,9 +748,51 @@ df2 <- nrgstream_gen %>% filter(date<floor_date(max(date),"month"))%>% #trim to 
     
     
     
+    rep_plant_cpi_totals<-plant_capture %>%
+      filter(Plant_Type%in% c("MARKET",REP_projects),as.numeric(as.character(Year))>=2019)%>%
+      group_by(Plant_Type)%>%
+      mutate(startup=as.numeric(as.character(Year[min(which(!is.na(capture)))]))
+      )%>%
+      ungroup()  %>%
+      #add environmental attributes
+      mutate(env_attr=case_when(
+        (Plant_Type %in% REP_projects)& Year==2019 ~30*.37,
+        (Plant_Type %in% REP_projects)& Year==2020 ~30*.37,
+        (Plant_Type %in% REP_projects)& Year==2021 ~40*.37,
+        (Plant_Type %in% REP_projects)& Year==2022 ~50*.37,
+        TRUE~0
+      ))%>%
+      mutate(REP=rep(Plant_Type))%>%
+      mutate(strike=case_when(
+        (REP == "REP1") ~41.36*cpi(as.character(Year)),
+        (REP == "REP2") ~38.69*cpi(as.character(Year)),
+        (REP == "REP3") ~40.14*cpi(as.character(Year)),
+        TRUE~0
+      ))%>%
+      #reset factor levels
+      mutate(Year=fct_recode(Year,"2022 (YTD)"="2022"),
+             Plant_Type=fct_relevel(Plant_Type,"WHT1","CRR2","RIV1","WRW1"),
+             Plant_Type=fct_relevel(Plant_Type,"MARKET"),
+             Plant_Type=fct_recode(Plant_Type,"Market Generation-Weighted Average"="MARKET"),
+             Plant_Type=fct_recode(Plant_Type,"Whitla 1 (WHT1)"="WHT1","Castle Rock Ridge 2 (CRR2)"="CRR2","Riverview Wind (RIV1)"="RIV1","Windrise Wind (WRW1)"="WRW1"),
+             #Plant_Type=fct_reorder(Plant_Type,startup,min),
+      )%>%
+      filter(REP != "Not in REP",!is.na(gen))%>%
+      select(Plant_Type,Year,gen,capture,startup,env_attr,strike)%>%
+      mutate(AESO_net=(capture-strike)*gen/10^6,
+             govt_net=env_attr*gen/10^6,
+             total_net=AESO_net+govt_net)
+   
+    
+    rep_plant_cpi_totals %>% ungroup()%>%
+      summarize(AESO_total=sum(AESO_net),
+                GOA_total=sum(govt_net),
+                total=AESO_total+GOA_total)
     
     
     
+    
+     
 
     
   #price_capture plant level table
@@ -1019,5 +1184,7 @@ lto_renew<-lto_gen %>% filter(calendar_year==2023,fuel_type %in% renew) %>%
   group_by(scenario)%>%
   mutate(renew_cap_share=sum(cap_share),
             renew_gen_share=sum(output_share))
+
+
             
   

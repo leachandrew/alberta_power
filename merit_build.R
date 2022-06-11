@@ -9,14 +9,15 @@ start_time<-Sys.time()
 
 options(scipen=999)
 
-update<-1 #add new data
+update<-0 #add new data
 save<-1 #save files at the end
 synth<-0 #synthetic plants?
-  synth_type<-2  #5 is a target facility, focus_id,4 is facility,3 is offer control by type, 2 is by offer_control,1 is by plant_fuel, 0 is full merit as synthetic plant
+  synth_type<-0  #5 is a target facility, focus_id,4 is facility,3 is offer control by type, 2 is by offer_control,1 is by plant_fuel, 0 is full merit as synthetic plant
 
   if(synth_type==5)
     focus_id<-c("SH1","SH2")
 
+  
 load("data/all_merit.RData")  
 if(update==1){
   merit_data<-rbind(merit_data,update_merit(merit_data))
@@ -79,7 +80,7 @@ load("data/forecast_data.RData")
   if(update==1)
    {
    load(file="data/metered_vols_data.Rdata" ) 
-    #all_vols<-all_vols %>% filter(year<2019)
+    #all_vols<-all_vols %>% filter(year<2022)
     all_vols<-update_vols(all_vols)
     save(all_vols,file="data/metered_vols_data.Rdata" ) 
     #isolate renewable (non-hydro and biomass) volumes from metered volumes - the ones that default bid to zero
@@ -148,12 +149,14 @@ load("data/forecast_data.RData")
  
 #testing storage objects
 #merit_store<-merit_aug  
-#merit_small<-merit_aug%>%filter(year(date)==2019)
+#merit_small<-merit_aug%>%filter(year(date)==2022)
 #merit_aug<-merit_small
   
 #merit_aug<-merit_store  
 #merit_aug<-merit_small
 
+  
+plant<-plant_data()
   
 merit_aug<-merit_aug %>% left_join(plant_data(),by=c("asset_id"="ID"))%>%
   mutate(year=year(date))%>%
@@ -166,11 +169,61 @@ merit_aug<-merit_aug %>% left_join(plant_data(),by=c("asset_id"="ID"))%>%
                            year(date)==2019 ~ "CCIR_30",
                            year(date)==2020 ~ "TIER_30",
                            year(date)==2021 ~ "TIER_40",
-                           TRUE ~ "TIER_40")
+                           year(date)==2022 ~ "TIER_50",
+                           TRUE ~ "TIER_50")
     )%>%
   select(-year)# take out the year value since it will create duplication with older code snippets later for full data set
 
 
+#testing storage objects
+#merit_store<-merit_aug  
+#merit_small<-merit_aug%>%filter(year(date)>=2020)
+#merit_aug<-merit_small
+
+#merit_aug<-merit_store  
+#merit_aug<-merit_small
+
+
+
+
+#Repair coal-to-gas-conversions
+merit_aug<-merit_aug %>% 
+  mutate(Plant_Type=case_when( 
+    (asset_id=="HRM") & (date>=ymd("2020-05-08")) ~ "SCGT",  #Milner change to gas effective 
+    #SH1 Sheerness #1 and SH2 Sheerness #2 -July 30, 2021.https://www.aeso.ca/market/market-updates/2021/sh1-sheerness-1-and-sh2-sheerness-2-change-in-fuel-type-notice/
+    (asset_id %in% c("SH1","SH2")) & (date>=ymd("2021-07-30")) ~ "NGCONV",
+    #KH3 January 11, 2022
+    (asset_id =="KH1") & (date>=ymd("2022-01-11")) ~ "NGCONV",
+    #KH2 July 27, 2021.
+    (asset_id =="KH2") & (date>=ymd("2021-07-21")) ~ "NGCONV",
+    #Battle River #4 (BR4)	March 8, 2022
+    (asset_id =="BR4") & (date>=ymd("2022-03-08")) ~ "NGCONV",
+    #Battle River #5 (BR5)	 November 19, 2021
+    (asset_id =="BR5") & (date>=ymd("2021-11-19")) ~ "NGCONV",
+    #Sundance #6 (SD6)	401	0	0 February 19, 2021
+    (asset_id =="SD6") & (date>=ymd("2021-02-19")) ~ "NGCONV",
+    TRUE ~ Plant_Type),
+    Capacity=case_when(
+      (asset_id=="HRM") & (date>=ymd("2020-04-23"))&(date<ymd("2020-05-08")) ~ 185,  #Milner change to gas effective 
+      (asset_id=="HRM") & (date>=ymd("2020-05-08"))&(date<ymd("2021-12-09")) ~ 208,  #Milner change to gas effective 
+      (asset_id=="HRM") & (date>=ymd("2021-12-09")) ~ 300,  #Milner change to gas effective 
+      TRUE~Capacity
+    )
+    
+    
+  )
+  
+#merit_aug%>%filter(asset_id=="HRM")%>% mutate(year=year(date))%>%
+#  select(year,Capacity) %>% distinct()
+
+#gen_type<-merit_aug %>% mutate(year=year(date),month=month(date))%>%
+#  group_by(year,month,Plant_Type) %>% summarize(gen=sum(dispatched_mw))%>%
+#  mutate(date=ymd(paste(year,month,1,sep="-")))
+
+  #milner capacity change
+  
+  
+  
 
   
   fossils<-c("SCGT","NGCC","COAL")
@@ -313,7 +366,10 @@ merit_aug<-merit_aug %>% left_join(plant_data(),by=c("asset_id"="ID"))%>%
            offer_sum=fct_other(offer_sum,keep = key_firms),
            #offer_sum=as.character(offer_sum))
            NULL)
-    
+
+
+  
+  
   #storage objects for testing purposes
   #merit_store<-merit_aug
   #use this to revert to stored merit_aug so you don't have to re-load
@@ -331,7 +387,9 @@ merit_aug<-merit_aug %>% left_join(plant_data(),by=c("asset_id"="ID"))%>%
     ungroup() %>% 
       filter(rank<=3)%>%
     select(asset_id)
-  
+
+
+
   
   #small_testing_sample 
   #merit_small<-merit_aug%>%filter(date==ymd("2019-10-05"))
@@ -349,6 +407,11 @@ merit_aug<-merit_aug %>% left_join(plant_data(),by=c("asset_id"="ID"))%>%
   #merit_aug<-merit_small
   
   #load("data/merit_data_proc_bak.RData")  
+  
+  
+  
+  
+  
   
   
   if(synth==1){
@@ -428,11 +491,7 @@ merit_aug<-merit_aug %>% left_join(plant_data(),by=c("asset_id"="ID"))%>%
         )%>%
         ungroup()
   
-      #merit_aug<-merit_aug%>% mutate(offer_func=list(bid_func(merit[[1]],oba_val[[1]])))
-      #merit_store<-merit_aug
 
-      
-      
       merit_aug<-merit_aug%>% group_by(date,he,Plant_Type,offer_gen) %>%
         mutate(bid_15=merit_func[[1]](15),
                bid_30=merit_func[[1]](30),
@@ -518,12 +577,8 @@ merit_aug<-merit_aug %>% left_join(plant_data(),by=c("asset_id"="ID"))%>%
                plant_90=plant_func[[1]](90),
                plant_95=plant_func[[1]](95),
                plant_100=plant_func[[1]](100)) %>%
-        
-        
-        
         ungroup() 
-      
-      print(paste("Built bids, elapsed time is",time_length(interval(start_time, Sys.time()), "seconds"),"seconds"))
+    print(paste("Built bids, elapsed time is",time_length(interval(start_time, Sys.time()), "seconds"),"seconds"))
       
         
       merit_aug<-merit_aug%>%

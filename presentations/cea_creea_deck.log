@@ -1,7 +1,7 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.21 (MiKTeX 20.11) (preloaded format=pdflatex 2021.1.8)  30 MAY 2022 14:38
+This is pdfTeX, Version 3.14159265-2.6-1.40.21 (MiKTeX 20.11) (preloaded format=pdflatex 2022.5.30)  30 MAY 2022 22:09
 entering extended mode
-**./aere_deck.tex
-(aere_deck.tex
+**./cea_creea_deck.tex
+(cea_creea_deck.tex
 LaTeX2e <2020-10-01> patch level 2
 L3 programming layer <2020-10-27> xparse <2020-03-03>
 (C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/latex/beamer\beamer.cls
@@ -828,4 +828,671 @@ default.sty)
 edefault.sty)
 (C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/latex/beamer\beamerinnerthem
 edefault.sty
-\beamer@dima=\dim
+\beamer@dima=\dimen290
+\beamer@dimb=\dimen291
+)
+(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/latex/beamer\beamerouterthem
+edefault.sty)))
+(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/latex/fontawesome\fontawesom
+e.sty
+Package: fontawesome 2016/05/15 v4.6.3.1 font awesome icons
+
+(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/generic/iftex\ifxetex.sty
+Package: ifxetex 2019/10/25 v0.7 ifxetex legacy package. Use iftex instead.
+)
+(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/generic/iftex\ifluatex.sty
+Package: ifluatex 2019/10/25 v1.5 ifluatex legacy package. Use iftex instead.
+)
+(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/latex/fontawesome\fontawesom
+esymbols-generic.tex)
+(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/latex/fontawesome\fontawesom
+esymbols-pdftex.tex)) (C:/Users/aleach/mytexmf\tex/latex\mystuff\ualberta.sty
+(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/latex/beamer\beamerthemeRoch
+ester.sty
+(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/latex/beamer\beamerouterthem
+esidebar.sty
+\beamer@sidebarwidth=\dimen292
+\beamer@headheight=\dimen293
+)
+(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/latex/beamer\beamerinnerthem
+erectangles.sty)
+(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/latex/beamer\beamercolorthem
+ewhale.sty)
+(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/latex/beamer\beamercolorthem
+eorchid.sty))
+(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/latex/pgf/basiclayer\pgf.sty
+Package: pgf 2020/10/01 v3.1.6a (3.1.6a)
+
+(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/generic/pgf/modules\pgfmodul
+eshapes.code.tex
+File: pgfmoduleshapes.code.tex 2020/10/01 v3.1.6a (3.1.6a)
+\pgfnodeparttextbox=\box72
+)
+(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/generic/pgf/modules\pgfmodul
+eplot.code.tex
+File: pgfmoduleplot.code.tex 2020/10/01 v3.1.6a (3.1.6a)
+)
+(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/latex/pgf/compatibility\pgfc
+omp-version-0-65.sty
+Package: pgfcomp-version-0-65 2020/10/01 v3.1.6a (3.1.6a)
+\pgf@nodesepstart=\dimen294
+\pgf@nodesepend=\dimen295
+)
+(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/latex/pgf/compatibility\pgfc
+omp-version-1-18.sty
+Package: pgfcomp-version-1-18 2020/10/01 v3.1.6a (3.1.6a)
+))
+(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/latex/beamer\beamerouterthem
+esplit.sty)
+(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/latex/beamer\beamerinnerthem
+erounded.sty)
+(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/latex/beamer\beamercolorthem
+estructure.sty))
+(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/generic/babel\babel.sty
+Package: babel 2020/10/27 3.51 The Babel package
+
+(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/generic/babel\babel.def
+File: babel.def 2020/10/27 3.51 Babel common definitions
+\babel@savecnt=\count323
+\U@D=\dimen296
+\l@babelnohyphens=\language79
+
+(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/generic/babel\txtbabel.def)
+\bbl@readstream=\read3
+)
+LaTeX Info: Redefining \textlatin on input line 707.
+\bbl@dirlevel=\count324
+*************************************
+* Local config file bblopts.cfg used
+*
+(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/latex/arabi\bblopts.cfg
+File: bblopts.cfg 2005/09/08 v0.1 add Arabic and Farsi to "declared" options of
+ babel
+)
+(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/latex/babel-english\english.
+ldf
+Language: english 2017/06/06 v3.3r English support from the babel system
+Package babel Info: \l@canadian = using hyphenrules for english
+(babel)             (\language0) on input line 102.
+Package babel Info: \l@australian = using hyphenrules for ukenglish
+(babel)             (\language73) on input line 105.
+Package babel Info: \l@newzealand = using hyphenrules for ukenglish
+(babel)             (\language73) on input line 108.
+))
+(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/latex/base\inputenc.sty
+Package: inputenc 2020/08/01 v1.3d Input encoding file
+\inpenc@prehook=\toks44
+\inpenc@posthook=\toks45
+
+(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/latex/base\latin1.def
+File: latin1.def 2020/08/01 v1.3d Input encoding file
+))
+(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/latex/base\fontenc.sty
+Package: fontenc 2020/08/10 v2.0s Standard LaTeX package
+)
+(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/latex/multirow\multirow.sty
+Package: multirow 2021/01/02 v2.6 Span multiple rows of a table
+\multirow@colwidth=\skip64
+\multirow@cntb=\count325
+\multirow@dima=\skip65
+\bigstrutjot=\dimen297
+) (C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/latex/capt-of\capt-of.sty
+Package: capt-of 2009/12/29 v0.2 standard captions outside of floats
+)
+(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/latex/tools\array.sty
+Package: array 2019/08/31 v2.4l Tabular extension package (FMi)
+\col@sep=\dimen298
+\ar@mcellbox=\box73
+\extrarowheight=\dimen299
+\NC@list=\toks46
+\extratabsurround=\skip66
+\backup@length=\skip67
+\ar@cellbox=\box74
+)
+(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/latex/pgf/frontendlayer\tikz
+.sty
+(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/latex/pgf/utilities\pgffor.s
+ty
+(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/generic/pgf/utilities\pgffor
+.code.tex
+Package: pgffor 2020/10/01 v3.1.6a (3.1.6a)
+
+(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/generic/pgf/math\pgfmath.cod
+e.tex)
+\pgffor@iter=\dimen300
+\pgffor@skip=\dimen301
+\pgffor@stack=\toks47
+\pgffor@toks=\toks48
+))
+(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/generic/pgf/frontendlayer/ti
+kz\tikz.code.tex
+Package: tikz 2020/10/01 v3.1.6a (3.1.6a)
+
+(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/generic/pgf/libraries\pgflib
+raryplothandlers.code.tex
+File: pgflibraryplothandlers.code.tex 2020/10/01 v3.1.6a (3.1.6a)
+\pgf@plot@mark@count=\count326
+\pgfplotmarksize=\dimen302
+)
+\tikz@lastx=\dimen303
+\tikz@lasty=\dimen304
+\tikz@lastxsaved=\dimen305
+\tikz@lastysaved=\dimen306
+\tikz@lastmovetox=\dimen307
+\tikz@lastmovetoy=\dimen308
+\tikzleveldistance=\dimen309
+\tikzsiblingdistance=\dimen310
+\tikz@figbox=\box75
+\tikz@figbox@bg=\box76
+\tikz@tempbox=\box77
+\tikz@tempbox@bg=\box78
+\tikztreelevel=\count327
+\tikznumberofchildren=\count328
+\tikznumberofcurrentchild=\count329
+\tikz@fig@count=\count330
+
+(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/generic/pgf/modules\pgfmodul
+ematrix.code.tex
+File: pgfmodulematrix.code.tex 2020/10/01 v3.1.6a (3.1.6a)
+\pgfmatrixcurrentrow=\count331
+\pgfmatrixcurrentcolumn=\count332
+\pgf@matrix@numberofcolumns=\count333
+)
+\tikz@expandcount=\count334
+
+(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/generic/pgf/frontendlayer/ti
+kz/libraries\tikzlibrarytopaths.code.tex
+File: tikzlibrarytopaths.code.tex 2020/10/01 v3.1.6a (3.1.6a)
+)))
+(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/generic/iftex\ifpdf.sty
+Package: ifpdf 2019/10/25 v3.4 ifpdf legacy package. Use iftex instead.
+)
+Package hyperref Info: Option `colorlinks' set `true' on input line 23.
+
+(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/latex/l3backend\l3backend-pd
+ftex.def
+File: l3backend-pdftex.def 2020-09-24 L3 backend support: PDF output (pdfTeX)
+\l__kernel_color_stack_int=\count335
+\l__pdf_internal_box=\box79
+) (cea_creea_deck.aux)
+\openout1 = `cea_creea_deck.aux'.
+
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 49.
+LaTeX Font Info:    ... okay on input line 49.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 49.
+LaTeX Font Info:    ... okay on input line 49.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 49.
+LaTeX Font Info:    ... okay on input line 49.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 49.
+LaTeX Font Info:    ... okay on input line 49.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 49.
+LaTeX Font Info:    ... okay on input line 49.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 49.
+LaTeX Font Info:    ... okay on input line 49.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 49.
+LaTeX Font Info:    ... okay on input line 49.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 49.
+LaTeX Font Info:    ... okay on input line 49.
+
+*geometry* driver: auto-detecting
+*geometry* detected driver: pdftex
+*geometry* verbose mode - [ preamble ] result:
+* driver: pdftex
+* paper: custom
+* layout: <same size as paper>
+* layoutoffset:(h,v)=(0.0pt,0.0pt)
+* modes: includehead includefoot 
+* h-part:(L,W,R)=(28.45274pt, 398.3386pt, 28.45274pt)
+* v-part:(T,H,B)=(0.0pt, 256.0748pt, 0.0pt)
+* \paperwidth=455.24408pt
+* \paperheight=256.0748pt
+* \textwidth=398.3386pt
+* \textheight=227.62207pt
+* \oddsidemargin=-43.81725pt
+* \evensidemargin=-43.81725pt
+* \topmargin=-72.26999pt
+* \headheight=14.22636pt
+* \headsep=0.0pt
+* \topskip=11.0pt
+* \footskip=14.22636pt
+* \marginparwidth=4.0pt
+* \marginparsep=10.0pt
+* \columnsep=10.0pt
+* \skip\footins=10.0pt plus 4.0pt minus 2.0pt
+* \hoffset=0.0pt
+* \voffset=0.0pt
+* \mag=1000
+* \@twocolumnfalse
+* \@twosidefalse
+* \@mparswitchfalse
+* \@reversemarginfalse
+* (1in=72.27pt=25.4mm, 1cm=28.453pt)
+
+
+(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/context/base/mkii\supp-pdf.m
+kii
+[Loading MPS to PDF converter (version 2006.09.02).]
+\scratchcounter=\count336
+\scratchdimen=\dimen311
+\scratchbox=\box80
+\nofMPsegments=\count337
+\nofMParguments=\count338
+\everyMPshowfont=\toks49
+\MPscratchCnt=\count339
+\MPscratchDim=\dimen312
+\MPnumerator=\count340
+\makeMPintoPDFobject=\count341
+\everyMPtoPDFconversion=\toks50
+)
+(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/latex/epstopdf-pkg\epstopdf-
+base.sty
+Package: epstopdf-base 2020-01-24 v2.11 Base part for package epstopdf
+Package epstopdf-base Info: Redefining graphics rule for `.eps' on input line 4
+85.
+)
+Package hyperref Info: Link coloring ON on input line 49.
+
+(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/latex/hyperref\nameref.sty
+Package: nameref 2019/09/16 v2.46 Cross-referencing by name of section
+
+(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/latex/refcount\refcount.sty
+Package: refcount 2019/12/15 v3.6 Data extraction from label references (HO)
+)
+(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/generic/gettitlestring\getti
+tlestring.sty
+Package: gettitlestring 2019/12/15 v1.6 Cleanup title references (HO)
+)
+\c@section@level=\count342
+)
+LaTeX Info: Redefining \ref on input line 49.
+LaTeX Info: Redefining \pageref on input line 49.
+LaTeX Info: Redefining \nameref on input line 49.
+ (cea_creea_deck.out) (cea_creea_deck.out)
+\@outlinefile=\write5
+\openout5 = `cea_creea_deck.out'.
+
+LaTeX Font Info:    Overwriting symbol font `operators' in version `normal'
+(Font)                  OT1/cmr/m/n --> OT1/cmss/m/n on input line 49.
+LaTeX Font Info:    Overwriting symbol font `operators' in version `bold'
+(Font)                  OT1/cmr/bx/n --> OT1/cmss/b/n on input line 49.
+\symnumbers=\mathgroup6
+\sympureletters=\mathgroup7
+LaTeX Font Info:    Overwriting math alphabet `\mathrm' in version `normal'
+(Font)                  OT1/cmss/m/n --> T1/cmr/m/n on input line 49.
+LaTeX Font Info:    Redeclaring math alphabet \mathbf on input line 49.
+LaTeX Font Info:    Overwriting math alphabet `\mathbf' in version `normal'
+(Font)                  OT1/cmr/bx/n --> T1/cmss/b/n on input line 49.
+LaTeX Font Info:    Overwriting math alphabet `\mathbf' in version `bold'
+(Font)                  OT1/cmr/bx/n --> T1/cmss/b/n on input line 49.
+LaTeX Font Info:    Redeclaring math alphabet \mathsf on input line 49.
+LaTeX Font Info:    Overwriting math alphabet `\mathsf' in version `normal'
+(Font)                  OT1/cmss/m/n --> T1/cmss/m/n on input line 49.
+LaTeX Font Info:    Overwriting math alphabet `\mathsf' in version `bold'
+(Font)                  OT1/cmss/bx/n --> T1/cmss/m/n on input line 49.
+LaTeX Font Info:    Redeclaring math alphabet \mathit on input line 49.
+LaTeX Font Info:    Overwriting math alphabet `\mathit' in version `normal'
+(Font)                  OT1/cmr/m/it --> T1/cmss/m/it on input line 49.
+LaTeX Font Info:    Overwriting math alphabet `\mathit' in version `bold'
+(Font)                  OT1/cmr/bx/it --> T1/cmss/m/it on input line 49.
+LaTeX Font Info:    Redeclaring math alphabet \mathtt on input line 49.
+LaTeX Font Info:    Overwriting math alphabet `\mathtt' in version `normal'
+(Font)                  OT1/cmtt/m/n --> T1/cmtt/m/n on input line 49.
+LaTeX Font Info:    Overwriting math alphabet `\mathtt' in version `bold'
+(Font)                  OT1/cmtt/m/n --> T1/cmtt/m/n on input line 49.
+LaTeX Font Info:    Overwriting symbol font `numbers' in version `bold'
+(Font)                  T1/cmss/m/n --> T1/cmss/b/n on input line 49.
+LaTeX Font Info:    Overwriting symbol font `pureletters' in version `bold'
+(Font)                  T1/cmss/m/it --> T1/cmss/b/it on input line 49.
+LaTeX Font Info:    Overwriting math alphabet `\mathrm' in version `bold'
+(Font)                  OT1/cmss/b/n --> T1/cmr/b/n on input line 49.
+LaTeX Font Info:    Overwriting math alphabet `\mathbf' in version `bold'
+(Font)                  T1/cmss/b/n --> T1/cmss/b/n on input line 49.
+LaTeX Font Info:    Overwriting math alphabet `\mathsf' in version `bold'
+(Font)                  T1/cmss/m/n --> T1/cmss/b/n on input line 49.
+LaTeX Font Info:    Overwriting math alphabet `\mathit' in version `bold'
+(Font)                  T1/cmss/m/it --> T1/cmss/b/it on input line 49.
+LaTeX Font Info:    Overwriting math alphabet `\mathtt' in version `bold'
+(Font)                  T1/cmtt/m/n --> T1/cmtt/b/n on input line 49.
+LaTeX Font Info:    Redeclaring symbol font `pureletters' on input line 49.
+LaTeX Font Info:    Encoding `T1' has changed to `OT1' for symbol font
+(Font)              `pureletters' in the math version `normal' on input line 49
+.
+LaTeX Font Info:    Overwriting symbol font `pureletters' in version `normal'
+(Font)                  T1/cmss/m/it --> OT1/mathkerncmss/m/sl on input line 49
+.
+LaTeX Font Info:    Encoding `T1' has changed to `OT1' for symbol font
+(Font)              `pureletters' in the math version `bold' on input line 49.
+LaTeX Font Info:    Overwriting symbol font `pureletters' in version `bold'
+(Font)                  T1/cmss/b/it --> OT1/mathkerncmss/m/sl on input line 49
+.
+LaTeX Font Info:    Overwriting symbol font `pureletters' in version `bold'
+(Font)                  OT1/mathkerncmss/m/sl --> OT1/mathkerncmss/bx/sl on inp
+ut line 49.
+
+(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/latex/translator\translator-
+basic-dictionary-English.dict
+Dictionary: translator-basic-dictionary, Language: English 
+)
+(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/latex/translator\translator-
+bibliography-dictionary-English.dict
+Dictionary: translator-bibliography-dictionary, Language: English 
+)
+(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/latex/translator\translator-
+environment-dictionary-English.dict
+Dictionary: translator-environment-dictionary, Language: English 
+)
+(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/latex/translator\translator-
+months-dictionary-English.dict
+Dictionary: translator-months-dictionary, Language: English 
+)
+(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/latex/translator\translator-
+numbers-dictionary-English.dict
+Dictionary: translator-numbers-dictionary, Language: English 
+)
+(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/latex/translator\translator-
+theorem-dictionary-English.dict
+Dictionary: translator-theorem-dictionary, Language: English 
+) (cea_creea_deck.nav)
+Overfull \hbox (291.22525pt too wide) detected at line 49
+  [] [] [] [] [] [] [] [] [] 
+ []
+
+
+Package hyperref Warning: Option `pdfauthor' has already been used,
+(hyperref)                setting the option has no effect on input line 73.
+
+LaTeX Font Info:    Trying to load font information for U+msa on input line 82.
+
+(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/latex/amsfonts\umsa.fd
+File: umsa.fd 2013/01/14 v3.01 AMS symbols A
+)
+LaTeX Font Info:    Trying to load font information for U+msb on input line 82.
+
+
+(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/latex/amsfonts\umsb.fd
+File: umsb.fd 2013/01/14 v3.01 AMS symbols B
+)
+LaTeX Font Info:    Trying to load font information for OT1+mathkerncmss on inp
+ut line 82.
+
+(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/latex/sansmathaccent\ot1math
+kerncmss.fd
+File: ot1mathkerncmss.fd 2020/01/31 Fontinst v1.933 font definitions for OT1/ma
+thkerncmss.
+)
+Overfull \hbox (291.22525pt too wide) has occurred while \output is active
+  [] [] [] [] [] [] [] [] [] 
+ []
+
+[1{C:/Users/aleach/AppData/Local/MiKTeX/pdftex/config/pdftex.map}
+
+ <C:/Users/aleach/mytexmf/tex/latex/mystuff/ualberta_header.png>]
+Overfull \hbox (291.22525pt too wide) has occurred while \output is active
+  [] [] [] [] [] [] [] [] [] 
+ []
+
+[2
+
+]
+Overfull \hbox (291.22525pt too wide) has occurred while \output is active
+  [] [] [] [] [] [] [] [] [] 
+ []
+
+[3
+
+]
+<../images/alberta_grid.png, id=94, 467.17393pt x 386.30035pt>
+File: ../images/alberta_grid.png Graphic file (type png)
+<use ../images/alberta_grid.png>
+Package pdftex.def Info: ../images/alberta_grid.png  used on input line 122.
+(pdftex.def)             Requested size: 227.62204pt x 188.21603pt.
+
+Overfull \hbox (291.22525pt too wide) has occurred while \output is active
+  [] [] [] [] [] [] [] [] [] 
+ []
+
+[4
+
+ <../images/alberta_grid.png>]
+Overfull \hbox (291.22525pt too wide) has occurred while \output is active
+  [] [] [] [] [] [] [] [] [] 
+ []
+
+[5
+
+]
+<../images/prices_and_loads.png, id=120, 1011.78pt x 578.16pt>
+File: ../images/prices_and_loads.png Graphic file (type png)
+<use ../images/prices_and_loads.png>
+Package pdftex.def Info: ../images/prices_and_loads.png  used on input line 141
+.
+(pdftex.def)             Requested size: 341.43306pt x 195.10735pt.
+
+Overfull \hbox (291.22525pt too wide) has occurred while \output is active
+  [] [] [] [] [] [] [] [] [] 
+ []
+
+[6
+
+ <../images/prices_and_loads.png>]
+Overfull \hbox (291.22525pt too wide) has occurred while \output is active
+  [] [] [] [] [] [] [] [] [] 
+ []
+
+[7
+
+]
+<../images/gen_fuel_policies.png, id=147, 1156.32pt x 578.16pt>
+File: ../images/gen_fuel_policies.png Graphic file (type png)
+<use ../images/gen_fuel_policies.png>
+Package pdftex.def Info: ../images/gen_fuel_policies.png  used on input line 16
+1.
+(pdftex.def)             Requested size: 386.96024pt x 193.47527pt.
+
+Overfull \hbox (291.22525pt too wide) has occurred while \output is active
+  [] [] [] [] [] [] [] [] [] 
+ []
+
+[8
+
+ <../images/gen_fuel_policies.png>]
+Overfull \hbox (291.22525pt too wide) has occurred while \output is active
+  [] [] [] [] [] [] [] [] [] 
+ []
+
+[9
+
+]
+Overfull \hbox (291.22525pt too wide) has occurred while \output is active
+  [] [] [] [] [] [] [] [] [] 
+ []
+
+[10
+
+]
+<../../sger/compliance_cost_policies.png, id=187, 1011.78pt x 433.62pt>
+File: ../../sger/compliance_cost_policies.png Graphic file (type png)
+<use ../../sger/compliance_cost_policies.png>
+Package pdftex.def Info: ../../sger/compliance_cost_policies.png  used on input
+ line 218.
+(pdftex.def)             Requested size: 386.96024pt x 165.84256pt.
+
+Overfull \hbox (291.22525pt too wide) has occurred while \output is active
+  [] [] [] [] [] [] [] [] [] 
+ []
+
+[11
+
+ <../../sger/compliance_cost_policies.png>]
+Overfull \hbox (291.22525pt too wide) has occurred while \output is active
+  [] [] [] [] [] [] [] [] [] 
+ []
+
+[12
+
+]
+<../images/sampling.png, id=220, 1011.78pt x 505.89pt>
+File: ../images/sampling.png Graphic file (type png)
+<use ../images/sampling.png>
+Package pdftex.def Info: ../images/sampling.png  used on input line 242.
+(pdftex.def)             Requested size: 364.19664pt x 182.09709pt.
+
+Overfull \hbox (291.22525pt too wide) has occurred while \output is active
+  [] [] [] [] [] [] [] [] [] 
+ []
+
+[13
+
+ <../images/sampling.png>]
+<../images/coal_synth_cea.png, id=235, 736.89589pt x 271.44267pt>
+File: ../images/coal_synth_cea.png Graphic file (type png)
+<use ../images/coal_synth_cea.png>
+Package pdftex.def Info: ../images/coal_synth_cea.png  used on input line 250.
+(pdftex.def)             Requested size: 450.69414pt x 166.01881pt.
+
+Overfull \hbox (291.22525pt too wide) has occurred while \output is active
+  [] [] [] [] [] [] [] [] [] 
+ []
+
+[14
+
+ <../images/coal_synth_cea.png>]
+Overfull \hbox (291.22525pt too wide) has occurred while \output is active
+  [] [] [] [] [] [] [] [] [] 
+ []
+
+[15
+
+]
+<../images/expectation.png, id=261, 844.87071pt x 507.61072pt>
+File: ../images/expectation.png Graphic file (type png)
+<use ../images/expectation.png>
+Package pdftex.def Info: ../images/expectation.png  used on input line 274.
+(pdftex.def)             Requested size: 318.66946pt x 191.46115pt.
+
+Overfull \hbox (291.22525pt too wide) has occurred while \output is active
+  [] [] [] [] [] [] [] [] [] 
+ []
+
+[16
+
+ <../images/expectation.png>]
+<../images/all_plants_net.png, id=276, 1011.78pt x 578.16pt>
+File: ../images/all_plants_net.png Graphic file (type png)
+<use ../images/all_plants_net.png>
+Package pdftex.def Info: ../images/all_plants_net.png  used on input line 285.
+(pdftex.def)             Requested size: 318.66946pt x 182.0949pt.
+
+Overfull \hbox (291.22525pt too wide) has occurred while \output is active
+  [] [] [] [] [] [] [] [] [] 
+ []
+
+[17
+
+ <../images/all_plants_net.png>]
+<../images/all_plants_no_peaks.png, id=289, 1011.78pt x 578.16pt>
+File: ../images/all_plants_no_peaks.png Graphic file (type png)
+<use ../images/all_plants_no_peaks.png>
+Package pdftex.def Info: ../images/all_plants_no_peaks.png  used on input line 
+292.
+(pdftex.def)             Requested size: 318.66946pt x 182.0949pt.
+
+Overfull \hbox (291.22525pt too wide) has occurred while \output is active
+  [] [] [] [] [] [] [] [] [] 
+ []
+
+[18
+
+ <../images/all_plants_no_peaks.png>]
+<../images/all_plants_net_peak.png, id=303, 1011.78pt x 578.16pt>
+File: ../images/all_plants_net_peak.png Graphic file (type png)
+<use ../images/all_plants_net_peak.png>
+Package pdftex.def Info: ../images/all_plants_net_peak.png  used on input line 
+299.
+(pdftex.def)             Requested size: 318.66946pt x 182.0949pt.
+
+Overfull \hbox (291.22525pt too wide) has occurred while \output is active
+  [] [] [] [] [] [] [] [] [] 
+ []
+
+[19
+
+ <../images/all_plants_net_peak.png>]
+Overfull \hbox (291.22525pt too wide) has occurred while \output is active
+  [] [] [] [] [] [] [] [] [] 
+ []
+
+[20
+
+]
+LaTeX Font Info:    Trying to load font information for U+fontawesometwo on inp
+ut line 378.
+
+(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/latex/fontawesome\ufontaweso
+metwo.fd
+File: ufontawesometwo.fd 2016/05/22 Font definitions for U/fontawesometwo.
+)
+LaTeX Font Info:    Trying to load font information for U+fontawesomethree on i
+nput line 378.
+
+(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/latex/fontawesome\ufontaweso
+methree.fd
+File: ufontawesomethree.fd 2016/05/22 Font definitions for U/fontawesomethree.
+)
+Overfull \hbox (291.22525pt too wide) has occurred while \output is active
+  [] [] [] [] [] [] [] [] [] 
+ []
+
+[21
+
+]
+\tf@nav=\write6
+\openout6 = `cea_creea_deck.nav'.
+
+\tf@toc=\write7
+\openout7 = `cea_creea_deck.toc'.
+
+\tf@snm=\write8
+\openout8 = `cea_creea_deck.snm'.
+
+ (cea_creea_deck.aux)
+Package rerunfilecheck Info: File `cea_creea_deck.out' has not changed.
+(rerunfilecheck)             Checksum: 29F8BB74ABDF642C92F5CE757F6605AA;287.
+ ) 
+Here is how much of TeX's memory you used:
+ 23881 strings out of 479798
+ 469641 string characters out of 2869230
+ 763701 words of memory out of 3000000
+ 40225 multiletter control sequences out of 15000+200000
+ 557593 words of font info for 87 fonts, out of 3000000 for 9000
+ 1141 hyphenation exceptions out of 8191
+ 125i,19n,126p,478b,646s stack positions out of 5000i,500n,10000p,200000b,50000s
+{C:/Users/aleach/AppData/Local/Programs/MiKTeX/fonts/enc/dvips/fontawesome/fo
+ntawesomethree.enc}{C:/Users/aleach/AppData/Local/Programs/MiKTeX/fonts/enc/dvi
+ps/fontawesome/fontawesometwo.enc} <C:\Users\aleach\AppData\Local\MiKTeX\fonts/
+pk/ljfour/jknappen/ec/dpi600\ecss0700.pk> <C:\Users\aleach\AppData\Local\MiKTeX
+\fonts/pk/ljfour/jknappen/ec/dpi600\ecsi1000.pk> <C:\Users\aleach\AppData\Local
+\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecsi1095.pk> <C:\Users\aleach\AppDat
+a\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecss1000.pk> <C:\Users\aleach
+\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecss1095.pk> <C:\Users
+\aleach\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecss1440.pk> <C
+:\Users\aleach\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecsx0800
+.pk> <C:\Users\aleach\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\e
+csx1440.pk> <C:\Users\aleach\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/d
+pi600\ecss0600.pk><C:/Users/aleach/AppData/Local/Programs/MiKTeX/fonts/type1/pu
+blic/fontawesome/FontAwesome.pfb><C:/Users/aleach/AppData/Local/Programs/MiKTeX
+/fonts/type1/public/amsfonts/cm/cmex10.pfb><C:/Users/aleach/AppData/Local/Progr
+ams/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi10.pfb><C:/Users/aleach/AppData/L
+ocal/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi12.pfb><C:/Users/aleach
+/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi7.pfb><C:/Use
+rs/aleach/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmss10.p
+fb><C:/Users/aleach/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/c
+m/cmssi10.pfb><C:/Users/aleach/AppData/Local/Programs/MiKTeX/fonts/type1/public
+/amsfonts/cm/cmssi8.pfb><C:/Users/aleach/AppData/Local/Programs/MiKTeX/fonts/ty
+pe1/public/amsfonts/cm/cmsy10.pfb>
+Output written on cea_creea_deck.pdf (21 pages, 1720621 bytes).
+PDF statistics:
+ 756 PDF objects out of 1000 (max. 8388607)
+ 50 named destinations out of 1000 (max. 500000)
+ 146 words of extra memory for PDF output out of 10000 (max. 10000000)
+

@@ -388,23 +388,24 @@ paste("loaded file=data/",data_files$value,sep="")
 
 #test<-merit_aug %>% filter(date==ymd("2019-02-04"),he=="19",Plant_Type=="COAL")%>% select(actual_posted_pool_price)
 
-merit_aug %>% filter(date==ymd("2019-02-04"),he=="19",Plant_Type=="COAL")%>% 
+coal_merit<-merit_aug %>% filter(date==ymd("2019-02-04"),he=="19",Plant_Type=="COAL")%>% 
   mutate(facility=gsub(" #","_",AESO_Name))%>% separate(facility,into = c("facility","number"), sep="_(?=[^_]+$)")%>%
   group_by(facility,price,dispatched) %>% summarize(size=sum(size),dispatched_mw=sum(dispatched_mw))%>% ungroup()%>%
   arrange(price,facility)%>%
   mutate(merit=cumsum(size),total_offers=sum(size),total_dispatch=sum(dispatched_mw),dispatch_limit=max(merit*(dispatched=="Y")))%>%
   ggplot()+
   geom_rect(aes(xmin=merit-size,xmax=merit,ymin=-20,ymax=price,fill=facility),color="black")+
-  geom_vline(aes(xintercept=max(dispatch_limit)))+
-  annotate("text",3950,y=815,label="All offers to the\nleft of this line\nwere dispatched",size=rel(6),hjust=1,vjust=0)+
+  #geom_vline(aes(xintercept=max(dispatch_limit)))+
   #geom_label_repel(aes(merit-size/2,y=price,label=facility))+
-  scale_fill_grey("",end = 1,start=0)+   
+  #scale_fill_grey("",end = 1,start=0)+   
+  scale_fill_manual("",values=c(grey.colors(6, end = 1,start=0)))+
   scale_x_continuous(breaks=pretty_breaks(), expand=c(0,0))+
   scale_y_continuous(breaks=pretty_breaks(), expand=c(0,0))+
   #scale_colour_manual(labe ls=c("Brent","WTI"),values=c("#41ae76","#238b45","#006d2c","#00441b","Black","Black","Black","Black"))
   paper_theme()+
   theme(
-    legend.position = c(.1,.8),
+    legend.justification = c("left", "top"),
+    legend.position = c(.05,.99),
     legend.margin=margin(c(0,0,0,0),unit="cm"),
     legend.text = element_text(colour="black", size = 18),
     plot.caption = element_text(size = 16, face = "italic"),
@@ -420,9 +421,54 @@ merit_aug %>% filter(date==ymd("2019-02-04"),he=="19",Plant_Type=="COAL")%>%
        #title=paste("Alberta Energy Merit Order, Feb 4, 2019 at hour ending 7pm"),
        #caption="Source: AESO Data, graph by Andrew Leach."
        )
+coal_merit
 ggsave("images/coal_merit.png",dpi=300,width = 14,height = 10)
 
+coal_merit+
+annotate("text",3950,y=815,label="All offers to the\nleft of this line\nwere dispatched",size=rel(6),hjust=1,vjust=0)+
+geom_vline(aes(xintercept=max(dispatch_limit)))
+ggsave("images/coal_merit_marg.png",dpi=300,width = 14,height = 10)
 
+  
+
+  coal_merit_tax<-merit_aug %>% filter(date==ymd("2019-02-04"),he=="19",Plant_Type=="COAL")%>% 
+  mutate(facility=gsub(" #","_",AESO_Name))%>% separate(facility,into = c("facility","number"), sep="_(?=[^_]+$)")%>%
+  group_by(facility,price,dispatched) %>% 
+  summarize(pre_tax=mean(price-compliance_cost),size=sum(size),dispatched_mw=sum(dispatched_mw))%>%
+  ungroup()%>%
+  arrange(price,facility)%>%
+  mutate(merit=cumsum(size),total_offers=sum(size),total_dispatch=sum(dispatched_mw),dispatch_limit=max(merit*(dispatched=="Y")))%>%
+  ggplot()+
+  geom_rect(aes(xmin=merit-size,xmax=merit,ymin=-20,ymax=price,fill="Carbon costs"),color="black",alpha=0.8)+
+  geom_rect(aes(xmin=merit-size,xmax=merit,ymin=-20,ymax=pre_tax,fill=facility),color="black",alpha=1)+
+  #geom_label_repel(aes(merit-size/2,y=price,label=facility))+
+  scale_fill_manual("",values=c(grey.colors(6, end = 1,start=0)),breaks=c("Battle River","Genesee","Keephills","Sheerness","Sundance","Carbon costs"))+   
+  scale_x_continuous(breaks=pretty_breaks(), expand=c(0,0))+
+  scale_y_continuous(breaks=pretty_breaks(), expand=c(0,0))+
+  #scale_colour_manual(labe ls=c("Brent","WTI"),values=c("#41ae76","#238b45","#006d2c","#00441b","Black","Black","Black","Black"))
+  paper_theme()+
+  theme(
+    legend.justification = c("left", "top"),
+    legend.position = c(.05,.99),
+    legend.margin=margin(c(0,0,0,0),unit="cm"),
+    legend.text = element_text(colour="black", size = 18),
+    plot.caption = element_text(size = 16, face = "italic"),
+    plot.title = element_text(face = "bold"),
+    plot.subtitle = element_text(size = 16, face = "italic"),
+    panel.grid.minor = element_blank(),
+    axis.title.x = element_text(size = 24,face = "bold"),
+    axis.title.y = element_text(size = 24,face = "bold"),
+    axis.text.x = element_text(size = 24,face = "bold"),
+    axis.text.y = element_text(size = 24,face = "bold"),
+  )+
+  labs(x=paste("Offered Generation (MW)"),y="Price ($/MWh)",
+       #title=paste("Alberta Energy Merit Order, Feb 4, 2019 at hour ending 7pm"),
+       #caption="Source: AESO Data, graph by Andrew Leach."
+  )
+coal_merit_tax
+ggsave("images/coal_merit_tax.png",dpi=300,width = 14,height = 10)
+
+  
 
 merit_aug %>% filter(year(date)==2019,he=="19",Plant_Type=="COAL")%>% 
   mutate(facility=gsub(" #","_",AESO_Name))%>% separate(facility,into = c("facility","number"), sep="_(?=[^_]+$)")%>%
