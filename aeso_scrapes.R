@@ -114,17 +114,22 @@ update_vols <- function(data_sent) {
       xdf<-get_metered_volumes_report(as.Date(day), as.Date(day)+days(1))
       data_store<-rbind(data_store,clean_volume_data(xdf))
       #list_item<-list_item+1
-    }
+  }
+  
+  #test<-process_data(data_store)
   #return the data
   rbind(data_sent,process_data(data_store))
 }
 
+
+
 process_data <- function(data_sent) {
   #function to process all AESO data into useful load and trade volumes
   #testing
-  #day<-ymd("2019-02-01")
+  #day<-ymd("2022-04-01")
   #xdf<-get_metered_volumes_report(as.Date(day), as.Date(day)+days(1)) %>% clean_volume_data()
   #data_sent<-xdf
+  #data_sent<-data_store
   #data_sent<-get_metered_volumes_report(Sys.Date()-days(5), Sys.Date()-days(5)+days(1))%>% clean_volume_data()
   
   include_list<-c("IMPORTER","IPP","EXPORTER","GENCO","SPP")
@@ -261,7 +266,7 @@ process_data <- function(data_sent) {
   combined_new<-arrange(combined_new,date,hour)
   
   #bring in prices and load information
-  
+  #this is where we are crashing - why?
   combined_new<-combined_new%>%left_join(forecast_data,by=c("date","he"))
   
   combined_new$month<-month(combined_new$date)
