@@ -266,7 +266,7 @@ assign_peaks<-function(data_orig,time_var=time){
     #Victoria day - monday before May 25, so earliest it can be is day 18, latest is day 24
     Victoria_Day=ifelse(month(!!temp_time)==5 & day(!!temp_time)<=24 & day(!!temp_time)>=18 & wday(!!temp_time,label = T)=="Mon",T,F) #Monday before May 25
   ) %>% mutate(
-    stat = select(., holiday_list) %>% rowSums()>0
+    stat = select(., all_of(holiday_list)) %>% rowSums()>0
     #stat = select(all_of(holiday_list)) %>% rowSums()>0
   )
   

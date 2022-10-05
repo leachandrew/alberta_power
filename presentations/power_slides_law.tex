@@ -1,6 +1,6 @@
 %First Beamer Talk
 
-\documentclass{beamer}
+\documentclass[aspectratio=169]{beamer}
 
 % Setup appearance:
 
@@ -223,6 +223,32 @@
 
 
 
+
+
+% Bayliss Fancy fit image command with optional caption
+\usepackage{adjustbox} % Shrink stuff
+
+\makeatletter
+
+\newcommand{\fitimage}[2][\@nil]{
+  \begin{figure}
+    \begin{adjustbox}{width=0.95\textwidth, totalheight=\textheight-2\baselineskip-2\baselineskip,keepaspectratio}
+      \includegraphics{#2}
+    \end{adjustbox}
+    \def\tmp{#1}%
+   \ifx\tmp\@nnil
+      \else
+      \newline{\tiny{#1}}
+    \fi
+  \end{figure}
+}
+
+\makeatother
+
+
+
+
+
 % The main document
 
 
@@ -269,7 +295,7 @@
 \item The next constitutional battleground?
 \begin{itemize}
 \setlength\itemsep{.5em}
-\item Fed/prov issues, environmental policy, section 125 jurisprudence, the oddity that is section 92(10) including the declaratory power and POGG all come into play!
+\item Fed/prov issues, environmental policy, section 125 jurisprudence, the oddity that is section 92(10) including the declaratory power, and POGG all come into play!
 \end{itemize}
 \end{itemize}
 \vfill
@@ -280,7 +306,7 @@
 
 \begin{tabular}{p{\linewidth}}
     \centering
-    \includegraphics[width=.9\linewidth]{../images/grid_storage.png} \\[\abovecaptionskip]
+    \includegraphics[width=.75\linewidth]{../images/grid_storage.png} \\[\abovecaptionskip]
   Source: \url{http://www.mpoweruk.com/grid_storage.htm}
 \end{tabular}
 
@@ -288,7 +314,7 @@
 
 \begin{frame}{Market Participants}
 \begin{itemize}
-\setlength\itemsep{1.7em}
+\setlength\itemsep{1.2em}
 \item Generation
 
 \item Transmission
@@ -311,25 +337,22 @@
 \begin{frame}{Market Regulation in Alberta}
 \begin{itemize}
 \setlength\itemsep{1.7em}
-\item Generation is a competitive market competitive
+\item Generation is a competitive market
 
 \item Transmission is regulated on a cost-of-service basis
 
-\item Distribution (wires) is regulated on a cost-of-service basis, but retail (billing) is competitive.
+\item Distribution (local wires) is regulated on a cost-of-service basis, but retail (billing) is competitive.
 
 \item Ancillary Services is competitive
 
 \item Load (i.e. customers) may contract for electricity supply
- 
+
 \item Storage (Still a lot TBD)
 
 \item Microgeneration (free market for self-supply)
 \end{itemize}
 
 \vfill \end{frame}
-
-
-
 
 
 \section{Units}
@@ -340,13 +363,14 @@
 \item Watts: measure of capacity (instantaneous production, installed capacity, or instantaneous demand)
 \begin{itemize}
 \setlength\itemsep{.5em}
-\item Alberta system demand: 7,200-10,700 MW (million watts)
+\item Alberta system demand: 7,200-10,700 MW (megawatts or million watts)
 \item Capital Power's Genessee 3 power plant has a nameplate capacity of 450 MW
 \end{itemize}
 \item Watt hours: measure of energy (production or demand during a given period of time; i.e. flow through)
 \begin{itemize}
 \setlength\itemsep{.5em}
 \item Production over a day, week, month, year
+\item A 7.5W LED bulb on all day (24hr) uses 180Wh of electricity (.18kWh)
 \end{itemize}
 \item Volts: measure of the electrical potential or the ability to convert charge to power (Watts=amps x volts)
 \begin{itemize}
@@ -393,8 +417,14 @@
 
 \begin{frame}{Regulatory characteristics}
 \begin{itemize}
-\setlength\itemsep{.25em}
+\setlength\itemsep{1.25em}
 \item Rate-regulated or or state-owned utilities
+\begin{itemize}
+\setlength\itemsep{.15em}
+\item EPCOR (legacy) or BC Hydro
+\item PG \& E in California
+\end{itemize}
+
 \item Competitive markets
 \begin{itemize}
 \setlength\itemsep{.15em}
@@ -408,16 +438,21 @@
 \end{frame}
 
 
-\begin{frame}{Alberta Market Design}
+\begin{frame}{Alberta Wholesale Energy Market Design}
 \begin{itemize}
 \setlength\itemsep{.25em}
 \item Energy-only market
 \item Real time, spot pricing, no day-ahead market
 \item Single node
-\item Capacity market to be added in the near future
+\item Capacity market was contemplated, but not pursued
 \item Transmission
+\begin{itemize}
+\setlength\itemsep{.25em}
+\item Regulated monopoly
 \item Congestion free (no nodal pricing)
 \item No transmission rights
+\item Paid for (mostly) by load (consumers)
+\end{itemize}
 \item Ancillary services: separate, competitive market for operating reserves, transmission-must-run, load-shed and black start
 \end{itemize}
 
@@ -429,7 +464,7 @@
 
 \begin{tabular}{p{\linewidth}}
     \centering
-    \includegraphics[width=\linewidth]{../images/cali_nodes.png} \\[.1\abovecaptionskip]
+    \includegraphics[width=.7\linewidth]{../images/cali_nodes.png} \\[.1\abovecaptionskip]
   Source: CAISO
 \end{tabular}
 \vfill
@@ -452,63 +487,47 @@
 \vfill \end{frame}
 
 \begin{frame}{The Merit Order}
-   \tikz [remember picture,overlay]
-    \node[yshift=-.5cm,xshift=0cm] at (current page.center)
-        {\includegraphics[width=.9\paperwidth]{../images/merit_type.png}}; \vspace{1cm}
+   \fitimage{../images/merit_type.png}
    \vfill
-\end{frame}
+   \end{frame}
 
 \begin{frame}{The Merit Order}
-   \tikz [remember picture,overlay]
-    \node[yshift=-.5cm,xshift=0cm] at (current page.center)
-        {\includegraphics[width=.9\paperwidth]{../images/merit_offer.png}}; \vspace{1cm}
+   \fitimage{../images/merit_offer.png}
    \vfill
 \end{frame}
 
 \begin{frame}{Offers}
-   \tikz [remember picture,overlay]
-    \node[yshift=-.5cm,xshift=0cm] at (current page.center)
-        {\includegraphics[width=.9\paperwidth]{../images/bids.png}}; \vspace{1cm}
+   \fitimage{../images/bids.png}
    \vfill
 \end{frame}
 
 
 \begin{frame}{Hourly Loads}
-   \tikz [remember picture,overlay]
-    \node[yshift=-.5cm,xshift=0cm] at (current page.center)
-        {\includegraphics[width=.9\paperwidth]{../images/hourly-loads.png}}; \vspace{1cm}
+   \fitimage{../images/hourly_loads.png}
    \vfill
 \end{frame}
 
 
 \begin{frame}{Peak and Average Loads}
-   \tikz [remember picture,overlay]
-    \node[yshift=-.5cm,xshift=0cm] at (current page.center)
-        {\includegraphics[width=.9\paperwidth]{../images/loads_clean.png}}; \vspace{1cm}
+   \fitimage{../images/loads_clean.png}
    \vfill
 \end{frame}
 
 
 \begin{frame}{Hourly Prices}
-   \tikz [remember picture,overlay]
-    \node[yshift=-.5cm,xshift=0cm] at (current page.center)
-        {\includegraphics[width=.9\paperwidth]{../images/hourly_prices_col.png}}; \vspace{1cm}
+   \fitimage{../images/hourly_prices.png}
    \vfill
 \end{frame}
 
 
 \begin{frame}{Prices over time}
-   \tikz [remember picture,overlay]
-    \node[yshift=-.5cm,xshift=0cm] at (current page.center)
-        {\includegraphics[width=.9\paperwidth]{../images/peak_prices.png}}; \vspace{1cm}
+  \fitimage{../images/peak_prices.png}
    \vfill
 \end{frame}
 
 
 \begin{frame}{Forward Markets}
-   \tikz [remember picture,overlay]
-    \node[yshift=-.5cm,xshift=0cm] at (current page.center)
-        {\includegraphics[width=.9\paperwidth]{../images/forwards.png}}; \vspace{1cm}
+   \fitimage{../images/forwards.png}
    \vfill
 \end{frame}
 
@@ -516,13 +535,7 @@
 \section{PPAs and the Balancing Pool}
 
 \begin{frame}{The Balancing Pool: What on earth does/did it do?}
-\vspace{-.2cm}\centering
-\hspace{-1.5cm}\begin{tabular}{p{1.1\linewidth}}
-    \centering
-    \includegraphics[width=.9\linewidth]{../images/balancingpool.png} \\[\abovecaptionskip]
-  Source: Capital Power
-\end{tabular}
-
+\fitimage[Source: Capital Power]{../images/balancingpool.png}
 \vfill \end{frame}
 
 
@@ -541,9 +554,7 @@
 
 
 \begin{frame}{Costs of New Capacity Additions}
-   \tikz [remember picture,overlay]
-    \node[yshift=-.25cm,xshift=0cm] at (current page.center)
-        {\includegraphics[width=.9\paperwidth]{../images/eia_lcoe.png}}; \vspace{1cm}
+   \fitimage{../images/lcoe_22.png}
    %\\[\abovecaptionskip]  \vspace{5.5cm}
    %\tiny{See for more information: \url{https://www.lazard.com/media/451086/lazards-levelized-cost-of-energy-version-130-vf.pdf}}
    \vfill
@@ -551,54 +562,57 @@
 
 
 \begin{frame}{Costs of New Capacity Additions}
-   \tikz [remember picture,overlay]
-    \node[yshift=-.25cm,xshift=0cm] at (current page.center)
-        {\includegraphics[width=.9\paperwidth]{../images/lazard_lcoe.png}}; \vspace{1cm}
-   %\\[\abovecaptionskip]  \vspace{5.5cm}
-   %\tiny{See for more information: \url{https://www.lazard.com/media/451086/lazards-levelized-cost-of-energy-version-130-vf.pdf}}
+   \fitimage{../images/lcoe_lazard_22.png}
    \vfill
 \end{frame}
 
+\begin{frame}{New Technology}
+   \fitimage{../images/ab_solar.png}
+   \vfill
+\end{frame}
 
 
 \begin{frame}{New Technology}
-   \tikz [remember picture,overlay]
-    \node[yshift=-.5cm,xshift=0cm] at (current page.center)
-        {\includegraphics[width=.9\paperwidth]{../images/ab_solar.png}}; \vspace{1cm}
+   \fitimage{../images/solar.png}
    \vfill
 \end{frame}
 
+\begin{frame}{New Technology}
+   \fitimage{../images/solar_year.png}
+   \vfill
+\end{frame}
 
+\begin{frame}{New Technology}
+   \fitimage{../images/small_solar.png}
+   \vfill
+\end{frame}
 
 \begin{frame}{Price Capture by Technology}
-   \tikz [remember picture,overlay]
-    \node[yshift=-.5cm,xshift=0cm] at (current page.center)
-        {\includegraphics[width=.9\paperwidth]{../images/price_capture.png}}; \vspace{1cm}
+\fitimage{../images/price_capture_renew.png}
+   \vfill
+\end{frame}
+
+\begin{frame}{Evolution of Technology}
+   \fitimage{../images/eia_solar.png}
+   \vfill
+\end{frame}
+
+
+
+\begin{frame}{Evolution of Technology}
+   \fitimage{../images/eia_coal.png}
    \vfill
 \end{frame}
 
 
 \begin{frame}{Evolution of Technology}
-   \tikz [remember picture,overlay]
-    \node[yshift=-.5cm,xshift=0cm] at (current page.center)
-        {\includegraphics[width=.9\paperwidth]{../images/solar_eia.png}}; \vspace{1cm}
+   \fitimage[Source: Lazard]{../images/lazard_decline.png}
    \vfill
-\end{frame}
-
-
-\begin{frame}{Evolution of Technology}
-   \tikz [remember picture,overlay]
-    \node[yshift=-.5cm,xshift=0cm] at (current page.center)
-        {\includegraphics[width=.9\paperwidth]{../images/solar_costs.png}}; \vspace{1cm}
-   \vfill
-   \vspace{4cm}\tiny{Source: NREL}  \hfill
 \end{frame}
 
 
 \begin{frame}{GHG Policy and Electricity Supply}
-   \tikz [remember picture,overlay]
-    \node[yshift=-.5cm,xshift=0cm] at (current page.center)
-        {\includegraphics[width=.95\paperwidth]{../images/monthly_ghgs.png}}; \vspace{1cm}
+   \fitimage{../images/monthly_ghgs.png}
    \vfill
 \end{frame}
 
@@ -634,7 +648,9 @@
 \begin{itemize}
 \setlength\itemsep{2em}
 \item Rivers and Dolter paper on decarbonizing Canada's supply
-\item van de Biezenbos paper on transmission.
+\item van de Biezenbos paper on transmission
+
+\item Clean Electricity Standard discussion paper
 
 \end{itemize}
 

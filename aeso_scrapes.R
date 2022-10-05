@@ -117,6 +117,7 @@ update_vols <- function(data_sent) {
   }
   
   #test<-process_data(data_store)
+  #test2<-data_sent %>% bind_rows(test)
   #return the data
   rbind(data_sent,process_data(data_store))
 }
@@ -181,7 +182,10 @@ process_data <- function(data_sent) {
     mutate(asset_id = ifelse(grepl("DOW1",asset_id),"DOWG",asset_id))%>% #dow
     mutate(asset_id = ifelse(grepl("GEN1",asset_id),"GEN6",asset_id))%>% #gen1 in asset id is judy creek (gen6)
     mutate(asset_id = ifelse(grepl("GEN3",asset_id),"WCD1",asset_id))%>% #gen3 is cadotte
-    mutate(asset_id = ifelse(grepl("SCTG",asset_id),"APS1",asset_id)) #SCTG is sctoford, but it's shell-offered power
+    mutate(asset_id = ifelse(grepl("SCTG",asset_id),"APS1",asset_id))%>% #SCTG is sctoford, but it's shell-offered power
+    {.}
+    
+    
   #merge in asset names and pool participant ID combos
   clean2<-clean2 %>% left_join(select(aeso_assets,asset_name,asset_id,pool_participant_id),by=c("asset_id","pool_participant_id"))%>%
     #now we need to fix some of the joint marketing of power from assets
@@ -214,6 +218,7 @@ process_data <- function(data_sent) {
   combined<-merge(ghg_rates,heat_rates,by="GHG_ID",all.y = T) # NA's match
   coal_co2_btu<-100.4  #coal fuel factor GHGs/MMBTU
   gas_co2_btu<-53.077752 #gas fuel factor GHGs/MMBTU
+  
   combined<-merge(plant_info,combined,suffixes = c(".info",".rates"),all.x=TRUE,by="Aurora_ID") # NA's match
   combined$co2_est<-combined$CO2/2.20462*combined$Heat.Rate #convert to kg/mmbtu
   combined$co2_est<-ifelse(combined$Plant_Fuel=="COAL",coal_co2_btu*combined$Heat.Rate,combined$co2_est)

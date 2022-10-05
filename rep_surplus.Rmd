@@ -1,0 +1,207 @@
+---
+title: "AB REP Surplus from Hastings-Simon et al (2022)"
+output:
+  html_document:
+    code_folding: hide
+date: '2022-08-12'
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,cache=TRUE,warning = FALSE,message=FALSE)
+library(tidyverse)
+library(lubridate)
+library(viridis)
+library(scales)
+
+paper_theme<-function(){
+  theme_minimal()+theme(
+    text = element_text(size = rel(5),margin = margin(t = 2, b =2,l=2,r=2)),
+    axis.title = element_text(size = rel(.8)),
+    legend.position = "bottom",
+    legend.text=element_text(size=rel(3)),
+    strip.text=element_text(size=rel(3)),
+    legend.margin=margin(c(0,0,-0.25,0),unit="cm"),
+    legend.key.width = unit(rel(2),"line"),
+    plot.margin=margin(c(.5,.5,0.5,0.5),unit="cm"),
+    #plot.caption = element_text(size = 9, color = "gray40",hjust=1),
+    #plot.title = element_text(face = "bold"),
+    #plot.subtitle = element_text(size = 10, color = "gray40"),
+    panel.grid.minor = element_blank(),
+    panel.grid.major.x = element_blank()
+  )
+}
+
+```
+
+## REP CFD Valuation
+
+The contracts-for-differences procured through the REP have been net positive for the government to date, driven by an increase in wholesale power prices in Alberta in 2021 and 2022 year-to-date. We estimate the value of the REP contract portfolio to date starting with the hourly surplus value generated on power sales relative to project-specific, inflation-adjusted contract strike prices, to which we add an estimate of the value of greenhouse gas emissions credits (EC) transferred to the government under the REP contracts at market carbon prices (τ_t). These are each multiplied by hourly production for each project from the first hour in which a facility was in commercial operation, through to the end-of-day July 31, 2022.
+
+We make three important assumptions to value the portfolio of contracts. 
+
+First, we use the capacity-weighted average strike prices for each REP round as a proxy for project-specific strike prices, as project-specific information was not disclosed. 
+
+Second, ww assume that the lowest strike price in REP round 1 (CA\$30.90/MWh) was associated with the Sharp Hills project that terminated its support agreement and, based on this assumption, we adjust the capacity-weighted average strike price for first round contracts to CA\$41.36/MWh, which we apply to the remaining three round 1 projects. 
+
+Finally, we estimate the value of surrendered environmental attributes based on the annual value of emissions performance credits that would have otherwise been allocated to the projects at a rate of 0.37t/MWh under Alberta’s carbon pricing policy, the Technology and Innovation Emissions Reduction Regulation (2019), multiplied by annual carbon prices established in the regulation.
+
+This document details how we set the preliminaries for our analysis.
+
+```{r rep_prelims}
+#CPI Adjustments for REP1 projects. REP3 still at 1, since the only project in-service came on-line this year.
+cpi<-function(year,REP="REP1"){
+      ret<-case_when(
+        (as.character(year)==2019) ~ 0.97801,
+        (as.character(year)==2020) ~ 1.00000, 
+        (as.character(year)==2021) ~  1.00733,
+        (as.character(year)==2022) &  (REP=="REP1") ~  1.05572,
+        (as.character(year)=="2022 (YTD)") &  (REP=="REP1")~ 1.05572,
+        TRUE ~ 1)
+      ret
+}
+
+#define the REP projects
+    REP_projects<-c("RIV1","CRR2","WHT1","WRW1")
+    
+```
+
+This document uses publicly-avaialble AESO data. The paper uses the same data for this analysis, but for longer-term history we use AESO data as scraped and provided by NRGStream.
+
+```{r aeso_data}
+#use updated AESO MV data to calculate REP contract values
+    
+aeso_file<-read.csv("https://www.aeso.ca/assets/Uploads/data-requests/Hourly_Metered_Volumes_and_Pool_Price_and_AIL.csv")         
+#make a local version if you want to run it faster or make changes
+#save(aeso_file,file="aeso_file_local.RData")
+#load("aeso_file_local.RData")
+
+  aeso_rep<-aeso_file %>% 
+      select(-Date_Begin_GMT)%>%
+      rename("Market"=ACTUAL_AIL)%>%
+      pivot_longer(-c(Date_Begin_Local,"ACTUAL_POOL_PRICE","DAY_AHEAD_POOL_PRICE",
+                   "EXPORT_BC","EXPORT_MT","EXPORT_SK","IMPORT_BC",
+                   "IMPORT_MT","IMPORT_SK"),
+                   names_to = "ID", values_to = "gen")%>%
+      filter(ID %in% c(REP_projects,"Market"))%>%
+      mutate(time=mdy_hm(Date_Begin_Local))%>%
+      select(-Date_Begin_Local)%>%
+      filter(!is.na(gen))%>%
+      select(time,price=ACTUAL_POOL_PRICE,ID,gen)%>%
+      mutate(year=year(time),
+             power_value=gen*price)%>%
+      filter(as.numeric(as.character(year))>=2019)%>%
+      #value carbon credits
+      mutate(env_attr=case_when(
+        (ID %in% REP_projects)& year==2019 ~30*.37,
+        (ID %in% REP_projects)& year==2020 ~30*.37,
+        (ID %in% REP_projects)& year==2021 ~40*.37,
+        (ID %in% REP_projects)& year==2022 ~50*.37,
+        TRUE~0
+      ))%>%
+      #assign rep series
+      mutate(rep=case_when(
+        (ID=="WHT1") ~ "REP1",
+        (ID=="WRW1") ~ "REP3",
+        (ID=="RIV1") ~ "REP1",
+        (ID=="CRR2") ~ "REP1",
+        TRUE ~ "Not in REP"))%>%
+      #assign REP strike prices
+      mutate(raw_strike=case_when(
+        (rep=="REP1") ~ 41.36,
+        (rep=="REP2") ~ 38.69,
+        (rep=="REP3") ~ 40.14,
+        TRUE ~ 0))%>%
+      #adjust strikes for inflation, then calculate net positions
+      group_by(year)%>%
+      #calculate generation by year for the graph labels
+      mutate(
+       rep_gen_year=sum(gen*(ID %in% REP_projects))
+       )%>%
+      ungroup()%>%
+      mutate(
+        strike=raw_strike*(.8+.2*cpi(year,rep)),
+        #value the cfd
+        cfd_val=strike*gen,
+        #hourly value on power
+        net_govt_power=(price-strike)*gen,
+        #hourly environmental attr value
+        env_ttl=env_attr*gen,
+        #hourly net
+        net_govt_ttl=net_govt_power+env_ttl,
+        #set up the years so we can label the YTD
+        year=as.factor(year),
+        year_mod=fct_recode(year,"2022 (YTD)"="2022"),
+        label=paste(as.character(year_mod),"\n\n","(",round(rep_gen_year/10^3,0)," GWh of REP-\nsupported generation)",sep="")
+     )%>%
+      #create yearly summaries by ID. Preserve the labels
+      group_by(year,ID,label)%>%
+      summarize(cfd_surplus=sum(net_govt_power),
+                env_surplus=sum(env_ttl),
+                #net_govt_ttl=net_govt_power+env_ttl,        
+                env_ttl=sum(env_ttl,na.rm = T)/sum(gen,na.rm = T),
+                power_val=sum(price*gen)/sum(gen),
+                total_val=power_val+env_ttl
+                )%>%
+      ungroup()%>%
+      #get the order by COD, with market on the left
+      mutate(
+        ID=fct_relevel(ID,"WHT1","CRR2","RIV1","WRW1"),
+        ID=fct_relevel(ID,"Market"),
+        ID=fct_recode(ID,"Market Generation-Weighted Average Price"="Market"),
+        ID=fct_recode(ID,"Whitla 1 (REP1)"="WHT1","Castle Rock Ridge 2 (REP1)"="CRR2","Riverview Wind (REP1)"="RIV1","Windrise Wind (REP3)"="WRW1"),
+        #Plant_Type=fct_reorder(Plant_Type,startup,min),
+      )
+    ```
+   
+  
+And, so using these data, we can summarize the annual surplus (net of and including the value of environmental attributes surrendered by the project proponents):
+    
+```{r aeso_graph,fig.width=16,fig.height=8}
+    #create the figure
+    aeso_rep_plant_cpi_graph<-ggplot(aeso_rep)+
+      geom_col(aes(ID,power_val,fill=ID),size=.25,position=position_dodge(width=0.9),color="black",alpha=0.5)+
+      geom_col(aes(ID,y=total_val,color="Deemed value of foregone emissions credits (0.37t/MWh, valued at Alberta TIER compliance prices)"),fill=NA,alpha=0.5,size=.5,position=position_dodge(width=0.9))+
+      facet_wrap(~label,nrow=1)+
+      #scale_fill_grey("")+
+      scale_fill_viridis("",option = "B",discrete = T,direction = 1)+
+      scale_color_manual("",values=c("black"))+
+      scale_linetype_manual("",values=c("solid","21","22"))+
+      scale_y_continuous(breaks = pretty_breaks(),expand=c(0,0))+
+      expand_limits(y=0)+
+      paper_theme()+
+      theme(legend.position = "bottom",legend.box="vertical", legend.margin=margin(),
+            legend.text=element_text(size=rel(2)),
+            axis.text.x = element_blank(),
+            NULL)+
+      expand_limits(y=120)+
+      guides(#fill="none",
+        fill=guide_legend(order = 1,nrow = 1,label.position = "right",keywidth = 1,keyheight = 1),
+        linetype=guide_legend(order = 3,nrow = 1,keywidth = 3),
+        color=guide_legend(order = 2,ncol = 1,label.position = "right",keywidth = 1,keyheight = 1))+
+      labs(x="",y="Value of generated electricity and environmental attributes ($/MWh)",
+           #title="Energy Price Capture ($/MWh, 2010-2021)",
+           #caption="Source: AESO Data, accessed via NRGStream\nGraph by @andrew_leach"
+      )
+    
+    aeso_rep_plant_cpi_graph+
+      geom_col(data=aeso_rep%>% filter(year!="2022"),aes(ID,power_val,fill=ID),size=.25,position=position_dodge(width=0.9),
+               color="black",alpha=.95)+
+      geom_col(data=aeso_rep%>% filter(year!="2022"),aes(ID,total_val,
+               color="Deemed value of foregone emissions credits (0.37t/MWh, valued at Alberta TIER compliance prices)"),
+               fill=NA,alpha=0.25,size=.5,position=position_dodge(width=0.9))+
+      geom_hline(aes(yintercept=37*(.8+.2*cpi(year)),lty="REP1 Average CfD Strike Price"),color="black",size=1.5)+
+      #omit REP 2 since no projects included
+      #geom_hline(aes(yintercept=38.69*(.8+.2*cpi(year)),lty="REP2 Average CfD Strike Price"),color="black",size=1.5)+
+      geom_hline(aes(yintercept=40.14*(.8+.2*cpi(year)),lty="REP3 Average CfD Strike Price"),color="black",size=1.5)+
+      NULL
+```
+
+
+And, these data also yield the cumulative totals cited in the paper:
+
+* Total CfD portfolio surplus: `r as.numeric(aeso_rep%>%filter(ID != "Market Generation-Weighted Average Price")%>% summarize(power_surplus=sum(cfd_surplus,na.rm=T))/10^6)` million
+
+* Total value of GHG emissions credits: `r as.numeric(aeso_rep%>%filter(ID != "Market Generation-Weighted Average Price")%>% summarize(power_surplus=sum(env_surplus,na.rm=T))/10^6)` million
+
+* Total combined surplus: `r as.numeric(aeso_rep%>%filter(ID != "Market Generation-Weighted Average Price")%>% summarize(power_surplus=sum(cfd_surplus+env_surplus,na.rm=T))/10^6)` million
+

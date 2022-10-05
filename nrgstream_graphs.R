@@ -1018,7 +1018,8 @@ df1 <- daily_forwards %>% group_by(Trade_Date,Inst_Date) %>% summarise(Settle = 
 #df1=melt(df1,id=c("Trade_Date","Inst_Year"),variable.name = "term",value.name = "settle")
 today_date<-max(daily_forwards$Trade_Date)
 dates<-c(today_date,today_date-weeks(1),today_date-weeks(2),today_date-weeks(3),today_date-weeks(4))
-df1 <- df1 %>% filter(Inst_Date<=min(dates)+)
+
+df1 <- df1 %>% filter(Inst_Date<=min(dates))
 
 png<-1
 if(png==1)
@@ -1825,3 +1826,139 @@ for(i in c(3:170))
         caption="Source: AESO 2017 Long Term Outlook\nGraph by @andrew_leach")
  dev.off()
  
+
+ 
+ monthly_solar<-nrgstream_gen %>% 
+   filter(Plant_Type=="SOLAR",!is.na(gen),he=="13")%>%
+   mutate(month=month(Time),year=year(Time))%>%
+   group_by(month,year,ID,AESO_Name)%>%summarize(gen=mean(gen,na.rm = T))%>%
+   mutate(date=ymd(paste(year,"-",month,"-1",sep="")))%>%
+   ungroup()
+ 
+ 
+monthly_solar %>%
+  ggplot()+
+  geom_col(aes(date,gen,group=ID,fill=ID),position = "stack")+
+  scale_x_date(expand=c(0,0),breaks="3 months",labels = date_format("%b\n%Y",tz="America/Denver"))+
+  scale_y_continuous(expand=c(0,0))+
+  expand_limits(x=c(ymd("2017-12-31"),Sys.Date()+months(2)),y=800)+
+  scale_fill_viridis("",option="C",discrete = T)+
+  guides(fill=guide_legend(ncol = 1))+
+   theme(panel.border = element_blank(),
+        panel.grid = element_blank(),
+        panel.grid.major.y = element_line(color = "gray",linetype="dotted"),
+        axis.line.x = element_line(color = "gray"),
+        axis.line.y = element_line(color = "gray"),
+        axis.text = element_text(size = 16),
+        axis.text.x = element_text(margin = margin(t=0),hjust = .50,vjust = .50),
+        axis.title = element_text(size = 16),
+        #axis.label.x = element_text(size=20,vjust=+5),
+        plot.subtitle = element_text(size = 16,hjust=0.5),
+        plot.caption = element_text(face="italic",size = 12,hjust=0),
+        legend.key.width=unit(2,"line"),
+        legend.position = "right",
+        #legend.box = "horizontal",
+        legend.title = element_text(size = 16),
+        legend.text = element_text(size = 16),
+        plot.title = element_text(hjust=0.5,size = 20),
+        plot.margin=unit(c(1,1,1.5,1.2),"cm")
+  )+
+  labs(x=NULL,y=expression('Mean Noon Hour Generation (MW)'),
+       #title="2017-2037 AESO Installed Capacity Scenarios",
+       #subtitle="Excluding Electricity",
+       caption="Data via NRGStream, graph by @andrew_leach")
+
+ggsave(file=paste("images/solar.png",sep=""),width = 14,height=7,dpi=300,bg="white")
+
+
+
+proc_forwards<-function(file_sent,type){
+  forwards<-read.csv(file=file_sent,header = TRUE, stringsAsFactors=FALSE,skip=1)
+  formats<-unique(guess_formats(forwards[,1],"mdY"))
+  forwards[,1]<-as.Date(forwards[,1],format=formats)
+  forwards[,2]<-as.Date(forwards[,2],format=formats)
+  forwards<-forwards[,-c(3,4,5)]
+  colnames(forwards)<-c("Trade_Date","Inst_Date","Settle","Volume_MW","Open_Int_MW")
+  forwards$Inst_Year<-year(forwards$Inst_Date)
+  forwards$Inst_Month<-month(forwards$Inst_Date)
+  forwards$Type<-type
+  return(forwards)
+}
+
+
+
+new_forwards<-function(){
+  #load existing ones up to Jan 2018
+  #load("forwards.Rdata")
+  #clip all_forwards
+  #all_forwards<-all_forwards%>%filter(Trade_Date<as.Date("2018-01-01"))
+  #import and proces new ones
+  forwards<-proc_forwards(paste(nrg_folder,"forwards2018.csv",sep="/"),"FLAT")
+  peak_forwards<-proc_forwards(paste(nrg_folder,"peak_forwards.csv",sep="/"),"PEAK")
+  ext_peak_forwards<-proc_forwards(paste(nrg_folder,"ext_peak_forwards.csv",sep="/"),"EXT_PEAK")
+  off_peaks<-proc_forwards(paste(nrg_folder,"off_peak_forwards.csv",sep="/"),"OFF_PEAK")
+  #rro<-proc_forwards(paste(nrg_folder,"rro_forwards.csv",sep="/"),"RRO")
+  
+  #stack new ones
+  new_forwards<-rbind(forwards,peak_forwards,ext_peak_forwards,off_peaks)
+  new_forwards<-arrange(new_forwards,Trade_Date,Inst_Date,Type)
+  new_forwards
+  #save(all_forwards,file="forwards.RData")
+}
+nrg_folder<-"C:/Users/aleach/Google Drive/NRGStream"
+test<-new_forwards()
+df1 <- test %>% group_by(Trade_Date,Inst_Date,Inst_Year,Type) %>% summarise(Settle = mean(Settle))
+
+today_date<-max(test$Trade_Date)
+#today_date<-max(test$Trade_Date)
+
+df1$Inst_Year<-factor(df1$Inst_Year,levels = sort(unique(df1$Inst_Year)))
+
+
+dates<-c(today_date,today_date-years(1),today_date-years(2),today_date-years(3),today_date-years(4))
+#dates<-c(today_date,today_date-years(1))
+#dates<-c(today_date)
+
+
+text_date<-function(date_sent=ymd("2020-01-01")){
+  format(date_sent,"%B %d,%Y")}
+
+
+format(dates,"%B %d,%Y")
+
+select_fwds<-df1 %>% filter(Trade_Date %in% dates)%>%
+  filter(Inst_Date<=Trade_Date+years(3),Type=="FLAT")%>%
+  mutate(Trade_Date=format(Trade_Date,"%b %d, %Y"))%>%
+mutate(Trade_Date=factor(as.character(Trade_Date)))
+        
+
+
+  
+
+
+aeso_fwds<-ggplot(select_fwds) +
+  #geom_line(data=subset(df1,Trade_Date %in% dates & Type=="OFF_PEAK"),aes(Inst_Date,Settle,colour=as.factor(Trade_Date),group=as.factor(Trade_Date),linetype=Type),size=1.25)+
+  geom_line(aes(Inst_Date,Settle,colour=Trade_Date,group=Trade_Date,linetype=Type),size=1.25)+
+  #geom_line(data=subset(df1,Trade_Date %in% dates & Type=="PEAK"),aes(Inst_Date,Settle,colour=as.factor(Trade_Date),group=as.factor(Trade_Date),linetype=Type),size=1.25)+
+  #geom_line(aes(Inst_Year,Peak_Settle,colour=as.factor(Trade_Date),group=as.factor(Trade_Date),linetype="dashed"),size=2)+
+  scale_y_continuous(breaks=pretty_breaks())+
+  expand_limits(x=Sys.Date()+months(38),y=200)+
+  scale_color_manual("Trade Date",values=colors_ua10(),guide=guide_legend(nrow=1,order=1))+
+  scale_linetype("Contract",guide=NULL)+ # Change linetypes
+  theme_minimal()+theme(    
+    legend.position = "bottom",
+    legend.key.width=unit(3,"line"),
+    legend.margin=margin(c(0,0,0,0),unit="cm"),
+    legend.text = element_text(colour="black", size = 16, face = "bold"),
+    plot.caption = element_text(size = 14, face = "italic"),
+    plot.title = element_text(face = "bold"),
+    plot.subtitle = element_text(size = 16, face = "italic"),
+    panel.grid.minor = element_blank(),
+    text = element_text(size = 16,face = "bold"),
+    axis.text = element_text(size = 16,face = "bold", colour="black")
+  )+    labs(y="Settlement Price ($/MWh)",x="\nInstrument Date",
+             title="Alberta Power Forward Curves (Calendar Strip)",
+             caption="Source: Data via NRGStream")
+aeso_fwds
+
+ggsave(file=paste("images/forwards.png",sep=""),width = 14,height=7,dpi=300,bg="white")

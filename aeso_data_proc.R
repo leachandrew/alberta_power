@@ -16,7 +16,7 @@ if(!exists("getSeason", mode="function")) source("get_season.R")
 
 #update prices and loads
 
-update<-0
+update<-1
 if(update==1)
   update_forecasts()
 #re-load
@@ -29,6 +29,8 @@ forecast_data<-assign_peaks(forecast_data)
 
 load(file="data/metered_vols_data.Rdata" ) 
 if(update==1){
+  all_vols<-all_vols %>% filter(date<=ymd("2021-12-31"))
+  #test<-update_vols(all_vols)
   all_vols<-update_vols(all_vols)
   save(all_vols, file="data/metered_vols_data.Rdata" ) 
   }
