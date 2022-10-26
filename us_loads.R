@@ -19,8 +19,12 @@ eia_data<-eia_data %>% clean_names()%>%mutate(
   summarize(demand_mw=sum(demand_mw,na.omit=T))%>%
   ungroup()%>%
   identity()
+
+start=ymd("2022-09-02")
+
+end=ymd("2022-09-09")
   
-hourly_data<-eia_data%>%filter(he_utc>=ymd("2022-07-02"),he_utc<=ymd("2022-07-09"))
+hourly_data<-eia_data%>%filter(he_utc>=start,he_utc<=end)
 
 hourly_graph<-
   ggplot(hourly_data) +
@@ -36,12 +40,36 @@ hourly_graph<-
     #legend.text = element_text(colour="black", size = 12, face = "bold")
     #axis.title.y = element_text(margin = margin(t = 0, r = 5, b = 0, l = 0, unit = "pt")
   )+
-  labs(y="Hourly System Load (MW)",x="Hour ending",
+  labs(y="Hourly System Load (MW)",x="Local Time",
        #title=paste("Alberta Hourly Wholesale Power Prices and Alberta Internal Load",sep=""),
        #subtitle=paste(month.name[month(period_start)],", ",year(period_start)," to ",month.name[month(end_date)],", ",year(end_date),sep="")
        NULL)
 hourly_graph 
 ggsave("images/us_regions.png", width=14, height=7, dpi=300,bg="white")
+
+
+hourly_graph<-
+  ggplot(hourly_data) +
+  geom_line(aes(he_utc+hours(7),demand_mw,group=balancing_authority,color=balancing_authority),size=.85)+
+  scale_color_viridis("",option = "C",discrete = T,direction=-1)+
+  scale_y_continuous(expand=c(0,0))+
+  scale_x_datetime(labels = date_format("%d %b\n%H:00"),breaks = "12 hours", expand=c(0,0))+
+  paper_theme()+
+  expand_limits(y=0)+ #make sure you get the zero line
+  #guides(color = guide_legend())+
+  theme(#legend.position="bottom",
+    legend.margin=margin(c(0,0,0,0),unit="cm")
+    #legend.text = element_text(colour="black", size = 12, face = "bold")
+    #axis.title.y = element_text(margin = margin(t = 0, r = 5, b = 0, l = 0, unit = "pt")
+  )+
+  labs(y="Hourly System Load (MW)",x="Eastern Time",
+       #title=paste("Alberta Hourly Wholesale Power Prices and Alberta Internal Load",sep=""),
+       #subtitle=paste(month.name[month(period_start)],", ",year(period_start)," to ",month.name[month(end_date)],", ",year(end_date),sep="")
+       NULL)
+hourly_graph 
+ggsave("images/us_regions_itc.png", width=14, height=7, dpi=300,bg="white")
+
+
 
 
 hourly_data<-hourly_data%>% group_by(balancing_authority)%>%
@@ -61,7 +89,7 @@ hourly_graph<-
     #legend.text = element_text(colour="black", size = 12, face = "bold")
     #axis.title.y = element_text(margin = margin(t = 0, r = 5, b = 0, l = 0, unit = "pt")
   )+
-  labs(y="Hourly System Load (MW)",x="Local Time",
+  labs(y="Hourly System Load Index (Mean = 100)",x="Local Time",
        #title=paste("Alberta Hourly Wholesale Power Prices and Alberta Internal Load",sep=""),
        #subtitle=paste(month.name[month(period_start)],", ",year(period_start)," to ",month.name[month(end_date)],", ",year(end_date),sep="")
        NULL)
@@ -83,7 +111,7 @@ hourly_graph<-
     #legend.text = element_text(colour="black", size = 12, face = "bold")
     #axis.title.y = element_text(margin = margin(t = 0, r = 5, b = 0, l = 0, unit = "pt")
   )+
-  labs(y="Hourly System Load (MW)",x="Eastern Time",
+  labs(y="Hourly System Load Index (Mean = 100)",x="Eastern Time",
        #title=paste("Alberta Hourly Wholesale Power Prices and Alberta Internal Load",sep=""),
        #subtitle=paste(month.name[month(period_start)],", ",year(period_start)," to ",month.name[month(end_date)],", ",year(end_date),sep="")
        NULL)
@@ -109,7 +137,7 @@ hourly_graph<-
     #legend.text = element_text(colour="black", size = 12, face = "bold")
     #axis.title.y = element_text(margin = margin(t = 0, r = 5, b = 0, l = 0, unit = "pt")
   )+
-  labs(y="Hourly System Load (MW)",x="Eastern Time",
+  labs(y="Hourly System Load Index (Mean = 100)",x="Eastern Time",
        #title=paste("Alberta Hourly Wholesale Power Prices and Alberta Internal Load",sep=""),
        #subtitle=paste(month.name[month(period_start)],", ",year(period_start)," to ",month.name[month(end_date)],", ",year(end_date),sep="")
        NULL)
@@ -147,5 +175,37 @@ hourly_graph
 ggsave("images/us_regions_area.png", width=14, height=7, dpi=300,bg="white")
 
 
+#re-do data set with local bounds
+
+hourly_data<-eia_data%>%filter(he_local>=start,he_local<=end)
+
+
+hourly_graph<-
+  ggplot(hourly_data) +
+  
+  geom_area(aes(he_local+hours(1),demand_mw,group=balancing_authority,fill=balancing_authority),color="black", size=.5,position = "stack")+
+  #geom_line(
+  #  data=hourly_data%>% group_by(he_local)%>% summarise(balancing_authority="US L48",demand_mw=sum(demand_mw,na.rm=T))%>%
+  #    ungroup()%>%mutate(avg_load=mean(demand_mw)),
+  #  aes(he_utc+hours(7),demand_mw,group=balancing_authority,color=balancing_authority,lty=balancing_authority),size=1.25)+
+  scale_color_manual("",values=c("black"),labels="US Lower 48 Total" )+
+  scale_linetype_manual("",values=c("21"),labels="US Lower 48 Total" )+
+  scale_fill_viridis("",option = "C",discrete = T,direction=-1)+
+  scale_y_continuous(expand=c(0,0))+
+  scale_x_datetime(labels = date_format("%d %b\n%H:00"),breaks = "12 hours", expand=c(0,0))+
+  paper_theme()+
+  #expand_limits(y=0)+ #make sure you get the zero line
+  #guides(color = guide_legend())+
+  theme(#legend.position="bottom",
+    legend.margin=margin(c(0,0,0,0),unit="cm")
+    #legend.text = element_text(colour="black", size = 12, face = "bold")
+    #axis.title.y = element_text(margin = margin(t = 0, r = 5, b = 0, l = 0, unit = "pt")
+  )+
+  labs(y="Hourly System Load (MW)",x="Local Time",
+       #title=paste("Alberta Hourly Wholesale Power Prices and Alberta Internal Load",sep=""),
+       #subtitle=paste(month.name[month(period_start)],", ",year(period_start)," to ",month.name[month(end_date)],", ",year(end_date),sep="")
+       NULL)
+hourly_graph 
+ggsave("images/us_regions_area_local.png", width=14, height=7, dpi=300,bg="white")
 
 
