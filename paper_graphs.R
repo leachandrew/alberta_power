@@ -3,6 +3,7 @@ library(directlabels)
 #load(file="data/metered_vols_data.Rdata")
 load(file="nrgstream/nrgstream_gen.Rdata") 
 
+
 load(file="data/forecast_data.Rdata") 
 forecast_data <- forecast_data %>% filter (he!="02*")
 
@@ -14,7 +15,7 @@ forecast_data <- forecast_data %>% filter (he!="02*")
 #align variable names
 df2 <- nrgstream_gen %>% filter(date<floor_date(max(date),"month"))%>% #trim to last full month of data
   select(time=Time,vol=gen,ID,AESO_Name,Plant_Type,Plant_Fuel,Capacity) %>%
-  filter(Plant_Type %in% c("COAL","COGEN","NGCC","WIND","SCGT","TRADE","HYDRO","SOLAR","OTHER"))%>%
+  filter(Plant_Type %in% c("COAL","COGEN","NGCC","NGCONV","WIND","SCGT","TRADE","HYDRO","SOLAR","OTHER"))%>%
   #filter(year(time)>=2010) %>% 
   left_join(forecast_data) %>% filter(!is.na(date))%>%
   #strip the AB-WECC tie since it's duplicate of AB-MT and AB-BC
@@ -28,7 +29,7 @@ df2 <- nrgstream_gen %>% filter(date<floor_date(max(date),"month"))%>% #trim to 
   mutate(month=month(time),year=year(time))%>%   
   mutate(Plant_Type=as_factor(Plant_Type),
          # Relevel to the end
-         Plant_Type=fct_other(Plant_Type,keep = c("COAL","COGEN","SCGT","NGCC","WIND","HYDRO","TRADE"),other_level = "OTHER"),
+         Plant_Type=fct_other(Plant_Type,keep = c("COAL","COGEN","SCGT","NGCC","NGCONV","WIND","HYDRO","TRADE","SOLAR"),other_level = "OTHER"),
          Plant_Type=fct_relevel(Plant_Type, "OTHER", after = Inf),
          Plant_Type=fct_recode(Plant_Type, "NET IMPORTS"="TRADE"),
          Plant_Type=fct_relevel(Plant_Type, "NET IMPORTS", after = Inf),
@@ -45,12 +46,12 @@ df2 <- nrgstream_gen %>% filter(date<floor_date(max(date),"month"))%>% #trim to 
 
 
 
-AB_plant_order<-c("COAL","COGEN","NGCC","WIND","HYDRO","SCGT","OTHER","NET IMPORTS")
-AB_palette<- c("black","grey80","grey50",ptol_pal()(6)[3],ptol_pal()(6)[1],"grey50",ptol_pal()(6)[5],ptol_pal()(6)[6])
+AB_plant_order<-c("COAL","NGCONV","COGEN","NGCC","WIND","HYDRO","SCGT","OTHER","NET IMPORTS")
+AB_palette<- c("black","grey90","grey70","grey50",ptol_pal()(6)[3],ptol_pal()(6)[1],"grey50",ptol_pal()(6)[5],ptol_pal()(6)[6])
 
 
 gen_plain <- df2 %>% mutate(Plant_Type=factor(Plant_Type,levels=AB_plant_order))%>%
-  #filter(date>ymd("2014-12-31"))%>%
+  filter(date>ymd("2005-12-31"))%>%
   ggplot(aes(date,gen, col = Plant_Type,fill = Plant_Type,shape=Plant_Type)) +
   geom_line(size=1.25)+
   geom_point(aes(date,gen*ifelse(month%%2==0,1,NA)),size=2.5)+
@@ -193,14 +194,15 @@ gen_plain <- df2 %>% mutate(Plant_Type=factor(Plant_Type,levels=AB_plant_order))
     scale_color_manual("",values= AB_palette)
   ggsave(file="images/gen_fuel_col.png", width = 14,height=9,dpi = 600)
     
-  
-  AB_palette<- c("black","grey50",ptol_pal()(6)[3],ptol_pal()(6)[1],ptol_pal()(6)[5],ptol_pal()(6)[6])
-  capacity_fuel <- df2 %>% mutate(Plant_Type=factor(Plant_Type,levels=AB_plant_order))%>%
-    filter(Plant_Type!="TRADE")%>%
+  #"WIND"         "NATURAL\nGAS" "HYDRO"        "COAL"         "SOLAR"        "NET IMPORTS"  "OTHER"  
+  AB_palette<- c(ptol_pal()(6)[3],"orange",ptol_pal()(6)[1],"black",ptol_pal()(6)[4],"grey50")
+  capacity_fuel <- df2 %>% #mutate(Plant_Type=factor(Plant_Type,levels=AB_plant_order))%>%
+    filter(year(date)>2005)%>%
+    filter(Plant_Type!="TRADE",Plant_Type!="NET IMPORTS")%>%
     mutate(Plant_Type=fct_collapse(Plant_Type,
                                    #"OTHER"=c("WIND","OTHER","HYDRO"),
-                                   "NATURAL\nGAS"=c("SCGT","COGEN","NGCC"),
-                                   "NET\nIMPORTS"="TRADE"),
+                                   "NATURAL\nGAS"=c("SCGT","COGEN","NGCC","NGCONV")
+                                   ),
            Plant_Type=fct_relevel(Plant_Type,"OTHER",after=Inf))%>% 
     group_by(date,month,year,Plant_Type) %>% summarise(capacity=sum(Capacity,na.rm=T),gen=sum(gen,na.rm = T))%>% 
     ungroup() %>%
@@ -213,30 +215,23 @@ gen_plain <- df2 %>% mutate(Plant_Type=factor(Plant_Type,levels=AB_plant_order))
     #scale_color_manual("",values=grey.colors(9,start=0,end=.8))+
     #scale_fill_manual("",values=grey.colors(9,start=0,end=.8))+
     scale_shape_manual("",values=c(15,16,17,18,0,1,2,3))+
-    blake_theme()+theme(plot.margin =unit(c(1,1,1,1),"cm"))+
     scale_x_date(date_labels = "%b\n%Y",date_breaks = "24 months",expand=c(0,0))+
-    expand_limits(x = as.Date(c("2004-01-01", "2023-11-30")))+
-    expand_limits(y=c(0, 8000))+
+    expand_limits(x = as.Date(c("2004-01-01", "2023-1-30")))+
+    coord_cartesian(clip = 'off')+
+    expand_limits(y=c(0,12000))+
     scale_y_continuous(expand = c(0,0),breaks=pretty_breaks())+
+    blake_theme()+
+    theme(legend.position = "none",
+          plot.margin = margin(t=15, r=60, b=0, l=0, "pt"))+
     
-    theme(legend.position = "none")+
-    labs(x="",y="Monthly Average Capacity (MW)",
-         #title="Coal and Gas Generation and Carbon Prices (MW, 2007-2015)",
-         #title="Alberta Power Generation by Plant Type (MW, 2015-2020)",
-         #caption="Source: AESO data, authors' calculations."
+    labs(x="",y="Monthly Average Installed Capacity (MW)",
          NULL)+
-    
-    # annotate("text", x = covid_mid, y =4500, label = "COVID\nperiod",size=3.25,hjust=0.5,vjust=0.5)+
-    #  annotate("rect", fill = "grey70", alpha = .3, 
-    #          xmin = as.Date("2020-03-11"), xmax =as.Date("2020-07-01"),
-    #           ymin = -Inf, ymax = Inf)+
-    # annotate("rect", fill = "grey70", alpha = .3, 
-    #         xmin = as.Date("2019-03-11"), xmax =as.Date("2019-07-01"),
-    #        ymin = -Inf, ymax = Inf)+
-    #annotate("text", x = covid_mid_lag, y =4500, label = "COVID\nperiod\nlast year",size=3.25,hjust=0.5,vjust=0.5)  
     NULL
   capacity_fuel
-  ggsave(file="images/cap_fuel_col.png", width = 14,dpi = 600)
+  ggsave(file="images/cap_fuel_col.png", width = 14,height=7,dpi = 600,bg="white")
+  ggsave(file="images/cap_fuel_col_small.png", width = 14,height=7,dpi = 150,bg="white")
+  ggsave(file="images/cap_fuel_col.eps", width = 14,height=7,dpi = 600,bg="white",dev=cairo_ps)
+  
   
   
   AB_palette<- c("black","grey80","grey30","grey40","grey20","grey50","grey70","grey60")

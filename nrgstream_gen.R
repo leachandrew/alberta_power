@@ -116,11 +116,11 @@ all_gen_data <- function() {
     #stack each year of data
     if(count==1)
       stack<-new_melt
-    else
+    if(count>=1)
       stack<-rbind(stack,new_melt)
     count<-count+1
     #check for data issues
-    print(paste("Merged year ", y_data,". Number of NA Dates:",length(subset(stack[,1],is.na(stack[,"Time"])))))
+    print(paste("Merged year ", y_data,". Number of NA Dates:",nrow(stack %>% filter(is.na(Time)))))
   }
   #merge files into gen_data
   gen_data<-stack
@@ -245,11 +245,63 @@ data_update <- function(data_sent,fix_year=0) {
   return(data_new)
 }
 
+
+ng_conv<-function(data_sent){
+
+#Repair coal-to-gas-conversions
+data_sent %>% 
+  mutate(Plant_Type=case_when( 
+    (ID=="HRM") & (Time>=ymd("2020-05-08")) ~ "SCGT",  #Milner change to gas effective 
+    #SH1 Sheerness #1 and SH2 Sheerness #2 -July 30, 2021.https://www.aeso.ca/market/market-upTimes/2021/sh1-sheerness-1-and-sh2-sheerness-2-change-in-fuel-type-notice/
+    (ID %in% c("SH1","SH2")) & (Time>=ymd("2021-07-30")) ~ "NGCONV",
+    #KH3 January 11, 2022
+    (ID =="KH1") & (Time>=ymd("2022-01-11")) ~ "NGCONV",
+    #KH2 July 27, 2021.
+    (ID =="KH2") & (Time>=ymd("2021-07-21")) ~ "NGCONV",
+    (ID =="KH3") & (Time>=ymd("2022-01-11")) ~ "NGCONV",
+    #Battle River #4 (BR4)	March 8, 2022
+    (ID =="BR4") & (Time>=ymd("2022-03-08")) ~ "NGCONV",
+    #Battle River #5 (BR5)	 November 19, 2021
+    (ID =="BR5") & (Time>=ymd("2021-11-19")) ~ "NGCONV",
+    #Sundance #6 (SD6)	401	0	0 February 19, 2021
+    (ID =="SD6") & (Time>=ymd("2021-02-19")) ~ "NGCONV",
+    (ID =="SD4") & (Time>=ymd("2022-01-4")) ~ "NGCONV",
+    TRUE ~ Plant_Type),
+    Capacity=case_when(
+      (ID=="HRM") & (Time>=ymd("2020-04-23"))&(Time<ymd("2020-05-08")) ~ 185,  #Milner change to gas effective 
+      (ID=="HRM") & (Time>=ymd("2020-05-08"))&(Time<ymd("2021-12-09")) ~ 208,  #Milner change to gas effective 
+      (ID=="HRM") & (Time>=ymd("2021-12-09")) ~ 300,  #Milner change to gas effective 
+      TRUE~Capacity
+    ),
+    Plant_Fuel=ifelse(Plant_Type=="NGCONV","GAS",Plant_Fuel)
+  )
+  
+  
+}
+
 #load the file
 load(file="nrgstream/nrgstream_gen.RData")
 #load plant data
 get_plant_info()
-#use this to compile all the data
-#nrgstream_gen<-all_gen_data()
+#use this to update
+
+nrgstream_gen<-filter(nrgstream_gen,year(Time)<=2020)
+nrgstream_gen<-data_update(nrgstream_gen,2021)
+nrgstream_gen<-data_update(nrgstream_gen,2022)
+
+nrgstream_gen<-ng_conv(nrgstream_gen)
+
+save(nrgstream_gen, file= "nrgstream/nrgstream_gen.RData")
+
+
+
+
+
+
+
+
+
+
+
 #rm(gen_data)
 #if we're changing over to a new year, run both of these two lines of code:

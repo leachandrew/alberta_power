@@ -1871,6 +1871,53 @@ monthly_solar %>%
 ggsave(file=paste("images/solar.png",sep=""),width = 14,height=7,dpi=300,bg="white")
 
 
+hourly_solar<-nrgstream_gen %>% 
+  filter(Plant_Type=="SOLAR",!is.na(gen))%>%
+  mutate(month=month(Time),year=year(Time))%>%
+  group_by(month,year,he)%>%summarize(gen=sum(gen,na.rm = T),n=n_distinct(date))%>%
+  mutate(gen=gen/n,
+         hour=factor(as.numeric(he),levels =seq(1,24)),
+         month=factor(month.abb[month],levels = month.abb)
+         )%>%
+  ungroup()
+
+
+hourly_solar %>%
+  ggplot()+
+  geom_line(aes(hour,gen,group=factor(year),color=factor(year)),size=1.25)+
+  facet_wrap(~month,ncol = 6)+
+  scale_x_discrete(expand=c(0,0),breaks=seq(2,23,4))+
+  #scale_y_continuous(expand=c(0,0))+
+  #expand_limits(x=c(ymd("2017-12-31"),Sys.Date()+months(2)),y=800)+
+  scale_color_viridis("",option="C",discrete = T)+
+  guides(color=guide_legend(nrow = 1))+
+  theme(panel.border = element_blank(),
+        panel.grid = element_blank(),
+        panel.grid.major.y = element_line(color = "gray",linetype="dotted"),
+        axis.line.x = element_line(color = "gray"),
+        axis.line.y = element_line(color = "gray"),
+        axis.text = element_text(size = 16),
+        axis.text.x = element_text(margin = margin(t=0),hjust = .50,vjust = .50),
+        axis.title = element_text(size = 16),
+        #axis.label.x = element_text(size=20,vjust=+5),
+        plot.subtitle = element_text(size = 16,hjust=0.5),
+        plot.caption = element_text(face="italic",size = 12,hjust=0),
+        legend.key.width=unit(2,"line"),
+        legend.position = "bottom",
+        #legend.box = "horizontal",
+        legend.title = element_text(size = 16),
+        legend.text = element_text(size = 16),
+        plot.title = element_text(hjust=0.5,size = 20),
+        plot.margin=unit(c(1,1,1.5,1.2),"cm")
+  )+
+  labs(x="Hour Ending",y=expression('Mean Hourly Generation (MWh)'),
+       #title="2017-2037 AESO Installed Capacity Scenarios",
+       #subtitle="Excluding Electricity",
+       caption="Data via NRGStream, graph by @andrew_leach")
+
+ggsave(file=paste("images/solar_year.png",sep=""),width = 14,height=7,dpi=300,bg="white")
+
+
 
 proc_forwards<-function(file_sent,type){
   forwards<-read.csv(file=file_sent,header = TRUE, stringsAsFactors=FALSE,skip=1)
