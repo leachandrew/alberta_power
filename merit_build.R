@@ -9,7 +9,7 @@ start_time<-Sys.time()
 
 options(scipen=999)
 
-update<-0 #add new data
+update<-1 #add new data
 save<-1 #save files at the end
 synth<-0 #synthetic plants?
   synth_type<-0  #5 is a target facility, focus_id,4 is facility,3 is offer control by type, 2 is by offer_control,1 is by plant_fuel, 0 is full merit as synthetic plant

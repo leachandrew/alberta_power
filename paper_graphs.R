@@ -220,9 +220,23 @@ gen_plain <- df2 %>% mutate(Plant_Type=factor(Plant_Type,levels=AB_plant_order))
     coord_cartesian(clip = 'off')+
     expand_limits(y=c(0,12000))+
     scale_y_continuous(expand = c(0,0),breaks=pretty_breaks())+
-    blake_theme()+
-    theme(legend.position = "none",
-          plot.margin = margin(t=15, r=60, b=0, l=0, "pt"))+
+    theme_tufte()+
+    theme(
+      legend.text = element_text(colour="black", size = 12),
+      plot.caption = element_text(size = 10, face = "italic",hjust=0),
+      plot.title = element_text(size=16,face = "bold"),
+      plot.subtitle = element_text(size = 10),
+      #panel.grid.minor = element_blank(),
+      axis.text.y = element_text(size = 12, colour="black"),
+      axis.text.y.right = element_text(margin = margin(t = 0, r = 10, b = 0, l = 2),color="red"),
+      axis.title.y.right = element_text(margin = margin(t = 0, r = 10, b = 0, l = 2),color="red"),
+      #axis.text.x = element_blank(),
+      axis.text.x = element_text(size = 10, colour = "black", hjust=0.5,vjust=0.5),
+      axis.title.y = element_text(size = 14, colour="black"),
+      axis.ticks = element_blank(),
+      text = element_text(size = 20,family="Times New Roman MS"),
+      legend.position = "none",
+      plot.margin = margin(t=15, r=60, b=15, l=15, "pt"))+
     
     labs(x="",y="Monthly Average Installed Capacity (MW)",
          NULL)+
@@ -231,6 +245,58 @@ gen_plain <- df2 %>% mutate(Plant_Type=factor(Plant_Type,levels=AB_plant_order))
   ggsave(file="images/cap_fuel_col.png", width = 14,height=7,dpi = 600,bg="white")
   ggsave(file="images/cap_fuel_col_small.png", width = 14,height=7,dpi = 150,bg="white")
   ggsave(file="images/cap_fuel_col.eps", width = 14,height=7,dpi = 600,bg="white",dev=cairo_ps)
+  
+  
+  gen_fuel <- df2 %>% #mutate(Plant_Type=factor(Plant_Type,levels=AB_plant_order))%>%
+    filter(year(date)>2005)%>%
+    filter(Plant_Type!="TRADE",Plant_Type!="NET IMPORTS")%>%
+    mutate(Plant_Type=fct_collapse(Plant_Type,
+                                   #"OTHER"=c("WIND","OTHER","HYDRO"),
+                                   "NATURAL\nGAS"=c("SCGT","COGEN","NGCC","NGCONV")
+    ),
+    Plant_Type=fct_relevel(Plant_Type,"OTHER",after=Inf))%>% 
+    group_by(date,month,year,Plant_Type) %>% summarise(capacity=sum(Capacity,na.rm=T),gen=sum(gen,na.rm = T))%>% 
+    ungroup() %>%
+    ggplot(aes(date,gen, col = Plant_Type,fill = Plant_Type,shape=Plant_Type)) +
+    geom_line(size=1.25)+
+    geom_dl(aes(label=Plant_Type),method=list("last.bumpup",dl.trans(x=x+0.3),cex = .85))+
+    scale_color_manual("",values= AB_palette)+
+    scale_fill_manual("",values= AB_palette)+
+    
+    #scale_color_manual("",values=grey.colors(9,start=0,end=.8))+
+    #scale_fill_manual("",values=grey.colors(9,start=0,end=.8))+
+    scale_shape_manual("",values=c(15,16,17,18,0,1,2,3))+
+    scale_x_date(date_labels = "%b\n%Y",date_breaks = "24 months",expand=c(0,0))+
+    expand_limits(x = as.Date(c("2004-01-01", "2023-1-30")))+
+    coord_cartesian(clip = 'off')+
+    expand_limits(y=c(0,8000))+
+    scale_y_continuous(expand = c(0,0),breaks=pretty_breaks())+
+    theme_tufte()+
+    theme(
+      legend.text = element_text(colour="black", size = 12),
+      plot.caption = element_text(size = 10, face = "italic",hjust=0),
+      plot.title = element_text(size=16,face = "bold"),
+      plot.subtitle = element_text(size = 10),
+      #panel.grid.minor = element_blank(),
+      axis.text.y = element_text(size = 12, colour="black"),
+      axis.text.y.right = element_text(margin = margin(t = 0, r = 10, b = 0, l = 2),color="red"),
+      axis.title.y.right = element_text(margin = margin(t = 0, r = 10, b = 0, l = 2),color="red"),
+      #axis.text.x = element_blank(),
+      axis.text.x = element_text(size = 10, colour = "black", hjust=0.5,vjust=0.5),
+      axis.title.y = element_text(size = 14, colour="black"),
+      axis.ticks = element_blank(),
+      text = element_text(size = 20,family="Times New Roman MS"),
+      legend.position = "none",
+      plot.margin = margin(t=15, r=60, b=15, l=15, "pt"))+
+    
+    labs(x="",y="Monthly Average Hourly Generation (MW)",
+         NULL)+
+    NULL
+  gen_fuel
+  ggsave(file="images/gen_fuel_col.png", width = 14,height=7,dpi = 600,bg="white")
+  ggsave(file="images/gen_fuel_col_small.png", width = 14,height=7,dpi = 150,bg="white")
+  ggsave(file="images/gen_fuel_col.eps", width = 14,height=7,dpi = 600,bg="white",dev=cairo_ps)
+  
   
   
   
