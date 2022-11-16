@@ -196,6 +196,8 @@ gen_plain <- df2 %>% mutate(Plant_Type=factor(Plant_Type,levels=AB_plant_order))
     
   #"WIND"         "NATURAL\nGAS" "HYDRO"        "COAL"         "SOLAR"        "NET IMPORTS"  "OTHER"  
   AB_palette<- c(ptol_pal()(6)[3],"orange",ptol_pal()(6)[1],"black",ptol_pal()(6)[4],"grey50")
+  
+  
   capacity_fuel <- df2 %>% #mutate(Plant_Type=factor(Plant_Type,levels=AB_plant_order))%>%
     filter(year(date)>2005)%>%
     filter(Plant_Type!="TRADE",Plant_Type!="NET IMPORTS")%>%
@@ -207,16 +209,16 @@ gen_plain <- df2 %>% mutate(Plant_Type=factor(Plant_Type,levels=AB_plant_order))
     group_by(date,month,year,Plant_Type) %>% summarise(capacity=sum(Capacity,na.rm=T),gen=sum(gen,na.rm = T))%>% 
     ungroup() %>%
     ggplot(aes(date,capacity, col = Plant_Type,fill = Plant_Type,shape=Plant_Type)) +
-    geom_line(size=1.25)+
+    geom_line(aes(lty=Plant_Type),size=1.25)+
     geom_dl(aes(label=Plant_Type),method=list("last.bumpup",dl.trans(x=x+0.3),cex = .85))+
     scale_color_manual("",values= AB_palette)+
-    scale_fill_manual("",values= AB_palette)+
+    scale_linetype_manual("",values= c("solid","11","31","solid","11","solid"))+
     
     #scale_color_manual("",values=grey.colors(9,start=0,end=.8))+
     #scale_fill_manual("",values=grey.colors(9,start=0,end=.8))+
     scale_shape_manual("",values=c(15,16,17,18,0,1,2,3))+
     scale_x_date(date_labels = "%b\n%Y",date_breaks = "24 months",expand=c(0,0))+
-    expand_limits(x = as.Date(c("2004-01-01", "2023-1-30")))+
+    expand_limits(x = as.Date(c("2006-01-01", "2023-1-30")))+
     coord_cartesian(clip = 'off')+
     expand_limits(y=c(0,12000))+
     scale_y_continuous(expand = c(0,0),breaks=pretty_breaks())+
@@ -241,33 +243,45 @@ gen_plain <- df2 %>% mutate(Plant_Type=factor(Plant_Type,levels=AB_plant_order))
     labs(x="",y="Monthly Average Installed Capacity (MW)",
          NULL)+
     NULL
-  capacity_fuel
-  ggsave(file="images/cap_fuel_col.png", width = 14,height=7,dpi = 600,bg="white")
-  ggsave(file="images/cap_fuel_col_small.png", width = 14,height=7,dpi = 150,bg="white")
-  ggsave(file="images/cap_fuel_col.eps", width = 14,height=7,dpi = 600,bg="white",dev=cairo_ps)
   
+  BW_palette<- c("grey60","black","grey60","black","grey60","grey40","yellow")
+  
+  
+  capacity_fuel+
+    scale_color_manual("",values=BW_palette)
+  
+  
+  ggsave(file="images/cap_fuel_bw.png", width = 14,height=7,dpi = 600,bg="white")
+  ggsave(file="images/cap_fuel_bw_small.png", width = 14,height=7,dpi = 150,bg="white")
+  ggsave(file="images/cap_fuel_bw.eps", width = 14,height=7,dpi = 600,bg="white",dev=cairo_ps)
+  
+  
+  
+  gen_palette<- c("black","orange",ptol_pal()(6)[3],ptol_pal()(6)[1],ptol_pal()(6)[4],"grey50")
   
   gen_fuel <- df2 %>% #mutate(Plant_Type=factor(Plant_Type,levels=AB_plant_order))%>%
     filter(year(date)>2005)%>%
     filter(Plant_Type!="TRADE",Plant_Type!="NET IMPORTS")%>%
     mutate(Plant_Type=fct_collapse(Plant_Type,
                                    #"OTHER"=c("WIND","OTHER","HYDRO"),
-                                   "NATURAL\nGAS"=c("SCGT","COGEN","NGCC","NGCONV")
-    ),
-    Plant_Type=fct_relevel(Plant_Type,"OTHER",after=Inf))%>% 
+                                   "NATURAL GAS"=c("SCGT","COGEN","NGCC","NGCONV")),
+    Plant_Type=fct_relevel(Plant_Type,"OTHER",after=Inf),
+    Plant_Type=fct_relevel(Plant_Type,"WIND",after=1),
+    Plant_Type=fct_relevel(Plant_Type,"COAL",after=0),
+    )%>% 
     group_by(date,month,year,Plant_Type) %>% summarise(capacity=sum(Capacity,na.rm=T),gen=sum(gen,na.rm = T))%>% 
     ungroup() %>%
     ggplot(aes(date,gen, col = Plant_Type,fill = Plant_Type,shape=Plant_Type)) +
-    geom_line(size=1.25)+
-    geom_dl(aes(label=Plant_Type),method=list("last.bumpup",dl.trans(x=x+0.3),cex = .85))+
-    scale_color_manual("",values= AB_palette)+
-    scale_fill_manual("",values= AB_palette)+
-    
+    geom_line(aes(lty=Plant_Type),size=1.15)+
+    #geom_dl(aes(label=Plant_Type),method=list("last.bumpup",dl.trans(x=x+0.3),cex = .85))+
+    scale_linetype_manual("",values = rep("solid",6))+
+    scale_color_manual("",values= gen_palette)+
+    guides(color=guide_legend(nrow = 1),lty=guide_legend(nrow = 1))+
     #scale_color_manual("",values=grey.colors(9,start=0,end=.8))+
     #scale_fill_manual("",values=grey.colors(9,start=0,end=.8))+
-    scale_shape_manual("",values=c(15,16,17,18,0,1,2,3))+
+    #scale_shape_manual("",values=c(15,16,17,18,0,1,2,3))+
     scale_x_date(date_labels = "%b\n%Y",date_breaks = "24 months",expand=c(0,0))+
-    expand_limits(x = as.Date(c("2004-01-01", "2023-1-30")))+
+    expand_limits(x = as.Date(c("2006-01-01", "2023-1-30")))+
     coord_cartesian(clip = 'off')+
     expand_limits(y=c(0,8000))+
     scale_y_continuous(expand = c(0,0),breaks=pretty_breaks())+
@@ -286,8 +300,9 @@ gen_plain <- df2 %>% mutate(Plant_Type=factor(Plant_Type,levels=AB_plant_order))
       axis.title.y = element_text(size = 14, colour="black"),
       axis.ticks = element_blank(),
       text = element_text(size = 20,family="Times New Roman MS"),
-      legend.position = "none",
-      plot.margin = margin(t=15, r=60, b=15, l=15, "pt"))+
+      legend.position = "bottom",
+      legend.key.width = unit(2.5,"line"),
+      plot.margin = margin(t=15, r=15, b=15, l=15, "pt"))+
     
     labs(x="",y="Monthly Average Hourly Generation (MW)",
          NULL)+
@@ -298,12 +313,76 @@ gen_plain <- df2 %>% mutate(Plant_Type=factor(Plant_Type,levels=AB_plant_order))
   ggsave(file="images/gen_fuel_col.eps", width = 14,height=7,dpi = 600,bg="white",dev=cairo_ps)
   
   
+  BW_palette<- c("black","black","grey60","grey60","grey60","grey30","yellow")
   
   
-  AB_palette<- c("black","grey80","grey30","grey40","grey20","grey50","grey70","grey60")
-  capacity_fuel+
-    scale_color_manual("",values= AB_palette)
-  ggsave(file="images/cap_fuel.png", width = 14,height=9,dpi = 600)
+  gen_fuel+
+    scale_linetype_manual("",values= c("solid","11","solid","31","11","solid"))+
+    scale_color_manual("",values=BW_palette)+
+    NULL
+  ggsave(file="images/gen_fuel_bw.png", width = 14,height=7,dpi = 600,bg="white")
+  ggsave(file="images/gen_fuel_bw_small.png", width = 14,height=7,dpi = 150,bg="white")
+  ggsave(file="images/gen_fuel_bw.eps", width = 14,height=7,dpi = 600,bg="white",dev=cairo_ps)
+  
+
+  
+  w_set<-15
+  y_set<-8000
+  gen_fuel+
+    annotate("text", x = as.Date("2012-1-1")-days(20), y =y_set, label = str_wrap(width = 30,"SGER in place. OBAs at 88% of historic emissions intensity and $15/tonne carbon price"),size=2.5,vjust=1)+  
+    annotate("text", x = as.Date("2016-1-1")-days(20), y = y_set, label = str_wrap(width = w_set,"SGER changed to 85% OBA and $20/tonne carbon price"),size=2.5,vjust=1)+  
+    annotate("text", x = as.Date("2017-1-1")-days(20), y = y_set, label = str_wrap(width = w_set,"SGER changed to 80% OBA and $30/tonne carbon price"),size=2.5,vjust=1)+  
+    annotate("text", x = as.Date("2018-1-1")-days(20), y = y_set, label = str_wrap(width = w_set,"SGER changed to CCIR with fixed 0.37t/MWh OBA and $30/tonne carbon price"),size=2.5,vjust=1)+
+    annotate("text", x = as.Date("2019-1-1")-days(20), y = y_set, label = str_wrap(width = w_set,"CCIR price increased to $40/tonne"),size=2.5,vjust=1)+
+    annotate("text", x = as.Date("2020-1-1")-days(20), y = y_set, label = str_wrap(width = w_set,"CCIR changed to TIER with fixed 0.37t/MWh OBA and $30/tonne carbon price"),size=2.5,vjust=1)+
+    annotate("text", x = as.Date("2021-1-1")-days(20), y = y_set, label = str_wrap(width = w_set,"SGER changed to CCIR with fixed 0.37t/MWh OBA and $30/tonne carbon price"),size=2.5,vjust=1)+
+    annotate("text", x = as.Date("2022-1-1")-days(20), y = y_set, label = str_wrap(width = w_set,"TIER price increased to $50/tonne"),size=2.5,vjust=1)+
+        NULL
+  ggsave(file="images/gen_fuel_policy.png", width = 14,height=7,dpi = 600,bg="white")
+  
+  
+  reg_h<-7980
+  ctax_h<-7700
+  oba_h<-7840
+  gen_fuel+
+    annotate("text", x = as.Date("2007-7-1"), y =oba_h, label = str_wrap(width = 100,"88% of Historic Facility Emissions Intensity (BEI)"),size=2.5,vjust=1,hjust=0.5)+  
+    annotate("text", x = as.Date("2016-1-1"), y = oba_h, label = str_wrap(width = w_set,"85% of BEI"),size=2.5,vjust=1,hjust=0.5)+  
+    annotate("text", x = as.Date("2017-1-1"), y = oba_h, label = str_wrap(width = w_set,"80% of BEI"),size=2.5,vjust=1,hjust=0.5)+  
+    annotate("text", x = as.Date("2018-1-1"), y = oba_h, label = str_wrap(width = w_set,"0.37t/MWh"),size=2.5,vjust=1,hjust=0.5)+
+    #annotate("text", x = as.Date("2019-1-1"), y = oba_h, label = str_wrap(width = w_set,"0.37t/MWh"),size=2.5,vjust=1,hjust=0.5)+
+    annotate("text", x = as.Date("2020-1-1"), y = oba_h, label = str_wrap(width = w_set,"0.37t/MWh"),size=2.5,vjust=1,hjust=0.5)+
+    annotate("text", x = as.Date("2021-1-1"), y = oba_h, label = str_wrap(width = w_set,"0.37t/MWh"),size=2.5,vjust=1,hjust=0.5)+
+    annotate("text", x = as.Date("2022-1-1"), y = oba_h, label = str_wrap(width = w_set,"0.37t/MWh"),size=2.5,vjust=1,hjust=0.5)+
+    
+    annotate("text", x = as.Date("2007-7-1"), y =ctax_h, label = str_wrap(width = 30,"$15/tonne"),size=2.5,vjust=1,hjust=0.5)+  
+    annotate("text", x = as.Date("2016-1-1"), y = ctax_h, label = str_wrap(width = w_set,"$20/tonne"),size=2.5,vjust=1,hjust=0.5)+  
+    annotate("text", x = as.Date("2017-1-1"), y = ctax_h, label = str_wrap(width = w_set,"$30/tonne"),size=2.5,vjust=1,hjust=0.5)+  
+    annotate("text", x = as.Date("2018-1-1"), y = ctax_h, label = str_wrap(width = w_set,"$30/tonne"),size=2.5,vjust=1,hjust=0.5)+
+    #annotate("text", x = as.Date("2019-1-1"), y = ctax_h, label = str_wrap(width = w_set,"$30/tonne"),size=2.5,vjust=1,hjust=0.5)+
+    annotate("text", x = as.Date("2020-1-1"), y = ctax_h, label = str_wrap(width = w_set,"$30/tonne"),size=2.5,vjust=1,hjust=0.5)+
+    annotate("text", x = as.Date("2021-1-1"), y = ctax_h, label = str_wrap(width = w_set,"$40/tonne"),size=2.5,vjust=1,hjust=0.5)+
+    annotate("text", x = as.Date("2022-1-1"), y = ctax_h, label = str_wrap(width = w_set,"$50/tonne"),size=2.5,vjust=1,hjust=0.5)+
+    
+    annotate("text", x = as.Date("2007-7-1"), y =reg_h, label = str_wrap(width = 30,"SGER"),size=2.5,vjust=1,hjust=0.5,fontface="italic")+  
+    annotate("text", x = as.Date("2016-1-1"), y = reg_h, label = str_wrap(width = w_set,"SGER"),size=2.5,vjust=1,hjust=0.5,fontface="italic")+  
+    annotate("text", x = as.Date("2017-1-1"), y = reg_h, label = str_wrap(width = w_set,"SGER"),size=2.5,vjust=1,hjust=0.5,fontface="italic")+  
+    annotate("text", x = as.Date("2018-1-1"), y = reg_h, label = str_wrap(width = w_set,"CCIR"),size=2.5,vjust=1,hjust=0.5,fontface="italic")+
+    #annotate("text", x = as.Date("2019-1-1"), y = reg_h, label = str_wrap(width = w_set,"CCIR"),size=2.5,vjust=1,hjust=0.5)+
+    annotate("text", x = as.Date("2020-1-1"), y = reg_h, label = str_wrap(width = w_set,"TIER"),size=2.5,vjust=1,hjust=0.5,fontface="italic")+
+    annotate("text", x = as.Date("2021-1-1"), y = reg_h, label = str_wrap(width = w_set,"TIER"),size=2.5,vjust=1,hjust=0.5,fontface="italic")+
+    annotate("text", x = as.Date("2022-1-1"), y = reg_h, label = str_wrap(width = w_set,"TIER"),size=2.5,vjust=1,hjust=0.5,fontface="italic")+
+    
+    annotate("segment", x = as.Date("2007-7-1"),xend = as.Date("2007-7-1"),y=0,yend=ctax_h-140,size=1.25,lty="21" )+
+    annotate("segment", x = as.Date("2016-1-1"),xend = as.Date("2016-1-1"),y=0,yend=ctax_h-140,size=1.25,lty="21" )+  
+    annotate("segment", x = as.Date("2017-1-1"),xend = as.Date("2017-1-1"),y=0,yend=ctax_h-140,size=1.25,lty="21" )+  
+    annotate("segment", x = as.Date("2018-1-1"),xend = as.Date("2018-1-1"),y=0,yend=ctax_h-140,size=1.25,lty="21" )+  
+    #annotate("segment", x = as.Date("2019-1-1"),xend = as.Date("2019-1-1"),y=0,yend=ctax_h-100,size=1.5,lty="21" )+  
+    annotate("segment", x = as.Date("2020-1-1"),xend = as.Date("2020-1-1"),y=0,yend=ctax_h-140,size=1.25,lty="21" )+
+    annotate("segment", x = as.Date("2021-1-1"),xend = as.Date("2021-1-1"),y=0,yend=ctax_h-140,size=1.25,lty="21" )+
+    annotate("segment", x = as.Date("2022-1-1"),xend = as.Date("2022-1-1"),y=0,yend=ctax_h-140,size=1.25,lty="21" )+  
+    
+    NULL
+  ggsave(file="images/gen_fuel_policy.png", width = 14,height=7,dpi = 600,bg="white")
   
   
   
