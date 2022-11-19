@@ -307,10 +307,7 @@ gen_plain <- df2 %>% mutate(Plant_Type=factor(Plant_Type,levels=AB_plant_order))
     labs(x="",y="Monthly Average Hourly Generation (MW)",
          NULL)+
     NULL
-  gen_fuel
-  ggsave(file="images/gen_fuel_col.png", width = 14,height=7,dpi = 600,bg="white")
-  ggsave(file="images/gen_fuel_col_small.png", width = 14,height=7,dpi = 150,bg="white")
-  ggsave(file="images/gen_fuel_col.eps", width = 14,height=7,dpi = 600,bg="white",dev=cairo_ps)
+  ,fontface="italic"
   
   
   BW_palette<- c("black","black","grey60","grey60","grey60","grey30","yellow")
