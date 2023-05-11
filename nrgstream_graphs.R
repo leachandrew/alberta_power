@@ -50,6 +50,13 @@ ctax_year<-function(year_sent){
     year_sent <= 2015 ~ 15,
     year_sent == 2016 ~ 20,
     year_sent == 2017 ~ 30,
+    year_sent == 2018 ~ 30,
+    year_sent == 2019 ~ 30,
+    year_sent == 2020 ~ 30,
+    year_sent == 2021 ~ 40,
+    year_sent == 2022 ~ 50,
+    year_sent == 2023 ~ 65,
+    
     TRUE                      ~  30 
   )
 }
@@ -87,7 +94,19 @@ nrgstream_gen<-nrgstream_gen[!is.na(nrgstream_gen$time),]
 #take out AB-BC and AB-MON
 #nrgstream_gen<-filter(nrgstream_gen, AESO_Name !="AB - BC Hydro  Imp/Exp Hr Avg MW",AESO_Name !="AB - Montana Imp/Exp Hr Avg MW")
 
-
+# capacities
+# nrgstream_gen %>% filter(year(time)==2022,Plant_Fuel%in%c("SOLAR","WIND"))%>% 
+#   filter(time>=ymd("2022-12-31"))%>%
+#   group_by(time,Plant_Fuel)%>%
+#   summarize(Capacity=sum(Capacity))%>%
+#   group_by(Plant_Fuel)%>%
+#   summarize(Capacity=max(Capacity))
+# 
+# 
+# caps<-nrgstream_gen %>% filter(year(time)==2022,Plant_Fuel%in%c("WIND"))%>% 
+#   filter(time>=ymd("2022-12-31"))%>%
+#   group_by(ID)%>%
+#   summarize(Capacity=max(Capacity))
 
 sub_samp<-subset(nrgstream_gen, time > as.Date("2010-01-1"))
 #sub_samp<-subset(sub_samp, time < as.Date("2017-12-31"))
@@ -126,7 +145,8 @@ sub_samp<-filter(nrgstream_gen, time >= as.Date("2010-01-1"))
 
 df_test<-filter(sub_samp,is.na(gen))
 
-df1 <- sub_samp %>% filter(! NRG_Stream %in% trade_excl)%>% group_by(Plant_Type,time) %>% summarise(meancap = mean(Cap_Fac),total_gen=sum(gen,na.rm = T),total_rev=sum(Revenue,na.rm = T),p_mean=mean(Price)) %>% ungroup()
+df1 <- sub_samp %>% filter(! NRG_Stream %in% trade_excl)%>% group_by(Plant_Type,time) %>% 
+  summarise(meancap = mean(Cap_Fac),total_gen=sum(gen,na.rm = T),total_rev=sum(Revenue,na.rm = T),p_mean=mean(Price,na.rm=T)) %>% ungroup()
 df1$Day <- date(df1$time)
 df1$Year <- as.factor(year(df1$time))
 #df1<-na.omit(df1)
@@ -139,8 +159,8 @@ gen_set<-c("COAL","COGEN","HYDRO","NGCC", "OTHER", "SCGT","SOLAR","IMPORT","EXPO
 #test_samp2<-test_samp %>% filter(Plant_Type %in% gen_set,! NRG_Stream %in% trade_excl)
 
 
-df2 <- df1 %>% filter(Plant_Type %in% gen_set,year(time)<2022) %>%
-       group_by(Plant_Type,Year) %>% summarise(capture = sum(total_rev)/sum(total_gen),avg_rev = sum(total_rev)/sum(total_gen),p_mean=mean(p_mean))
+df2 <- df1 %>% filter(Plant_Type %in% gen_set) %>%
+       group_by(Plant_Type,Year) %>% summarise(capture = sum(total_rev,na.rm=T)/sum(total_gen,na.rm=T),avg_rev = sum(total_rev,na.rm=T)/sum(total_gen,na.rm=T),p_mean=mean(p_mean,na.rm=T))
 
 
 #make vol-weighted avg
@@ -158,7 +178,8 @@ df2$Plant_Type<-fct_relevel(df2$Plant_Type, "EXPORT",after=Inf)
 
 
 
-df2 <-df2 %>% mutate(ei=deemed_ei(Plant_Type,as.character(Year)), oba=oba_type(Plant_Type,as.character(Year)), ctax=ctax_year(as.character(Year)),ctax_net=(deemed_ei(Plant_Type,as.character(Year))-oba_type(Plant_Type,as.character(Year)))*ctax_year(as.character(Year)),
+df2 <-df2 %>% mutate(ei=deemed_ei(Plant_Type,as.character(Year)), oba=oba_type(Plant_Type,as.character(Year)), 
+                     ctax=ctax_year(as.character(Year)),ctax_net=(deemed_ei(Plant_Type,as.character(Year))-oba_type(Plant_Type,as.character(Year)))*ctax_year(as.character(Year)),
                      ctax_net_rev=avg_rev-ctax_net,
                      policy=ifelse(as.character(Year)>="2018","CCIR","SGER"))
 
@@ -186,6 +207,23 @@ ggplot(df2,aes(Year,capture-p_mean,colour=Plant_Type,fill=Plant_Type),alpha=0.5)
        caption="Source: AESO Data, accessed via NRGStream\nGraph by @andrew_leach")
 dev.off()
 
+ggplot(df2%>%filter(!Plant_Type %in% c("IMPORT","EXPORT")),aes(Year,capture,colour=Plant_Type,fill=Plant_Type),alpha=0.5)+
+  geom_col(aes(Year,capture,colour=Plant_Type,fill=Plant_Type),size=1.5,position = position_dodge(width = .9),width = .6)+
+  #scale_color_viridis("Plant Type",discrete=TRUE)+
+  #scale_fill_viridis("Plant Type",discrete=TRUE)+
+  scale_color_manual("",values=my_palette)+
+  scale_fill_manual("",values=my_palette)+
+  scale_y_continuous(expand=c(0,0))+
+  scale_x_discrete(expand=c(0,0))+
+  expand_limits(y=225)+
+  
+  slide_theme()+
+  labs(x="",y="Average Revenue ($/MWh)",
+       title="Average Revenue by Generation($/MWh)",
+       caption="Source: AESO Data, accessed via NRGStream\nGraph by @andrew_leach")
+ggsave("images/capture.png",dpi=300,bg="white",width = 14,height=9)
+
+
 set_png(file="images/price_capture_pct.png", width = 1400, height = 750)
 my_palette<-c(colors_tableau10()[8],colors_tableau10_medium()[4],colors_tableau10()[4],colors_tableau10_light()[4],colors_tableau10()[7],colors_tableau10()[1],colors_tableau10()[3],colors_tableau10()[2],colors_tableau10()[9],colors_tableau10_light()[9])
 ggplot(df2,aes(Year,capture/p_mean*100-100,colour=Plant_Type,fill=Plant_Type),alpha=0.5)+
@@ -202,7 +240,7 @@ ggplot(df2,aes(Year,capture/p_mean*100-100,colour=Plant_Type,fill=Plant_Type),al
 dev.off()
 
 
-df3 <- df1 %>% filter(Plant_Type %in% gen_set,year(time)<2022) %>%
+df3 <- df1 %>% filter(Plant_Type %in% gen_set) %>%
   group_by(Year) %>% summarise(capture = sum(total_rev)/sum(total_gen),avg_rev = sum(total_rev)/sum(total_gen),p_mean=mean(p_mean))%>%
   mutate(Plant_Type="MARKET",Plant_Type=as_factor(Plant_Type))
 
@@ -216,7 +254,7 @@ df2<-df2 %>% bind_rows(df4)
 
 
 my_palette<-c("black",colors_tableau10()[8],colors_tableau10_medium()[4],colors_tableau10()[4],colors_tableau10_light()[4],colors_tableau10()[7],colors_tableau10()[1],colors_tableau10()[3],colors_tableau10()[2],colors_tableau10()[9],colors_tableau10_light()[9])
-my_palette<-c("black",grey.colors(10,start=0.2,end = .95))
+#my_palette<-c("black",grey.colors(10,start=0.2,end = .95))
 
 plot_a<-ggplot(df2,aes(Year,capture,fill=Plant_Type))+
   geom_col(aes(Year,capture,fill=Plant_Type),position = position_dodge(width = .9),width = .6,color="black",size=.5)+
@@ -237,35 +275,7 @@ labs(x="",y="Average Revenue ($/MWh)",
      #caption="Source: AESO Data, accessed via NRGStream\nGraph by @andrew_leach"
      )
 plot_a
-ggsave(file="images/price_capture.png", width = 14, height = 8)
-
-
-
-capture_new<-
-  ggplot(df2,aes(y=capture,x=Plant_Type))+
-  geom_bar(stat="identity",alpha=0.5,width=.9, position = "dodge",color="black")+
-  facet_wrap(~Year,nrow = 1)+
-  #coord_flip()+
-  geom_text(aes(y=capture+.5,label=Plant_Type),angle=90,size=1.6,hjust=0,vjust=0.35)+
-  #  scale_color_viridis("Plant Type",discrete=TRUE)+
-  #  scale_fill_viridis("Plant Type",discrete=TRUE)+
-  #scale_color_manual("",values=colors_tableau10())+
-  #scale_fill_manual("",values=colors_tableau10())+
-  #scale_color_manual("",values=my_palette)+
-  #scale_fill_manual("",values=my_palette)+
-  theme_minimal()+
-  theme(axis.text.x = element_blank(),
-        panel.grid = element_blank())+
-  expand_limits(y=0)+
-  labs(x="",y="Average Revenue ($/MWh)",
-       #title="Energy Price Capture ($/MWh, 2010-2021)",
-       #caption="Source: AESO Data, accessed via NRGStream\nGraph by @andrew_leach"
-       )
-capture_new
-ggsave(file="images/capture_test.png",width=14,height = 8,dpi=150)
-
-
-
+ggsave(file="images/price_capture.png", width = 15, height = 8,bg="white",dpi=200)
 
 
 df2 <-df2 %>% filter(!Plant_Type %in% c("OTHER", "TRADE","IMPORT","EXPORT","MARKET"))
@@ -303,11 +313,11 @@ plot_b<-ggplot(filter(df2,as.character(Year)>=2014))+
   guides(fill=guide_legend(nrow=1,byrow=TRUE),colour=guide_legend(nrow=1,byrow=TRUE))+
   small_theme()+
   labs(x="Year",y="Average Revenue ($/MWh)",
-       title="Change in Energy Price Capture Due to GHG Policies (2014-2019)",
+       title="Change in Energy Price Capture Due to GHG Policies (2014-present)",
        subtitle="Outline shows market revenues, fill shows market revenue plus OBA values less carbon pricing costs",
        caption="Source: AESO and SGER Data, with assumption that renewables capture full offset value pre-2018.\n AESO data accessed via NRGStream.")
-
 plot_b
+ggsave(file="images/price_capture_ctax.png", width = 15, height = 8,bg="white",dpi=200)
 
 
 
@@ -323,9 +333,10 @@ plot_c<-ggplot(filter(df2,as.character(Year)>=2014))+
   guides(fill=guide_legend(nrow=1,byrow=TRUE),colour=guide_legend(nrow=1,byrow=TRUE))+
   small_theme()+
   labs(x="Year",y="Average Credit Value ($/MWh)",
-       title="Value of Credit Allocations Under GHG Policies (2014-2019)",
+       title="Value of Credit Allocations Under GHG Policies (2014-present)",
        caption="Source: AESO and SGER Data, with assumption that renewables capture full offset value pre-2018.\n AESO data accessed via NRGStream, graph by @andrew_leach")
 plot_c
+ggsave(file="images/oba_value.png", width = 15, height = 8,bg="white",dpi=200)
 
 
 
@@ -342,26 +353,10 @@ plot_d<-ggplot(filter(df2,as.character(Year)>=2014))+
   guides(fill=guide_legend(nrow=1,byrow=TRUE),colour=guide_legend(nrow=1,byrow=TRUE))+
   small_theme()+
   labs(x="Year",y="Average Hourly Carbon Cost ($/MWh)",
-       title="Raw Cost of GHG Policies (2014-2019)",
+       title="Raw Cost of GHG Policies (2014-present)",
        caption="Source: AESO and SGER Data, with assumption that renewables capture full offset value pre-2018.\n AESO data accessed via NRGStream, graph by @andrew_leach")
 plot_d
-
-
-
-
-set_png(file="images/price_capture_ctax.png",width=1200,height = 850)
-plot_b
-dev.off()
-
-
-set_png(file="images/oba_value.png",width=1200,height = 850)
-plot_c
-dev.off()
-
-set_png(file="images/cost_ctax.png",width=1200,height = 850)
-print(plot_d)
-dev.off()
-
+ggsave(file="images/cost_ctax.png", width = 15, height = 8,bg="white",dpi=200)
 
 
 
@@ -412,17 +407,17 @@ df1$Year <- as.factor(year(df1$time))
 
 
 df2 <- df1 %>% mutate(month=month(time))%>% filter(Plant_Type %in% c("NGCC","SCGT","COGEN","COAL")) %>% 
-  group_by(Year,month,Plant_Type) %>% summarise(gen=sum(total_gen),capture = sum(total_rev)/sum(total_gen),avg_rev = sum(total_rev)/sum(total_gen),p_mean=mean(p_mean)) %>% 
+  group_by(Year,month,Plant_Type) %>% summarise(avg_gen=mean(total_gen),gen=sum(total_gen),capture = sum(total_rev)/sum(total_gen),avg_rev = sum(total_rev)/sum(total_gen),p_mean=mean(p_mean)) %>% 
   mutate(ei=deemed_ei(Plant_Type,as.character(Year)), oba=oba_type(Plant_Type,as.character(Year)), ctax=ctax_year(as.character(Year)),ctax_net=(deemed_ei(Plant_Type,as.character(Year))-oba_type(Plant_Type,as.character(Year)))*ctax_year(as.character(Year)),
                      ctax_net_rev=avg_rev-ctax_net,
                      policy=ifelse(as.character(Year)>="2018","CCIR","SGER"),
                     date=ymd(paste(Year,month,15,sep="-")))
 
 
-
+dl_cols<-c("black","darkblue","lightblue","dodgerblue")
 
 gen_plain <- df2 %>% filter(date>=ymd("2010-01-01")) %>%
-  ggplot(aes(date,gen/days_in_month(month)/24, col = Plant_Type)) +
+  ggplot(aes(date,avg_gen, col = Plant_Type)) +
   geom_line(size = 1.2)+
   #annotate("text", x = as.Date("2014-8-1")-days(20), y = 5600, label = "SGER in place at\n12% and $15/tonne\nsince July 2007",size=3.8)+  
   #annotate("text", x = as.Date("2016-1-1")-days(20), y = 5600, label = "SGER changed to\n15% and $20/tonne\nJan 2016",size=3.8)+  
@@ -431,12 +426,13 @@ gen_plain <- df2 %>% filter(date>=ymd("2010-01-01")) %>%
   
   slide_theme()+
   scale_x_date(expand = c(0,0),date_labels = "%b\n%Y",date_breaks = "12 months")+
-  scale_y_continuous(limits=c(0,5990),expand = c(0,0))+
-  scale_color_manual("",values=colors_tableau10()[1:4])+
+  scale_y_continuous(breaks=pretty_breaks(),expand = c(0,0))+
+  expand_limits(y=c(0,6000))+
+  scale_color_manual("",values=dl_cols)+
   theme(legend.position = "none")+
   labs(x="Year",y="Average Hourly Generation (MW)",
        #title="Coal and Gas Generation and Carbon Prices (MW, 20010-2020)",
-       title="Coal and Gas Generation (MW, 2010-2020)",
+       #title="Coal and Gas Generation (MW, 2010-2020)",
        caption="Source: AESO Data, accessed via NRGStream")
  
 
@@ -445,6 +441,23 @@ p<-gen_plain+
   annotate("text", x = as.Date("2016-1-1")-days(20), y = 5600, label = str_wrap(width = 17,"SGER changed to 85% OBA and $20/tonne carbon price"),size=2.5)+  
   annotate("text", x = as.Date("2017-1-1")-days(20), y = 5600, label = str_wrap(width = 17,"SGER changed to 80% OBA and $30/tonne carbon price"),size=2.5)+  
   annotate("text", x = as.Date("2018-1-1")-days(20), y = 5600, label = str_wrap(width = 17,"SGER changed to CCIR with fixed 0.37t/MWh OBA and $30/tonne carbon price"),size=2.5)+  
+  annotate("text", x = as.Date("2019-1-1")-days(20), y = 5600, label = str_wrap(width = 17,"CCIR changed to TIER, same OBA and $30/tonne carbon price"),size=2.5)+  
+  annotate("text", x = as.Date("2021-1-1")-days(20), y = 5600, label = str_wrap(width = 17,"TIER with fixed 0.363t/MWh OBA and $40/tonne carbon price"),size=2.5)+
+  annotate("text", x = as.Date("2022-1-1")-days(20), y = 5600, label = str_wrap(width = 17,"TIER with fixed 0.363t/MWh OBA and $50/tonne carbon price"),size=2.5)+  
+  annotate("text", x = as.Date("2023-1-1")-days(20), y = 5600, label = str_wrap(width = 17,"TIER with fixed 0.363t/MWh OBA and $65/tonne carbon price"),size=2.5)+  annotate("text", x = as.Date("2023-1-1")-days(20), y = 5600, label = str_wrap(width = 17,"TIER with fixed 0.363t/MWh OBA and $65/tonne carbon price"),size=2.5)+  
+  annotate("rect", fill = "black", alpha = 1, 
+           xmin = as.Date("2022-12-29"), xmax =as.Date("2023-1-3"),
+           ymin = 0, ymax = 5200) +
+  annotate("rect", fill = "black", alpha = 1, 
+           xmin = as.Date("2021-12-29"), xmax =as.Date("2022-1-3"),
+           ymin = 0, ymax = 5200) +
+  annotate("rect", fill = "black", alpha = 1, 
+           xmin = as.Date("2020-12-29"), xmax =as.Date("2021-1-3"),
+           ymin = 0, ymax = 5200) +
+  annotate("rect", fill = "black", alpha = 1, 
+           xmin = as.Date("2018-12-29"), xmax =as.Date("2019-1-3"),
+           ymin = 0, ymax = 5200) +
+  
   
   annotate("rect", fill = "black", alpha = 1, 
            xmin = as.Date("2015-12-29"), xmax =as.Date("2016-1-3"),
@@ -454,7 +467,9 @@ p<-gen_plain+
            ymin = 0, ymax = 5200) +
   annotate("rect", fill = "black", alpha = 1, 
            xmin = as.Date("2017-12-29"), xmax =as.Date("2018-1-3"),
-           ymin = 0, ymax = 5200) 
+           ymin = 0, ymax = 5200) +
+  
+  expand_limits(x=Sys.Date()+months(2))
   
 
 
@@ -464,7 +479,7 @@ direct_labels <- df2 %>%
     x = last(date)-months(1), 
     y = 1000
   )
-direct_labels$y<-c(3000,3400,1000,400)
+direct_labels$y<-c(1000,3400,1200,400)
 
 
 direct_labels_axis <- axis_canvas(p, axis = "y") +
@@ -474,7 +489,7 @@ direct_labels_axis <- axis_canvas(p, axis = "y") +
     x = 0.06, 
     hjust = 0, 
     size = 5, 
-    col = colors_tableau10()[1:4]
+    col = dl_cols
   )
 
 p_direct_labels <- insert_yaxis_grob(p, direct_labels_axis)
@@ -482,9 +497,8 @@ p_direct_labels <- insert_yaxis_grob(p, direct_labels_axis)
 plain_direct_labels <- insert_yaxis_grob(gen_plain, direct_labels_axis)
 ggdraw(plain_direct_labels)
 
-set_png(file="images/gen_ghg_price.png", width = 2000, height = 1000)
 ggdraw(p_direct_labels)
-dev.off()
+ggsave("images/gen_ghg_price.png", width = 16, height = 7,dpi=200,bg="white")
 
 set_png(file="images/gen_plain.png", width = 1600, height = 1000)
 ggdraw(plain_direct_labels)
@@ -630,7 +644,7 @@ df1$m12_avg<-as.numeric(rollapply(df1$avg_rev,12,mean,fill=NA,align = c("right")
 
 png<-1
 if(png==1)#set these to only turn on if you're making PNG graphs
-  set_png("monthly_prices.png")
+  set_png("images/monthly_prices.png")
 ggplot(data=df1, aes(Date,total_rev/total_gen,colour="A"),size=2.5) +
   geom_line(size=1.5) +
   geom_line(data=subset(df1,Date>="2005-01-01"),aes(Date,m12_avg,colour="B"),size=2.5) +

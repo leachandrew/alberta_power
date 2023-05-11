@@ -148,7 +148,7 @@ data_update <- function(data_sent,fix_year=0) {
   #build current year data and append to gen.Rdata
   #testing
   #data_sent<-filter(gen_data,year(Time)==2018)
-  #fix_year<-2019
+  #fix_year<-2023
   
   get_plant_info()
   stack<-NULL
@@ -285,11 +285,16 @@ load(file="nrgstream/nrgstream_gen.RData")
 get_plant_info()
 #use this to update
 
-nrgstream_gen<-filter(nrgstream_gen,year(Time)<=2020)
-nrgstream_gen<-data_update(nrgstream_gen,2021)
+nrgstream_gen<-filter(nrgstream_gen,year(Time)<=2021)
+#nrgstream_gen<-data_update(nrgstream_gen,2021)
 nrgstream_gen<-data_update(nrgstream_gen,2022)
+nrgstream_gen<-data_update(nrgstream_gen,2023)
 
 nrgstream_gen<-ng_conv(nrgstream_gen)
+
+
+#test_data<-nrgstream_gen %>% filter(is.na(Plant_Type))
+
 
 save(nrgstream_gen, file= "nrgstream/nrgstream_gen.RData")
 

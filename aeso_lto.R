@@ -22,18 +22,18 @@ df1<-lto_data %>% pivot_longer(-date, names_to = "forecast",values_to = "peak") 
 #set_png(file="images/AESO_LTO.png", width = 1400, height = 750)
 #jpeg(file="AESO_LTO.jpg", width = 1400, height = 750)
 ggplot(df1) +
-  geom_line(data=filter(df1,grepl("Reference",forecast)|grepl("Forecast",forecast))%>% filter(year!=2021),aes(date,peak,group = forecast,color="Previous AESO Reference Case Forecasts"),size=.7) +
-  geom_line(data=filter(df1,forecast=="Actual"),aes(date,peak,group = forecast,colour="Historic Peak Loads"),size=3) +
-  geom_line(data=df1%>%filter(year==2021)%>%mutate(forecast=fct_relevel(forecast,"2021 Reference Case",after = Inf)),aes(date,peak,group = forecast,colour=forecast),size=1.7) +
-  #geom_point(size=1) +
-  #scale_color_viridis(labels=c("2004 Forecast","2006 Forecast", "2007 Forecast" ,"2008 Forecast","2009 Forecast","2012 Forecast" , "2014 Reference Case", "2016 Reference Case","Actual AIL"),discrete=TRUE)+   
-  #scale_colour_brewer(labels=c("2004 Forecast","2006 Forecast", "2007 Forecast" ,"2008 Forecast","2009 Forecast","2012 Forecast" , "2014 Reference Case", "2016 Reference Case","Actual AIL"),type = "seq", palette = "Greens", direction = 1)+
-  #scale_colour_brewer(type = "seq", palette = "Greens", direction = 1)+
-  scale_colour_manual(NULL,#labels=c("2004 Forecast","2005 Forecast","2006 Forecast", "2007 Forecast" ,"2008 Forecast","2009 Forecast","2012 Forecast" , "2014 Reference Case", "2016 Reference Case","2017 Reference Case","2019 Reference Case","Actual AIL"),
-                      values=c(brewer.pal(5,"Blues")[2:5],"Black","grey60"))+
-  #scale_linetype_manual(NULL,values=c("11","solid","22","33"))+
-  
+  geom_line(data=filter(df1,grepl("Reference",forecast)|grepl("Forecast",forecast))%>% filter(year!=2021),
+            aes(date,peak,group = forecast,color="Previous AESO Reference Case Forecasts",linetype="Previous AESO Reference Case Forecasts"),size=.7) +
+  geom_line(data=filter(df1,forecast=="Actual"),aes(date,peak,group = forecast,colour="Historic Peak Loads",linetype="Historic Peak Loads"),size=2) +
+  geom_line(data=df1%>%filter(year==2021, forecast=="2021 Reference Case")%>%
+              mutate(forecast=fct_relevel(forecast,"2021 Reference Case",after = Inf),
+                     forecast=fct_recode(forecast,"Reference Case (2021)"="2021 Reference Case")),
+              aes(date,peak,group = forecast,colour=forecast,linetype=forecast),size=2) +
+  scale_colour_manual(NULL,values=c("Black","grey60","Black"),
+                      guide=guide_legend(override.aes = list(lty = c("solid", "solid","21"),size=c(2,.7,2) ) ))+
+  scale_linetype_manual(NULL,values=c("solid","solid","21")) +
   theme_minimal()+theme(
+    legend.key.width=unit(2,"line"),
     legend.position = "bottom",
     legend.margin=margin(c(0,0,0,0),unit="cm"),
     legend.text = element_text(colour="black", size = 14, face = "bold"),
@@ -44,9 +44,9 @@ ggplot(df1) +
     text = element_text(size = 16,face = "bold"),
     axis.text = element_text(size = 16,face = "bold", colour="black")
   )+    labs(y="Alberta Peak Internal Load (MW)",x="",
-             title="AESO Long Term Outlook forecasts of Alberta peak internal load (MW, 2004-2021)",
-             caption="Source: AESO Reports as compiled by Andrew Leach and Calder Watrich. Graph: Andrew Leach.")
-ggsave("aeso_lto.png",width=16,height=9,dpi=300)
+             #title="AESO Long Term Outlook forecasts of Alberta peak internal load (MW, 2004-2021)",
+             caption="Data via AESO, graph by Andrew Leach.")
+ggsave("aeso_lto.png",width=14,height=6,dpi=300,bg="white")
 ggsave("aeso_lto_small.png",width=16,height=9,dpi=150)
 
 lto_capacity <- read.xlsx(xlsxFile = "Reports/AESO/2017-LTO-data-file.xlsx", sheet = "Generation Capacity by Type", startRow = 1,skipEmptyRows = TRUE,detectDates = TRUE)

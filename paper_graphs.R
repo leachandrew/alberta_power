@@ -9,12 +9,60 @@ forecast_data <- forecast_data %>% filter (he!="02*")
 
 
 
+# load profile
+
+peak_data<-forecast_data %>%filter(!is.na(actual_posted_pool_price),!is.na(actual_ail),year(time)==2022)%>% 
+  assign_date_time_days()%>%
+  assign_peaks()%>%
+  group_by(he) %>% 
+  summarize(mean_ail=mean(actual_ail,na.rm = T),med_ail=median(actual_ail,na.rm=T),trough_ail=min(actual_ail),max_ail=max(actual_ail),
+            q95_ail=quantile(actual_ail, probs=c(.995)),
+            q05_ail=quantile(actual_ail, probs=c(.005))
+  )%>%ungroup()%>%
+  mutate(he=as.numeric(he)) 
+
+
+bottom_panel<-
+  ggplot(peak_data) +
+  #geom_line(aes(date,ail,colour="basic"),size=1.5)+
+  geom_rect(aes(xmin=1, xmax=24, ymin=0, ymax=min(peak_data$trough_ail)), fill="grey80",color="black", alpha=0.1) +
+  geom_rect(aes(xmin=1, xmax=24, ymax=max(peak_data$max_ail), ymin=min(peak_data$trough_ail)), fill="grey90",color="black", alpha=.1) +
+    geom_ribbon(aes(he,ymax=q95_ail,ymin=q05_ail,fill="Two-tailed 99th percentile range"),alpha=1)+
+  geom_line(aes(he,mean_ail,linetype="A"),size=.85,color="black")+
+  geom_line(aes(he,med_ail,linetype="B"),size=.85,color="blue")+
+  #geom_ribbon(aes(date,ymax=peak_ail,ymin=trough_ail,fill="Range of Monthly Values"),alpha=.5)+
+  
+  #scale_color_manual("",values = c("black"),labels=c("Average Monthly Price"))+
+  scale_fill_manual("",values = c("grey50"))+
+  scale_linetype_manual("",values = c("solid","11"),labels=c("Average load","Median Load"))+
+  scale_x_continuous(expand=c(0,0),breaks = pretty_breaks(6))+
+  scale_y_continuous(expand=c(0,0),breaks = pretty_breaks())+
+  expand_limits(y=c(0,12000))+
+  guides(linetype = guide_legend(override.aes = list(color = c("black","blue"))),color="none")+
+  paper_theme()+
+  annotate("text",x=11,y=4000,label="'Base Load'",
+           color="black",fontface="bold",hjust=0)+
+  annotate("text",x=11,y=8500,label="'Load-following' or 'peaking' plants",
+           color="black",fontface="bold",hjust=0)+
+  
+  theme(legend.position="bottom",
+        #axis.title.y = element_text(margin = margin(t = 0, r = 5, b = 0, l = 0, unit = "pt")),
+        legend.margin=margin(c(0,0,0,0),unit="cm"),
+        legend.key.width = unit(1.3,"cm"),
+        #legend.text = element_text(colour="black", size = 12, face = "bold"),
+  )+    labs(y="Internal Load (MW)",x="Hour of the day")
+bottom_panel
+ggsave("../book/images/base_load.png",width = 11,height=5,dpi=220,bg="white")
+
+
+
+
 
 #direct label graph with AESO data
 
 #align variable names
 df2 <- nrgstream_gen %>% filter(date<floor_date(max(date),"month"))%>% #trim to last full month of data
-  select(time=Time,vol=gen,ID,AESO_Name,Plant_Type,Plant_Fuel,Capacity) %>%
+  select(time,vol=gen,ID,AESO_Name,Plant_Type,Plant_Fuel,Capacity) %>%
   filter(Plant_Type %in% c("COAL","COGEN","NGCC","NGCONV","WIND","SCGT","TRADE","HYDRO","SOLAR","OTHER"))%>%
   #filter(year(time)>=2010) %>% 
   left_join(forecast_data) %>% filter(!is.na(date))%>%

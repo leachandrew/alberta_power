@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.21 (MiKTeX 20.11) (preloaded format=pdflatex 2022.5.30)  4 OCT 2022 22:02
+This is pdfTeX, Version 3.14159265-2.6-1.40.21 (MiKTeX 20.11) (preloaded format=pdflatex 2022.5.30)  7 MAR 2023 13:07
 entering extended mode
 **./power_slides_law.tex
 (power_slides_law.tex
@@ -1341,7 +1341,7 @@ Package pdftex.def Info: ../images/loads_clean.png  used on input line 514.
  [16
 
  <../images/loads_clean.png>]
-<../images/hourly_prices.png, id=258, 1011.78pt x 505.89pt>
+<../images/hourly_prices.png, id=257, 1011.78pt x 505.89pt>
 File: ../images/hourly_prices.png Graphic file (type png)
 <use ../images/hourly_prices.png>
 Package pdftex.def Info: ../images/hourly_prices.png  used on input line 520.
@@ -1349,7 +1349,7 @@ Package pdftex.def Info: ../images/hourly_prices.png  used on input line 520.
  [17
 
  <../images/hourly_prices.png>]
-<../images/peak_prices.png, id=271, 1011.78pt x 505.89pt>
+<../images/peak_prices.png, id=270, 1011.78pt x 505.89pt>
 File: ../images/peak_prices.png Graphic file (type png)
 <use ../images/peak_prices.png>
 Package pdftex.def Info: ../images/peak_prices.png  used on input line 526.
@@ -1357,7 +1357,7 @@ Package pdftex.def Info: ../images/peak_prices.png  used on input line 526.
  [18
 
  <../images/peak_prices.png>]
-<../images/forwards.png, id=284, 1011.78pt x 505.89pt>
+<../images/forwards.png, id=282, 1011.78pt x 505.89pt>
 File: ../images/forwards.png Graphic file (type png)
 <use ../images/forwards.png>
 Package pdftex.def Info: ../images/forwards.png  used on input line 532.
@@ -1365,7 +1365,7 @@ Package pdftex.def Info: ../images/forwards.png  used on input line 532.
  [19
 
  <../images/forwards.png>]
-<../images/balancingpool.png, id=298, 682.55pt x 439.6425pt>
+<../images/balancingpool.png, id=295, 682.55pt x 439.6425pt>
 File: ../images/balancingpool.png Graphic file (type png)
 <use ../images/balancingpool.png>
 Package pdftex.def Info: ../images/balancingpool.png  used on input line 539.
@@ -1375,7 +1375,7 @@ Package pdftex.def Info: ../images/balancingpool.png  used on input line 539.
  <../images/balancingpool.png>] [21
 
 ]
-<../images/lcoe_22.png, id=320, 614.295pt x 363.07071pt>
+<../images/lcoe_22.png, id=317, 614.295pt x 363.07071pt>
 File: ../images/lcoe_22.png Graphic file (type png)
 <use ../images/lcoe_22.png>
 Package pdftex.def Info: ../images/lcoe_22.png  used on input line 561.
@@ -1383,7 +1383,7 @@ Package pdftex.def Info: ../images/lcoe_22.png  used on input line 561.
  [22
 
  <../images/lcoe_22.png>]
-<../images/lcoe_lazard_22.png, id=333, 855.195pt x 523.09714pt>
+<../images/lcoe_lazard_22.png, id=330, 855.195pt x 523.09714pt>
 File: ../images/lcoe_lazard_22.png Graphic file (type png)
 <use ../images/lcoe_lazard_22.png>
 Package pdftex.def Info: ../images/lcoe_lazard_22.png  used on input line 567.
@@ -1392,7 +1392,7 @@ Package pdftex.def Info: ../images/lcoe_lazard_22.png  used on input line 567.
 [23
 
  <../images/lcoe_lazard_22.png>]
-<../images/ab_solar.png, id=346, 434.05019pt x 443.08392pt>
+<../images/ab_solar.png, id=343, 434.05019pt x 443.08392pt>
 File: ../images/ab_solar.png Graphic file (type png)
 <use ../images/ab_solar.png>
 Package pdftex.def Info: ../images/ab_solar.png  used on input line 572.
@@ -1400,7 +1400,7 @@ Package pdftex.def Info: ../images/ab_solar.png  used on input line 572.
  [24
 
  <../images/ab_solar.png>]
-<../images/solar.png, id=359, 1011.78pt x 505.89pt>
+<../images/solar.png, id=356, 1011.78pt x 505.89pt>
 File: ../images/solar.png Graphic file (type png)
 <use ../images/solar.png>
 Package pdftex.def Info: ../images/solar.png  used on input line 578.
@@ -1408,7 +1408,7 @@ Package pdftex.def Info: ../images/solar.png  used on input line 578.
  [25
 
  <../images/solar.png>]
-<../images/solar_year.png, id=373, 1011.78pt x 505.89pt>
+<../images/solar_year.png, id=369, 1011.78pt x 505.89pt>
 File: ../images/solar_year.png Graphic file (type png)
 <use ../images/solar_year.png>
 Package pdftex.def Info: ../images/solar_year.png  used on input line 583.
@@ -1416,7 +1416,7 @@ Package pdftex.def Info: ../images/solar_year.png  used on input line 583.
  [26
 
  <../images/solar_year.png>]
-<../images/small_solar.png, id=386, 600.0991pt x 258.10715pt>
+<../images/small_solar.png, id=381, 600.0991pt x 258.10715pt>
 File: ../images/small_solar.png Graphic file (type png)
 <use ../images/small_solar.png>
 Package pdftex.def Info: ../images/small_solar.png  used on input line 588.
@@ -1424,7 +1424,7 @@ Package pdftex.def Info: ../images/small_solar.png  used on input line 588.
  [27
 
  <../images/small_solar.png>]
-<../images/price_capture_renew.png, id=399, 1011.78pt x 505.89pt>
+<../images/price_capture_renew.png, id=394, 1011.78pt x 505.89pt>
 File: ../images/price_capture_renew.png Graphic file (type png)
 <use ../images/price_capture_renew.png>
 Package pdftex.def Info: ../images/price_capture_renew.png  used on input line 
@@ -1434,7 +1434,7 @@ Package pdftex.def Info: ../images/price_capture_renew.png  used on input line
 [28
 
  <../images/price_capture_renew.png>]
-<../images/eia_solar.png, id=412, 1011.78pt x 505.89pt>
+<../images/eia_solar.png, id=407, 1011.78pt x 505.89pt>
 File: ../images/eia_solar.png Graphic file (type png)
 <use ../images/eia_solar.png>
 Package pdftex.def Info: ../images/eia_solar.png  used on input line 598.
@@ -1442,7 +1442,7 @@ Package pdftex.def Info: ../images/eia_solar.png  used on input line 598.
  [29
 
  <../images/eia_solar.png>]
-<../images/eia_coal.png, id=425, 1011.78pt x 505.89pt>
+<../images/eia_coal.png, id=420, 1011.78pt x 505.89pt>
 File: ../images/eia_coal.png Graphic file (type png)
 <use ../images/eia_coal.png>
 Package pdftex.def Info: ../images/eia_coal.png  used on input line 605.
@@ -1451,7 +1451,7 @@ Package pdftex.def Info: ../images/eia_coal.png  used on input line 605.
 [30
 
  <../images/eia_coal.png>]
-<../images/lazard_decline.png, id=438, 859.49678pt x 525.24803pt>
+<../images/lazard_decline.png, id=433, 859.49678pt x 525.24803pt>
 File: ../images/lazard_decline.png Graphic file (type png)
 <use ../images/lazard_decline.png>
 Package pdftex.def Info: ../images/lazard_decline.png  used on input line 611.
@@ -1459,14 +1459,14 @@ Package pdftex.def Info: ../images/lazard_decline.png  used on input line 611.
  [31
 
  <../images/lazard_decline.png>]
-<../images/monthly_ghgs.png, id=452, 1022.96465pt x 500.72786pt>
+<../images/monthly_ghgs.png, id=447, 778.29231pt x 416.9423pt>
 File: ../images/monthly_ghgs.png Graphic file (type png)
 <use ../images/monthly_ghgs.png>
 Package pdftex.def Info: ../images/monthly_ghgs.png  used on input line 617.
-(pdftex.def)             Requested size: 1022.96214pt x 500.72662pt.
+(pdftex.def)             Requested size: 778.29042pt x 416.94128pt.
  [32
 
- <../images/monthly_ghgs.png>] [33
+ <../images/monthly_ghgs.png (PNG copy)>] [33
 
 ] [34
 
@@ -1487,10 +1487,10 @@ Package rerunfilecheck Info: File `power_slides_law.out' has not changed.
 (rerunfilecheck)             Checksum: B3FA3A8C4F7CBE1A1702AB387B5F3333;307.
  ) 
 Here is how much of TeX's memory you used:
- 23375 strings out of 479798
- 463731 string characters out of 2869230
+ 23377 strings out of 479798
+ 463747 string characters out of 2869230
  756825 words of memory out of 3000000
- 39693 multiletter control sequences out of 15000+200000
+ 39695 multiletter control sequences out of 15000+200000
  546970 words of font info for 59 fonts, out of 3000000 for 9000
  1141 hyphenation exceptions out of 8191
  125i,16n,126p,423b,617s stack positions out of 5000i,500n,10000p,200000b,50000s
@@ -1503,9 +1503,9 @@ jfour/jknappen/ec/dpi600\ecss0800.pk> <C:\Users\aleach\AppData\Local\MiKTeX\fon
 ts/pk/ljfour/jknappen/ec/dpi600\ecss1095.pk> <C:\Users\aleach\AppData\Local\MiK
 TeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecss1440.pk> <C:\Users\aleach\AppData\Lo
 cal\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecss0600.pk>
-Output written on power_slides_law.pdf (35 pages, 5456023 bytes).
+Output written on power_slides_law.pdf (35 pages, 6969419 bytes).
 PDF statistics:
- 811 PDF objects out of 1000 (max. 8388607)
+ 806 PDF objects out of 1000 (max. 8388607)
  77 named destinations out of 1000 (max. 500000)
  243 words of extra memory for PDF output out of 10000 (max. 10000000)
 

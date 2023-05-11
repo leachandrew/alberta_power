@@ -197,7 +197,7 @@ plant_data<-function(){
 
 clean_merit_trade<-function(data_sent,id_tag){
   #for testing
-  #data_sent<-head(merit_data,1000) #%>% assign_time %>% assign_date_time_days %>% assign_peaks
+  #data_sent<-merit_data) #%>% assign_time %>% assign_date_time_days %>% assign_peaks
   #data_sent<-merit_day #%>% assign_time %>% assign_date_time_days %>% assign_peaks
   
   #read in all AESO asset names so we're up-to-date
@@ -233,8 +233,8 @@ clean_merit_trade<-function(data_sent,id_tag){
     mutate(key_firm=TRUE,offer_control="TRADE",offer_sum="TRADE",merit=0,
            from=0,to=available_mw,block_number=0,) %>% 
     ungroup()%>%
-    mutate(dest=ifelse(import_export=="I",paste(dest,"_IMP",sep = ""),paste(dest,"_EXP",sep = "")))
-  names(trade)[names(trade) == "dest"] <- "asset_id"
+    mutate(dest=ifelse(import_export=="I",paste(dest,"_IMP",sep = ""),paste(dest,"_EXP",sep = "")))%>%
+    rename(asset_id=dest)
   clean<-data_sent%>%filter(!import_export %in% c("E","I")) %>% #select the non-imports and non-exports from the merit data
     rbind(trade)
   clean

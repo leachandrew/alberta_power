@@ -30,7 +30,8 @@ if(update==1){
 #merit_small<-merit_data%>%filter(date==ymd("2019-10-05"))
 #merit_data<-merit_small
 
-
+#fix the ANC1 issue if it exists
+merit_data<-merit_data %>% mutate(asset_id=gsub("ANCI","ANC1",asset_id))
 
 
 
@@ -156,8 +157,6 @@ load("data/forecast_data.RData")
 #merit_aug<-merit_small
 
   
-plant<-plant_data()
-  
 merit_aug<-merit_aug %>% left_join(plant_data(),by=c("asset_id"="ID"))%>%
   mutate(year=year(date))%>%
   left_join(ghg_data(),by=c("asset_id"="ID","year"))%>%
@@ -170,6 +169,7 @@ merit_aug<-merit_aug %>% left_join(plant_data(),by=c("asset_id"="ID"))%>%
                            year(date)==2020 ~ "TIER_30",
                            year(date)==2021 ~ "TIER_40",
                            year(date)==2022 ~ "TIER_50",
+                           year(date)==2023 ~ "TIER_65",
                            TRUE ~ "TIER_50")
     )%>%
   select(-year)# take out the year value since it will create duplication with older code snippets later for full data set
@@ -177,7 +177,7 @@ merit_aug<-merit_aug %>% left_join(plant_data(),by=c("asset_id"="ID"))%>%
 
 #testing storage objects
 #merit_store<-merit_aug  
-#merit_small<-merit_aug%>%filter(year(date)>=2020)
+#merit_small<-merit_aug%>%filter(year(date)==2020)
 #merit_aug<-merit_small
 
 #merit_aug<-merit_store  
@@ -186,43 +186,44 @@ merit_aug<-merit_aug %>% left_join(plant_data(),by=c("asset_id"="ID"))%>%
 
 
 
-#Repair coal-to-gas-conversions
+#Repair coal-to-gas-conversions with script in power_paper_base
 merit_aug<-merit_aug %>% 
-  mutate(Plant_Type=case_when( 
-    (asset_id=="HRM") & (date>=ymd("2020-05-08")) ~ "SCGT",  #Milner change to gas effective 
-    #SH1 Sheerness #1 and SH2 Sheerness #2 -July 30, 2021.https://www.aeso.ca/market/market-updates/2021/sh1-sheerness-1-and-sh2-sheerness-2-change-in-fuel-type-notice/
-    (asset_id %in% c("SH1","SH2")) & (date>=ymd("2021-07-30")) ~ "NGCONV",
-    #KH3 January 11, 2022
-    (asset_id =="KH1") & (date>=ymd("2022-01-11")) ~ "NGCONV",
-    #KH2 July 27, 2021.
-    (asset_id =="KH2") & (date>=ymd("2021-07-21")) ~ "NGCONV",
-    #Battle River #4 (BR4)	March 8, 2022
-    (asset_id =="BR4") & (date>=ymd("2022-03-08")) ~ "NGCONV",
-    #Battle River #5 (BR5)	 November 19, 2021
-    (asset_id =="BR5") & (date>=ymd("2021-11-19")) ~ "NGCONV",
-    #Sundance #6 (SD6)	401	0	0 February 19, 2021
-    (asset_id =="SD6") & (date>=ymd("2021-02-19")) ~ "NGCONV",
-    TRUE ~ Plant_Type),
-    Capacity=case_when(
-      (asset_id=="HRM") & (date>=ymd("2020-04-23"))&(date<ymd("2020-05-08")) ~ 185,  #Milner change to gas effective 
-      (asset_id=="HRM") & (date>=ymd("2020-05-08"))&(date<ymd("2021-12-09")) ~ 208,  #Milner change to gas effective 
-      (asset_id=="HRM") & (date>=ymd("2021-12-09")) ~ 300,  #Milner change to gas effective 
-      TRUE~Capacity
+    mutate(Plant_Type=case_when( 
+      (asset_id=="HRM") & (effective_date_time>=ymd("2020-05-08")) ~ "SCGT",  #Milner change to gas effective 
+      #SH1 Sheerness #1 and SH2 Sheerness #2 -July 30, 2021.https://www.aeso.ca/market/market-upefffective_data_times/2021/sh1-sheerness-1-and-sh2-sheerness-2-change-in-fuel-type-notice/
+      (asset_id %in% c("SH1","SH2")) & (effective_date_time>=ymd("2021-07-30")) ~ "NGCONV",
+      #KH3 January 11, 2022
+      (asset_id =="KH1") & (effective_date_time>=ymd("2022-01-11")) ~ "NGCONV",
+      #KH2 July 27, 2021.
+      (asset_id =="KH2") & (effective_date_time>=ymd("2021-07-21")) ~ "NGCONV",
+      (asset_id =="KH3") & (effective_date_time>=ymd("2022-01-11")) ~ "NGCONV",
+      #Battle River #4 (BR4)	March 8, 2022
+      (asset_id =="BR4") & (effective_date_time>=ymd("2022-03-08")) ~ "NGCONV",
+      #Battle River #5 (BR5)	 November 19, 2021
+      (asset_id =="BR5") & (effective_date_time>=ymd("2021-11-19")) ~ "NGCONV",
+      #Sundance #6 (SD6)	401	0	0 February 19, 2021
+      (asset_id =="SD6") & (effective_date_time>=ymd("2021-02-19")) ~ "NGCONV",
+      (asset_id =="SD4") & (effective_date_time>=ymd("2022-01-4")) ~ "NGCONV",
+      TRUE ~ Plant_Type),
+      Capacity=case_when(
+        (asset_id=="HRM") & (effective_date_time>=ymd("2020-04-23"))&(effective_date_time<ymd("2020-05-08")) ~ 185,  #Milner change to gas effective 
+        (asset_id=="HRM") & (effective_date_time>=ymd("2020-05-08"))&(effective_date_time<ymd("2021-12-09")) ~ 208,  #Milner change to gas effective 
+        (asset_id=="HRM") & (effective_date_time>=ymd("2021-12-09")) ~ 300,  #Milner change to gas effective 
+        TRUE~Capacity
+      ),
+      Plant_Fuel=ifelse(Plant_Type=="NGCONV","GAS",Plant_Fuel)
     )
-    
-    
-  )
   
-#merit_aug%>%filter(asset_id=="HRM")%>% mutate(year=year(date))%>%
-#  select(year,Capacity) %>% distinct()
+  
 
-#gen_type<-merit_aug %>% mutate(year=year(date),month=month(date))%>%
-#  group_by(year,month,Plant_Type) %>% summarize(gen=sum(dispatched_mw))%>%
-#  mutate(date=ymd(paste(year,month,1,sep="-")))
 
-  #milner capacity change
   
   
+#check
+anci<-merit_aug %>% filter(is.na(Plant_Type))%>% 
+  #select(asset_id, Plant_Type) %>% 
+  #distinct()
+  I()
   
 
   

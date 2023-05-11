@@ -371,3 +371,48 @@ colors_tableau10_medium <- function()
            "#ED97CA", "#A2A2A2", "#CDCC5D", "#6DCCDA"))
 }
 
+
+ng_conv<-function(data_sent,id_sent="ID",time_var="Time"){
+  #index_sym<- rlang::ensym(index_id)
+  #data_sent %>% 
+  #  #group_by(across(all_of(index_id)))%>%
+  #  mutate(
+  #    raw=ifelse(!!index_sym=="a",0,raw),
+  #    raw_2=case_when(
+  #      (!!index_sym=="a")~0,
+  #      TRUE~raw)
+  #  )
+#}
+  
+  ID<-rlang::ensym(id_sent)
+  Time<-rlang::ensym(time_var)
+  #Repair coal-to-gas-conversions
+  #data_sent<-merit_small
+  data_sent %>% 
+    mutate(Plant_Type=case_when( 
+      (!!ID=="HRM") & (!!Time>=ymd("2020-05-08")) ~ "SCGT",  #Milner change to gas effective 
+      #SH1 Sheerness #1 and SH2 Sheerness #2 -July 30, 2021.https://www.aeso.ca/market/market-upTimes/2021/sh1-sheerness-1-and-sh2-sheerness-2-change-in-fuel-type-notice/
+      (!!ID %in% c("SH1","SH2")) & (Time>=ymd("2021-07-30")) ~ "NGCONV",
+      #KH3 January 11, 2022
+      (!!ID =="KH1") & (!!Time>=ymd("2022-01-11")) ~ "NGCONV",
+      #KH2 July 27, 2021.
+      (!!ID =="KH2") & (!!Time>=ymd("2021-07-21")) ~ "NGCONV",
+      (!!ID =="KH3") & (!!Time>=ymd("2022-01-11")) ~ "NGCONV",
+      #Battle River #4 (BR4)	March 8, 2022
+      (!!ID =="BR4") & (!!Time>=ymd("2022-03-08")) ~ "NGCONV",
+      #Battle River #5 (BR5)	 November 19, 2021
+      (!!ID =="BR5") & (!!Time>=ymd("2021-11-19")) ~ "NGCONV",
+      #Sundance #6 (SD6)	401	0	0 February 19, 2021
+      (!!ID =="SD6") & (!!Time>=ymd("2021-02-19")) ~ "NGCONV",
+      (!!ID =="SD4") & (!!Time>=ymd("2022-01-4")) ~ "NGCONV",
+      TRUE ~ Plant_Type),
+      Capacity=case_when(
+        (!!ID=="HRM") & (!!Time>=ymd("2020-04-23"))&(!!Time<ymd("2020-05-08")) ~ 185,  #Milner change to gas effective 
+        (!!ID=="HRM") & (!!Time>=ymd("2020-05-08"))&(!!Time<ymd("2021-12-09")) ~ 208,  #Milner change to gas effective 
+        (!!ID=="HRM") & (!!Time>=ymd("2021-12-09")) ~ 300,  #Milner change to gas effective 
+        TRUE~Capacity
+      ),
+      Plant_Fuel=ifelse(Plant_Type=="NGCONV","GAS",Plant_Fuel)
+    )
+  
+}

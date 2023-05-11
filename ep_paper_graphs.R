@@ -8,7 +8,9 @@ library(cowplot)
 
 load(file="data/metered_vols_data.Rdata")
 load(file="nrgstream/nrgstream_gen.Rdata") 
-
+nrgstream_gen <- nrgstream_gen %>% 
+  #ng_conv(id_sent=ID)%>%
+  rename(time=Time)
 
 
 
@@ -26,7 +28,7 @@ hourly_patterns<-forecast_data %>%
 
 library(gghighlight)
 
-hourly_graph<-  ggplot(hourly_patterns%>%filter(year>=2004)) +
+hourly_graph<-  ggplot(hourly_patterns%>%filter(year>=2004,year<2023)) +
   geom_line(aes(factor(hour),price,group=factor(year),color=factor(year)),size=.85)+
   geom_line(data=hourly_patterns %>% filter(year==2022),aes(factor(hour),price,group=factor(year),color=factor(year)),size=1.5)+
   scale_color_viridis("",option = "C",discrete = T,direction=-1)+
@@ -50,13 +52,13 @@ ggsave(file=paste("images/hourly_prices.png",sep=""),width = 14,,height=7,dpi=30
 
 hourly_graph<-  ggplot(hourly_patterns%>%filter(year>=2004)) +
   geom_line(aes(factor(hour),ail,group=factor(year),color=factor(year)),size=.85)+
-  geom_line(data=hourly_patterns %>% filter(year==2022),aes(factor(hour),ail,group=factor(year),color=factor(year)),size=1.5)+
+  geom_line(data=hourly_patterns %>% filter(year==2023),aes(factor(hour),ail,group=factor(year),color=factor(year)),size=2.5)+
   scale_color_viridis("",option = "C",discrete = T,direction=-1)+
   scale_y_continuous(expand=c(0,0))+
   paper_theme()+
   scale_x_discrete(breaks=c("1:00","4:00","7:00","10:00",
                             "13:00","16:00","19:00","22:00"))+
-  expand_limits(y=c(6000,10500))+ #make sure you get the zero line
+  expand_limits(y=c(6000,11200))+ #make sure you get the zero line
   #guides(color = guide_legend())+
   theme(#legend.position="bottom",
     legend.margin=margin(c(0,0,0,0),unit="cm")
@@ -228,7 +230,7 @@ ggsave("images/prices_and_loads_ep.png",width = 14,height=8,bg="white",dpi = 300
 
 #align variable names
 df2 <- nrgstream_gen %>% filter(date<floor_date(max(date),"month"))%>% #trim to last full month of data
-  select(time=Time,vol=gen,ID,AESO_Name,Plant_Type,Plant_Fuel,Capacity) %>%
+  select(time,vol=gen,ID,AESO_Name,Plant_Type,Plant_Fuel,Capacity) %>%
   filter(Plant_Type %in% c("COAL","COGEN","NGCC","WIND","SCGT","NGCONV","TRADE","HYDRO","SOLAR","OTHER"))%>%
   #filter(year(time)>=2010) %>% 
   left_join(forecast_data) %>% filter(!is.na(date))%>%
@@ -243,7 +245,7 @@ df2 <- nrgstream_gen %>% filter(date<floor_date(max(date),"month"))%>% #trim to 
   mutate(month=month(time),year=year(time))%>%   
   mutate(Plant_Type=as_factor(Plant_Type),
          # Relevel to the end
-         Plant_Type=fct_other(Plant_Type,keep = c("COAL","COGEN","SCGT","NGCC","NGCONV","WIND","HYDRO","TRADE"),other_level = "OTHER"),
+         Plant_Type=fct_other(Plant_Type,keep = c("COAL","COGEN","SCGT","NGCC","NGCONV","WIND","SOLAR","HYDRO","TRADE"),other_level = "OTHER"),
          Plant_Type=fct_relevel(Plant_Type, "OTHER", after = Inf),
          Plant_Type=fct_recode(Plant_Type, "NET IMPORTS"="TRADE"),
          Plant_Type=fct_relevel(Plant_Type, "NET IMPORTS", after = Inf),
@@ -257,14 +259,14 @@ df2 <- nrgstream_gen %>% filter(date<floor_date(max(date),"month"))%>% #trim to 
   mutate(date=ymd(paste(year,month,15,sep="-")))
   
   
-  AB_palette<- c("black","black","grey60","grey60","grey30","grey30")
+  AB_palette<- c("black","black","grey60","grey60","grey30","grey30","grey30","grey30")
   
-  AB_plant_order<-c("COAL","NGCONV","COGEN","NGCC","WIND","HYDRO","SCGT","OTHER","NET IMPORTS")
+  AB_plant_order<-c("COAL","NGCONV","COGEN","NGCC","WIND","SOLAR","HYDRO","SCGT","OTHER","NET IMPORTS")
   
   gen_fuel <- df2 %>% mutate(Plant_Type=factor(Plant_Type,levels=AB_plant_order))%>%
-    #filter(date<ymd("2020-09-01"))%>%
+    filter(date>ymd("2005-01-01"))%>%
     mutate(Plant_Type=fct_collapse(Plant_Type,
-     "RENEWABLES"=c("WIND","OTHER","HYDRO"),
+     "OTHER"=c("OTHER","HYDRO"),
      "NATURAL GAS"=c("SCGT","NGCC","NGCONV","COGEN"),
      #"COGENERATION"=c("COGEN"),
      "NET IMPORTS"="TRADE"
@@ -283,13 +285,13 @@ df2 <- nrgstream_gen %>% filter(date<floor_date(max(date),"month"))%>% #trim to 
     #geom_dl(aes(label=Plant_Type),method=list("last.bumpup",dl.trans(x=x+0.3),cex = .85))+
     scale_color_manual("",values= AB_palette)+
     #scale_fill_manual("",values= AB_palette)+
-    scale_linetype_manual("",values= c("solid","11","21","solid","solid"))+
+    scale_linetype_manual("",values= c("solid","21","solid","21","solid","21","solid"))+
     #scale_color_manual("",values=grey.colors(9,start=0,end=.8))+
     #scale_fill_manual("",values=grey.colors(9,start=0,end=.8))+
     #scale_shape_manual("",values=c(15,16,17,18,0,1,2,3))+
     paper_theme()+
     scale_x_date(date_labels = "%b\n%Y",date_breaks = "12 months",expand=c(0,0))+
-    expand_limits(x = as.Date(c("2004-01-01", "2022-1-30")))+
+    expand_limits(x = as.Date(c("2005-01-01", "2023-1-30")))+
     expand_limits(y =-500)+
     scale_y_continuous(expand = c(0,0),breaks=pretty_breaks(6))+
     
@@ -313,12 +315,274 @@ df2 <- nrgstream_gen %>% filter(date<floor_date(max(date),"month"))%>% #trim to 
   gen_fuel
   ggsave(file="images/gen_fuel.png", width = 14, height=8,dpi = 300,bg="white")
   
-  color_palette<- c("black","grey30",colors_tableau10()[3],colors_tableau10()[2])
+  color_palette<- c("black","grey30",colors_tableau10()[3],colors_tableau10()[2],"grey60","grey60")
   gen_fuel+
     scale_color_manual("",values= color_palette)
   ggsave(file="images/gen_fuel_color.png", width = 14, height=8,dpi = 300,bg="white")
   
-  label_level<-5700
+  gen_trimmed <- df2 %>% mutate(Plant_Type=factor(Plant_Type,levels=AB_plant_order))%>%
+    filter(date>ymd("2005-01-01"))%>%
+    mutate(Plant_Type=fct_collapse(Plant_Type,
+                                   "OTHER"=c("OTHER","HYDRO"),
+                                   "NATURAL GAS"=c("SCGT","NGCC","NGCONV","COGEN"),
+                                   #"COGENERATION"=c("COGEN"),
+                                   "NET IMPORTS"="TRADE"
+    ),
+    Plant_Type=fct_relevel(Plant_Type,"COGENERATION",after = 1))%>% 
+    group_by(date,month,year,Plant_Type) %>% summarise(gen=sum(gen,na.rm = T),
+    )%>%
+    ungroup() %>%
+    filter(!Plant_Type %in% c("NET IMPORTS","OTHER"))%>%
+    group_by(Plant_Type) %>%
+    mutate(gen12m=zoo::rollmean(gen,12,fill=NA))%>%
+    #filter(date>ymd("2014-12-31"))%>%
+    ggplot(aes(date,gen, col = Plant_Type,lty=Plant_Type)) +
+    geom_line(size=1.25)+
+    #geom_line(aes(y=gen12m),size=1.25)+
+    #geom_point(aes(date,gen*ifelse(month%%2==0,1,NA)),size=2.5)+
+    #geom_dl(aes(label=Plant_Type),method=list("last.bumpup",dl.trans(x=x+0.3),cex = .85))+
+    scale_color_manual("",values= AB_palette)+
+    #scale_fill_manual("",values= AB_palette)+
+    scale_linetype_manual("",values= c("solid","21","solid","21","solid","21","solid"))+
+    #scale_color_manual("",values=grey.colors(9,start=0,end=.8))+
+    #scale_fill_manual("",values=grey.colors(9,start=0,end=.8))+
+    #scale_shape_manual("",values=c(15,16,17,18,0,1,2,3))+
+    paper_theme()+
+    scale_x_date(date_labels = "%b\n%Y",date_breaks = "12 months",expand=c(0,0))+
+    expand_limits(x = as.Date(c("2005-01-01", "2023-1-30")))+
+    expand_limits(y =-500)+
+    scale_y_continuous(expand = c(0,0),breaks=pretty_breaks(6))+
+    
+    theme(legend.position = "bottom",
+          legend.key.width = unit(3.1,"line"))+
+    labs(x="",y="Monthly Average Hourly Generation or Net Imports (MW)",
+         #title="Coal and Gas Generation and Carbon Prices (MW, 2007-2015)",
+         #title="Alberta Power Generation by Plant Type (MW, 2015-2020)",
+         #caption="Source: AESO data, authors' calculations."
+         NULL)+
+    
+    # annotate("text", x = covid_mid, y =4500, label = "COVID\nperiod",size=3.25,hjust=0.5,vjust=0.5)+
+    #  annotate("rect", fill = "grey70", alpha = .3, 
+    #          xmin = as.Date("2020-03-11"), xmax =as.Date("2020-07-01"),
+    #           ymin = -Inf, ymax = Inf)+
+    # annotate("rect", fill = "grey70", alpha = .3, 
+    #         xmin = as.Date("2019-03-11"), xmax =as.Date("2019-07-01"),
+    #        ymin = -Inf, ymax = Inf)+
+    #annotate("text", x = covid_mid_lag, y =4500, label = "COVID\nperiod\nlast year",size=3.25,hjust=0.5,vjust=0.5)  
+    NULL
+  color_palette<- c("black","grey50",colors_tableau10()[3],colors_tableau10()[2],"grey60","grey60")
+    gen_trimmed+
+      guides(color=guide_legend(nrow = 1))+
+      labs(x="",y="Monthly Average Hourly Generation(MW)",
+           #title="Coal and Gas Generation and Carbon Prices (MW, 2007-2015)",
+           #title="Alberta Power Generation by Plant Type (MW, 2015-2020)",
+           #caption="Source: AESO data, authors' calculations."
+           NULL)+
+    scale_color_manual("",values= color_palette)
+  ggsave(file="images/gen_trimmed_color.png", width = 14, height=8,dpi = 300,bg="white")
+  
+  
+  area_fuel <- df2 %>% mutate(Plant_Type=factor(Plant_Type,levels=AB_plant_order))%>%
+    filter(date>ymd("2005-01-01"))%>%
+    mutate(Plant_Type=fct_collapse(Plant_Type,
+                                   "RENEWABLES"=c("WIND","HYDRO","SOLAR","OTHER"),
+                                   "NATURAL GAS"=c("SCGT","NGCC","NGCONV","COGEN"),
+                                   #"COGENERATION"=c("COGEN"),
+                                   "NET IMPORTS"="TRADE"
+    ),
+    Plant_Type=fct_relevel(Plant_Type,"COGENERATION",after = 1))%>% 
+    group_by(date,month,year,Plant_Type) %>% summarise(gen=sum(gen,na.rm = T),
+    )%>%
+    ungroup() %>%
+    #filter(!Plant_Type %in% c("NET IMPORTS","OTHER"))%>%
+    group_by(Plant_Type) %>%
+    mutate(gen12m=zoo::rollmean(gen,12,fill=NA))%>%
+    #filter(date>ymd("2014-12-31"))%>%
+    ggplot(aes(date,gen,fill = Plant_Type)) +
+    geom_area(size=.5,position="stack",color="black")+
+    #geom_line(aes(y=gen12m),size=1.25)+
+    #geom_point(aes(date,gen*ifelse(month%%2==0,1,NA)),size=2.5)+
+    #geom_dl(aes(label=Plant_Type),method=list("last.bumpup",dl.trans(x=x+0.3),cex = .85))+
+    scale_fill_manual("",values=c("black","grey50",colors_tableau10()[3],colors_tableau10()[6],"grey60","grey60"))+
+    #scale_fill_manual("",values= AB_palette)+
+    scale_linetype_manual("",values= c("solid","21","solid","21","solid","21","solid"))+
+    #scale_color_manual("",values=grey.colors(9,start=0,end=.8))+
+    #scale_fill_manual("",values=grey.colors(9,start=0,end=.8))+
+    #scale_shape_manual("",values=c(15,16,17,18,0,1,2,3))+
+    paper_theme()+
+    scale_x_date(date_labels = "%b\n%Y",date_breaks = "12 months",expand=c(0,0))+
+    expand_limits(x = as.Date(c("2005-01-01", "2023-1-30")))+
+    expand_limits(y =-500)+
+    scale_y_continuous(expand = c(0,0),breaks=pretty_breaks(6))+
+    
+    theme(legend.position = "bottom",
+          legend.key.width = unit(3.1,"line"))+
+    labs(x="",y="Monthly Average Hourly Generation or Net Imports (MW)",
+         #title="Coal and Gas Generation and Carbon Prices (MW, 2007-2015)",
+         #title="Alberta Power Generation by Plant Type (MW, 2015-2020)",
+         #caption="Source: AESO data, authors' calculations."
+         NULL)+
+    
+    # annotate("text", x = covid_mid, y =4500, label = "COVID\nperiod",size=3.25,hjust=0.5,vjust=0.5)+
+    #  annotate("rect", fill = "grey70", alpha = .3, 
+    #          xmin = as.Date("2020-03-11"), xmax =as.Date("2020-07-01"),
+    #           ymin = -Inf, ymax = Inf)+
+    # annotate("rect", fill = "grey70", alpha = .3, 
+    #         xmin = as.Date("2019-03-11"), xmax =as.Date("2019-07-01"),
+    #        ymin = -Inf, ymax = Inf)+
+    #annotate("text", x = covid_mid_lag, y =4500, label = "COVID\nperiod\nlast year",size=3.25,hjust=0.5,vjust=0.5)  
+    NULL
+  area_fuel
+  area_fuel+
+    guides(fill=guide_legend(nrow = 1))+
+    theme(legend.key.width = unit(1.5,"line"))+
+    labs(x="",y="Monthly Average Hourly Generation (MW)",
+         #title="Coal and Gas Generation and Carbon Prices (MW, 2007-2015)",
+         #title="Alberta Power Generation by Plant Type (MW, 2015-2020)",
+         #caption="Source: AESO data, authors' calculations."
+         NULL)+
+    scale_color_manual("",values= color_palette)
+  ggsave(file="images/gen_trimmed_area.png", width = 14, height=8,dpi = 300,bg="white")
+  
+  
+  
+  share_fuel <- df2 %>% mutate(Plant_Type=factor(Plant_Type,levels=AB_plant_order))%>%
+    filter(date>ymd("2005-01-01"))%>%
+    filter(Plant_Type!="NET IMPORTS")%>%
+    mutate(Plant_Type=fct_collapse(Plant_Type,
+                                   "WWS"=c("WIND","HYDRO","SOLAR"),
+                                   #"RENEWABLES"=c("WIND","HYDRO","SOLAR","OTHER"),
+                                   "NATURAL GAS"=c("SCGT","NGCC","NGCONV","COGEN"),
+                                   #"COGENERATION"=c("COGEN"),
+                                   "NET IMPORTS"="TRADE"
+    ),
+    Plant_Type=fct_relevel(Plant_Type,"COGENERATION",after = 1))%>% 
+    group_by(date,month,year,Plant_Type) %>% summarise(gen=sum(gen,na.rm = T),
+    )%>%
+    ungroup() %>%
+    #filter(!Plant_Type %in% c("NET IMPORTS","OTHER"))%>%
+    group_by(date)%>%
+    mutate(total_gen=sum(gen),
+           share_gen=gen/total_gen)%>%
+    #filter(date>ymd("2014-12-31"))%>%
+    ggplot(aes(date,share_gen*100,fill = Plant_Type)) +
+    geom_area(size=.5,position="stack",color="black")+
+    #geom_line(aes(y=gen12m),size=1.25)+
+    #geom_point(aes(date,gen*ifelse(month%%2==0,1,NA)),size=2.5)+
+    #geom_dl(aes(label=Plant_Type),method=list("last.bumpup",dl.trans(x=x+0.3),cex = .85))+
+    scale_fill_manual("",values=c("black","grey50",colors_tableau10()[3],colors_tableau10()[6],"grey60","grey60"))+
+    #scale_fill_manual("",values= AB_palette)+
+    scale_linetype_manual("",values= c("solid","21","solid","21","solid","21","solid"))+
+    #scale_color_manual("",values=grey.colors(9,start=0,end=.8))+
+    #scale_fill_manual("",values=grey.colors(9,start=0,end=.8))+
+    #scale_shape_manual("",values=c(15,16,17,18,0,1,2,3))+
+    paper_theme()+
+    scale_x_date(date_labels = "%b\n%Y",date_breaks = "12 months",expand=c(0,0))+
+    expand_limits(x = as.Date(c("2005-01-01", "2023-1-30")))+
+    #expand_limits(y =-500)+
+    scale_y_continuous(expand = c(0,0),breaks=pretty_breaks(6))+
+    
+    theme(legend.position = "bottom",
+          legend.key.width = unit(3.1,"line"))+
+    labs(x="",y="Monthly Average Hourly Generation or Net Imports (MW)",
+         #title="Coal and Gas Generation and Carbon Prices (MW, 2007-2015)",
+         #title="Alberta Power Generation by Plant Type (MW, 2015-2020)",
+         #caption="Source: AESO data, authors' calculations."
+         NULL)+
+    
+    # annotate("text", x = covid_mid, y =4500, label = "COVID\nperiod",size=3.25,hjust=0.5,vjust=0.5)+
+    #  annotate("rect", fill = "grey70", alpha = .3, 
+    #          xmin = as.Date("2020-03-11"), xmax =as.Date("2020-07-01"),
+    #           ymin = -Inf, ymax = Inf)+
+    # annotate("rect", fill = "grey70", alpha = .3, 
+    #         xmin = as.Date("2019-03-11"), xmax =as.Date("2019-07-01"),
+    #        ymin = -Inf, ymax = Inf)+
+    #annotate("text", x = covid_mid_lag, y =4500, label = "COVID\nperiod\nlast year",size=3.25,hjust=0.5,vjust=0.5)  
+    NULL
+  share_fuel
+  share_fuel+
+    guides(fill=guide_legend(nrow = 1))+
+    theme(legend.key.width = unit(1.5,"line"))+
+    labs(x="",y="Share of Total Generation (%)",
+         #title="Coal and Gas Generation and Carbon Prices (MW, 2007-2015)",
+         #title="Alberta Power Generation by Plant Type (MW, 2015-2020)",
+         #caption="Source: AESO data, authors' calculations."
+         NULL)+
+    scale_color_manual("",values= color_palette)
+  ggsave(file="images/share_area.png", width = 14, height=8,dpi = 300,bg="white")
+  
+  share_ws <- df2 %>% mutate(Plant_Type=factor(Plant_Type,levels=AB_plant_order))%>%
+    filter(date>ymd("2005-01-01"))%>%
+    filter(Plant_Type!="NET IMPORTS")%>%
+    mutate(Plant_Type=fct_collapse(Plant_Type,
+                                   #"WS"=c("WIND","SOLAR"),
+                                   #"RENEWABLES"=c("WIND","HYDRO","SOLAR","OTHER"),
+                                   "NATURAL GAS"=c("SCGT","NGCC","NGCONV","COGEN"),
+                                   #"COGENERATION"=c("COGEN"),
+                                   "NET IMPORTS"="TRADE"
+    ),
+    Plant_Type=fct_relevel(Plant_Type,"COGENERATION",after = 1))%>% 
+    group_by(date,month,year,Plant_Type) %>% summarise(gen=sum(gen,na.rm = T),
+    )%>%
+    ungroup() %>%
+    #filter(!Plant_Type %in% c("NET IMPORTS","OTHER"))%>%
+    group_by(date)%>%
+    mutate(total_gen=sum(gen),
+           share_gen=gen/total_gen)%>%
+    
+    filter(Plant_Type%in% c("WIND","SOLAR"))%>%
+    ggplot(aes(date,share_gen*100,fill = Plant_Type)) +
+    geom_area(size=.5,position="stack",color="black")+
+    #geom_line(aes(y=gen12m),size=1.25)+
+    #geom_point(aes(date,gen*ifelse(month%%2==0,1,NA)),size=2.5)+
+    #geom_dl(aes(label=Plant_Type),method=list("last.bumpup",dl.trans(x=x+0.3),cex = .85))+
+    scale_fill_manual("",values=c(colors_tableau10()[3],"yellow","grey60","grey60"))+
+    #scale_fill_manual("",values= AB_palette)+
+    scale_linetype_manual("",values= c("solid","21","solid","21","solid","21","solid"))+
+    #scale_color_manual("",values=grey.colors(9,start=0,end=.8))+
+    #scale_fill_manual("",values=grey.colors(9,start=0,end=.8))+
+    #scale_shape_manual("",values=c(15,16,17,18,0,1,2,3))+
+    paper_theme()+
+    scale_x_date(date_labels = "%b\n%Y",date_breaks = "12 months",expand=c(0,0))+
+    expand_limits(x = as.Date(c("2005-01-01", "2023-1-30")))+
+    #expand_limits(y =-500)+
+    scale_y_continuous(expand = c(0,0),breaks=pretty_breaks(6))+
+    
+    theme(legend.position = "bottom",
+          legend.key.width = unit(3.1,"line"))+
+    labs(x="",y="Monthly Average Hourly Generation or Net Imports (MW)",
+         #title="Coal and Gas Generation and Carbon Prices (MW, 2007-2015)",
+         #title="Alberta Power Generation by Plant Type (MW, 2015-2020)",
+         #caption="Source: AESO data, authors' calculations."
+         NULL)+
+    
+    # annotate("text", x = covid_mid, y =4500, label = "COVID\nperiod",size=3.25,hjust=0.5,vjust=0.5)+
+    #  annotate("rect", fill = "grey70", alpha = .3, 
+    #          xmin = as.Date("2020-03-11"), xmax =as.Date("2020-07-01"),
+    #           ymin = -Inf, ymax = Inf)+
+    # annotate("rect", fill = "grey70", alpha = .3, 
+    #         xmin = as.Date("2019-03-11"), xmax =as.Date("2019-07-01"),
+    #        ymin = -Inf, ymax = Inf)+
+    #annotate("text", x = covid_mid_lag, y =4500, label = "COVID\nperiod\nlast year",size=3.25,hjust=0.5,vjust=0.5)  
+    NULL
+  
+  share_ws
+  share_ws+
+    guides(fill=guide_legend(nrow = 1))+
+    theme(legend.key.width = unit(1.5,"line"))+
+    labs(x="",y="Share of Total Generation (%)",
+         #title="Coal and Gas Generation and Carbon Prices (MW, 2007-2015)",
+         #title="Alberta Power Generation by Plant Type (MW, 2015-2020)",
+         #caption="Source: AESO data, authors' calculations."
+         NULL)+
+    scale_color_manual("",values= color_palette)
+  ggsave(file="images/share_ws.png", width = 14, height=8,dpi = 300,bg="white")
+  
+  
+  
+  
+  
+    label_level<-5700
   test<-gen_fuel+
     annotate("text", x = ymd("2007-7-1"), y = label_level, label = "SGER introduced\n OBA=88%\np=$15/t",size=3.5,hjust = 0.5)+  
     annotate("segment",x=ymd("2007-7-1"),xend=ymd("2007-7-1"),y=-Inf,yend=label_level-350, colour="black",size=1,lty="11") +
