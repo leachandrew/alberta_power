@@ -116,7 +116,7 @@ update_vols <- function(data_sent) {
       #list_item<-list_item+1
   }
   
-  #test<-process_data(data_store)
+  test<<-data_store
   #test2<-data_sent %>% bind_rows(test)
   #return the data
   rbind(data_sent,process_data(data_store))
@@ -130,7 +130,7 @@ process_data <- function(data_sent) {
   #day<-ymd("2022-04-01")
   #xdf<-get_metered_volumes_report(as.Date(day), as.Date(day)+days(1)) %>% clean_volume_data()
   #data_sent<-xdf
-  #data_sent<-data_store
+  #data_sent<-test
   #data_sent<-get_metered_volumes_report(Sys.Date()-days(5), Sys.Date()-days(5)+days(1))%>% clean_volume_data()
   
   include_list<-c("IMPORTER","IPP","EXPORTER","GENCO","SPP")
@@ -224,7 +224,7 @@ process_data <- function(data_sent) {
   combined$co2_est<-ifelse(combined$Plant_Fuel=="COAL",coal_co2_btu*combined$Heat.Rate,combined$co2_est)
   combined$co2_est<-ifelse(combined$Plant_Fuel=="GAS",gas_co2_btu*combined$Heat.Rate,combined$co2_est)
   combined$co2_est<-combined$co2_est/1000 #adjust from kg to tonnes
-  
+  #problem is here
   combined_new<-clean2%>%left_join(combined,by=c("asset_id"="ID"))
   
   #set those without co2_estimates to zero for now

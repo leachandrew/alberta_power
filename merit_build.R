@@ -9,13 +9,13 @@ start_time<-Sys.time()
 
 options(scipen=999)
 
-update<-1 #add new data
+update<-0 #add new data
 save<-1 #save files at the end
 synth<-0 #synthetic plants?
-  synth_type<-0  #5 is a target facility, focus_id,4 is facility,3 is offer control by type, 2 is by offer_control,1 is by plant_fuel, 0 is full merit as synthetic plant
+  synth_type<-1  #5 is a target facility, focus_id,4 is facility,3 is offer control by type, 2 is by offer_control,1 is by plant_fuel, 0 is full merit as synthetic plant
 
   if(synth_type==5)
-    focus_id<-c("SH1","SH2")
+    focus_id<-c("EGC1")
 
   
 load("data/all_merit.RData")  
@@ -101,9 +101,21 @@ load("data/forecast_data.RData")
           renew_gen=dispatched_mw
           )
     save(renew_vols, file="data/renew_vols.RData")  
+    
+    hourly_renew<-renew_vols%>%
+      group_by(date,he) %>% summarize(renew_gen=sum(dispatched_mw,na.rm = T)) %>%ungroup()
+    save(hourly_renew, file="data/hourly_renew.RData")  
+    
   }
   load("data/renew_vols.RData")
-
+  load("data/hourly_renew.RData")
+  
+  
+  hourly_renew<-renew_vols%>%
+    group_by(date,he) %>% summarize(renew_gen=sum(dispatched_mw,na.rm = T)) %>%ungroup()
+  
+  
+  
   asset_list<-"http://ets.aeso.ca/ets_web/ip/Market/Reports/AssetListReportServlet"
   aeso_assets<-readHTMLTable(asset_list, trim=T, as.data.frame=T, header=T,skip.rows = 3)[[2]]
   names(aeso_assets)<-aeso_assets[1,]
@@ -132,6 +144,7 @@ load("data/forecast_data.RData")
   #storage objects for testing purposes
   #merit_store<-merit_aug
   
+  save(hourly_renew_aug, file="data/hourly_renew_aug.RData")  
   
   #use this to revert to stored merit_aug so you don't have to re-load
   #merit_aug<-merit_store
@@ -181,7 +194,7 @@ merit_aug<-merit_aug %>% left_join(plant_data(),by=c("asset_id"="ID"))%>%
 #merit_aug<-merit_small
 
 #merit_aug<-merit_store  
-#merit_aug<-merit_small
+#merit_aug<-merit_aug %>% select(-c(co2_est,oba_rate,ctax,sger_first_year,compliance_cost))
 
 
 
@@ -407,9 +420,10 @@ anci<-merit_aug %>% filter(is.na(Plant_Type))%>%
 
   #merit_aug<-merit_small
   
+  save(merit_aug,file="data/merit_aug.RData")
   #load("data/merit_data_proc_bak.RData")  
   
-  
+  #load(file="data/merit_aug.RData")
   
   
   
@@ -420,7 +434,8 @@ anci<-merit_aug %>% filter(is.na(Plant_Type))%>%
       #determined by synth_type, we will send different information through these two variables for the final analysis.
       #synth_type 4 is facility,3 is offer control by type, 2 is by offer_control, 1 is by plant_type, 0 is full merit as synthetic plant
       
-    merit_aug <- merit_aug%>% filter(date<=ymd("2020-03-01")) #for the pass-through paper, let's use this.
+    #merit_aug <- merit_aug%>% filter(date<=ymd("2020-03-01")) #for the pass-through paper, let's use this.
+    merit_aug <- merit_aug%>% filter(date>=max(merit_aug$date)-years(5)) 
       
     
      #feb 16, 2022 - adding carry-through of plant offer control measure
@@ -460,7 +475,7 @@ anci<-merit_aug %>% filter(is.na(Plant_Type))%>%
             TRUE ~ offer_gen),
           offer_gen=factor(offer_gen)
           )%>%
-        filter(date<ymd("2020-01-01"))%>% #sample for the Shaffer paper is pre-2020
+        #filter(date<ymd("2020-01-01"))%>% #sample for the Shaffer paper is pre-2020
         filter(size>0)%>%  #don't include zero-sized blocks - this helps section out issues with zero wind and solar hours too.
         #select(date,he,price,available_mw,dispatched_mw,co2_est,ctax_cost,oba_val,Plant_Type,renew_gen,offer_sum)%>%
         arrange(date,he,Plant_Type,price) %>%
@@ -550,34 +565,34 @@ anci<-merit_aug %>% filter(is.na(Plant_Type))%>%
                oba_90=oba_func[[1]](90),
                oba_95=oba_func[[1]](95),
                oba_100=oba_func[[1]](100)) %>%
-        mutate(offer_15=offer_func[[1]](15),
-               offer_30=offer_func[[1]](30),
-               offer_40=offer_func[[1]](40),
-               offer_50=offer_func[[1]](50),
-               offer_55=offer_func[[1]](55),
-               offer_60=offer_func[[1]](60),
-               offer_65=offer_func[[1]](65),
-               offer_70=offer_func[[1]](70),
-               offer_75=offer_func[[1]](75),
-               offer_80=offer_func[[1]](80),
-               offer_85=offer_func[[1]](85),
-               offer_90=offer_func[[1]](90),
-               offer_95=offer_func[[1]](95),
-               offer_100=offer_func[[1]](100)) %>%
-        mutate(plant_15=plant_func[[1]](15),
-               plant_30=plant_func[[1]](30),
-               plant_40=plant_func[[1]](40),
-               plant_50=plant_func[[1]](50),
-               plant_55=plant_func[[1]](55),
-               plant_60=plant_func[[1]](60),
-               plant_65=plant_func[[1]](65),
-               plant_70=plant_func[[1]](70),
-               plant_75=plant_func[[1]](75),
-               plant_80=plant_func[[1]](80),
-               plant_85=plant_func[[1]](85),
-               plant_90=plant_func[[1]](90),
-               plant_95=plant_func[[1]](95),
-               plant_100=plant_func[[1]](100)) %>%
+        # mutate(offer_15=offer_func[[1]](15),
+        #        offer_30=offer_func[[1]](30),
+        #        offer_40=offer_func[[1]](40),
+        #        offer_50=offer_func[[1]](50),
+        #        offer_55=offer_func[[1]](55),
+        #        offer_60=offer_func[[1]](60),
+        #        offer_65=offer_func[[1]](65),
+        #        offer_70=offer_func[[1]](70),
+        #        offer_75=offer_func[[1]](75),
+        #        offer_80=offer_func[[1]](80),
+        #        offer_85=offer_func[[1]](85),
+        #        offer_90=offer_func[[1]](90),
+        #        offer_95=offer_func[[1]](95),
+        #        offer_100=offer_func[[1]](100)) %>%
+        # mutate(plant_15=plant_func[[1]](15),
+        #        plant_30=plant_func[[1]](30),
+        #        plant_40=plant_func[[1]](40),
+        #        plant_50=plant_func[[1]](50),
+        #        plant_55=plant_func[[1]](55),
+        #        plant_60=plant_func[[1]](60),
+        #        plant_65=plant_func[[1]](65),
+        #        plant_70=plant_func[[1]](70),
+        #        plant_75=plant_func[[1]](75),
+        #        plant_80=plant_func[[1]](80),
+        #        plant_85=plant_func[[1]](85),
+        #        plant_90=plant_func[[1]](90),
+        #        plant_95=plant_func[[1]](95),
+        #        plant_100=plant_func[[1]](100)) %>%
         ungroup() 
     print(paste("Built bids, elapsed time is",time_length(interval(start_time, Sys.time()), "seconds"),"seconds"))
       
@@ -598,8 +613,9 @@ anci<-merit_aug %>% filter(is.na(Plant_Type))%>%
         mutate(percentile=as.numeric(percentile))%>%
         #make it wider again
         pivot_wider(names_from = data_point,values_from=value)%>%
-        mutate(offer=as_factor(offer_levels[offer]),
-               plant=as_factor(plant_levels[plant]))
+        #mutate(offer=as_factor(offer_levels[offer]),
+        #       plant=as_factor(plant_levels[plant]))%>%
+        I()
         
       print(paste("Pivoted data frame, elapsed time is",time_length(interval(start_time, Sys.time()), "seconds"),"seconds"))
       
@@ -614,6 +630,11 @@ anci<-merit_aug %>% filter(is.na(Plant_Type))%>%
     } 
     # end of synth plants
     
+  
+  
+  load(file="data/hourly_summary.RData")
+  load(file="data/market_data.RData")
+  
     
       
       # merge in companion market data and NIT gas prices
@@ -629,7 +650,7 @@ anci<-merit_aug %>% filter(is.na(Plant_Type))%>%
       
       print(paste("Market Data Merged. Elapsed time is",time_length(interval(start_time, Sys.time()), "seconds"),"seconds"))
 
-
+test<-tail(merit_aug,1000)
       
       if(save==1)
       {

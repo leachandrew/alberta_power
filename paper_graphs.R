@@ -9,6 +9,18 @@ forecast_data <- forecast_data %>% filter (he!="02*")
 
 
 
+renew_vols<- nrgstream_gen %>% 
+  filter(Plant_Type=="WIND"| Plant_Type=="SOLAR") %>% select(date,he,ID,Plant_Type,gen,time)%>%
+  group_by(time,date,he)%>%
+  summarize(hourly_renew=sum(gen,na.rm = T),
+            time=time+hours(1),
+            )%>%
+  select(time,hourly_renew)#shift to hour ending)
+save(renew_vols, file="data/nrg_renew.RData")  
+
+
+forecast_data<-forecast_data %>%left_join(renew_vols,by="time")
+
 # load profile
 
 peak_data<-forecast_data %>%filter(!is.na(actual_posted_pool_price),!is.na(actual_ail),year(time)==2022)%>% 
@@ -25,8 +37,8 @@ peak_data<-forecast_data %>%filter(!is.na(actual_posted_pool_price),!is.na(actua
 bottom_panel<-
   ggplot(peak_data) +
   #geom_line(aes(date,ail,colour="basic"),size=1.5)+
-  geom_rect(aes(xmin=1, xmax=24, ymin=0, ymax=min(peak_data$trough_ail)), fill="grey80",color="black", alpha=0.1) +
-  geom_rect(aes(xmin=1, xmax=24, ymax=max(peak_data$max_ail), ymin=min(peak_data$trough_ail)), fill="grey90",color="black", alpha=.1) +
+  geom_rect(aes(xmin=1, xmax=24, ymin=0, ymax=min(trough_ail)), fill="grey80",color="black", alpha=0.1) +
+  geom_rect(aes(xmin=1, xmax=24, ymax=max(max_ail), ymin=min(trough_ail)), fill="grey90",color="black", alpha=.1) +
     geom_ribbon(aes(he,ymax=q95_ail,ymin=q05_ail,fill="Two-tailed 99th percentile range"),alpha=1)+
   geom_line(aes(he,mean_ail,linetype="A"),size=.85,color="black")+
   geom_line(aes(he,med_ail,linetype="B"),size=.85,color="blue")+
@@ -53,6 +65,68 @@ bottom_panel<-
   )+    labs(y="Internal Load (MW)",x="Hour of the day")
 bottom_panel
 ggsave("../book/images/base_load.png",width = 11,height=5,dpi=220,bg="white")
+
+
+
+solar_data<-
+  nrgstream_gen %>%filter(ID %in% c("CLR1"),year(Time)==2022)%>%
+  distinct()%>%
+  rename(time=Time)%>%
+  assign_date_time_days()%>%
+  assign_peaks()%>%
+  filter(!is.na(gen))%>%
+  group_by(he,month) %>% 
+  summarize(mean_gen=mean(gen,na.rm = T),med_gen=median(gen,na.rm=T),
+            trough_gen=min(gen),max_gen=max(gen),
+            q95_gen=quantile(gen, probs=c(.995)),
+            q05_gen=quantile(gen, probs=c(.005))
+  )%>%ungroup()%>%
+  mutate(he=as.numeric(he)) 
+  
+  
+  #group_by(Time)%>%
+  #summarize(gen=sum(gen,na.rm=T),gen2=sum(gen),capacity=sum(Capacity))%>%
+ggplot(solar_data) +
+  #geom_line(aes(date,ail,colour="basic"),size=1.5)+
+  #geom_rect(aes(xmin=1, xmax=24, ymin=0, ymax=min(peak_data$trough_ail)), fill="grey80",color="black", alpha=0.1) +
+  #geom_rect(aes(xmin=1, xmax=24, ymax=max(peak_data$max_ail), ymin=min(peak_data$trough_ail)), fill="grey90",color="black", alpha=.1) +
+  geom_ribbon(aes(he,ymax=q95_gen,ymin=q05_gen,fill="Two-tailed 99th percentile range"),alpha=1)+
+  geom_line(aes(he,mean_gen,linetype="A"),size=.85,color="black")+
+  geom_line(aes(he,med_gen,linetype="B"),size=.85,color="blue")+
+  #geom_ribbon(aes(date,ymax=peak_ail,ymin=trough_ail,fill="Range of Monthly Values"),alpha=.5)+
+  
+  #scale_color_manual("",values = c("black"),labels=c("Average Monthly Price"))+
+  scale_fill_manual("",values = c("grey50"))+
+  scale_linetype_manual("",values = c("solid","11"),labels=c("Average load","Median Load"))+
+  scale_x_continuous(expand=c(0,0),breaks = pretty_breaks(6))+
+  scale_y_continuous(expand=c(0,0),breaks = pretty_breaks())+
+  facet_wrap(~month,nrow = 4)
+  expand_limits(y=c(0,12000))+
+  guides(linetype = guide_legend(override.aes = list(color = c("black","blue"))),color="none")+
+  paper_theme()+
+  annotate("text",x=11,y=4000,label="'Base Load'",
+           color="black",fontface="bold",hjust=0)+
+  annotate("text",x=11,y=8500,label="'Load-following' or 'peaking' plants",
+           color="black",fontface="bold",hjust=0)+
+  
+  theme(legend.position="bottom",
+        #axis.title.y = element_text(margin = margin(t = 0, r = 5, b = 0, l = 0, unit = "pt")),
+        legend.margin=margin(c(0,0,0,0),unit="cm"),
+        legend.key.width = unit(1.3,"cm"),
+        #legend.text = element_text(colour="black", size = 12, face = "bold"),
+  )+    labs(y="Internal Load (MW)",x="Hour of the day")
+
+
+
+  assign_date_time_days()%>%
+  assign_peaks()%>%
+  group_by(he) %>% 
+  summarize(mean_ail=mean(actual_ail,na.rm = T),med_ail=median(actual_ail,na.rm=T),trough_ail=min(actual_ail),max_ail=max(actual_ail),
+            q95_ail=quantile(actual_ail, probs=c(.995)),
+            q05_ail=quantile(actual_ail, probs=c(.005))
+  )%>%ungroup()%>%
+  mutate(he=as.numeric(he)) 
+
 
 
 
@@ -614,7 +688,9 @@ annotate("text",3950,y=815,label="All offers to the\nleft of this line\nwere dis
 geom_vline(aes(xintercept=max(dispatch_limit)))
 ggsave("images/coal_merit_marg.png",dpi=300,width = 14,height = 10)
 
-  
+
+
+
 
   coal_merit_tax<-merit_aug %>% filter(date==ymd("2019-02-04"),he=="19",Plant_Type=="COAL")%>% 
   mutate(facility=gsub(" #","_",AESO_Name))%>% separate(facility,into = c("facility","number"), sep="_(?=[^_]+$)")%>%
@@ -753,6 +829,49 @@ bid_summary<-merit_bids %>% filter(year==2019,he=="19")%>% rename(price=bid)%>%
   mutate(merit=percentile/100*total_offers,size=merit-lag(merit,n=1),size=ifelse(is.na(size),merit[1],size))
 
   
+#shep test
+shep_merit<-
+merit_aug %>% filter(year>2018, year<2023,he=="19",on_peak,total_offers>750)%>% rename(price=bid)%>%
+  #group_by(percentile) %>% mutate(mean_price=mean(price),mean_offer=mean(total_offers))%>% ungroup()%>%
+  #group_by(date)%>%
+  mutate(merit=percentile/100*778,size=merit-lag(merit,n=1),size=ifelse(is.na(size),merit[1],size))%>%
+  group_by(year,merit)%>%
+  summarize(price=mean(price))%>%
+  
+  
+  #group_by(price)%>% summarize(size=sum(size))%>% ungroup()%>%
+  #mutate(merit=cumsum(size))%>%
+  ggplot()+
+  geom_line(aes(x=merit,y=price,color=paste("Average super-peak offers,",year),group=year),size=1.25)+
+  geom_point(aes(x=merit,y=price,color=paste("Average super-peak offers,",year),group=year),size=1.5)+
+  scale_color_manual("",values=c("black","grey70"))+   
+  scale_x_continuous(breaks=pretty_breaks(), expand=c(0,0))+
+  expand_limits(y=1000,x=800)+
+  scale_y_continuous(breaks=pretty_breaks(), expand=c(0,0))+
+  #scale_colour_manual(labe ls=c("Brent","WTI"),values=c("#41ae76","#238b45","#006d2c","#00441b","Black","Black","Black","Black"))
+  #facet_wrap(~year)+
+  paper_theme()+
+  theme(
+    legend.position="bottom",
+    legend.margin=margin(c(0,0,0,0),unit="cm"),
+    legend.text = element_text(colour="black", size = 18),
+    plot.caption = element_text(size = 16, face = "italic"),
+    plot.title = element_text(face = "bold"),
+    plot.subtitle = element_text(size = 16, face = "italic"),
+    panel.grid.minor = element_blank(),
+    axis.title.x = element_text(size = 24,face = "bold"),
+    axis.title.y = element_text(size = 24,face = "bold"),
+    axis.text.x = element_text(size = 24,face = "bold"),
+    axis.text.y = element_text(size = 24,face = "bold"),
+  )+
+  labs(x=paste("Offered Generation (MW)"),y="Price ($/MWh)",
+       #title=paste("Alberta Energy Merit Order, Feb 4, 2019 at hour ending 7pm"),
+       #caption="Source: AESO Data, graph by Andrew Leach."
+  )
+ggsave("images/shep_synth_2019.png",dpi=300,width = 14,height = 10)
+
+
+
 
 merit_bids %>% filter(year==2019,he=="19",Plant_Type=="COAL")%>% rename(price=bid)%>%
   #group_by(percentile) %>% mutate(mean_price=mean(price),mean_offer=mean(total_offers))%>% ungroup()%>%

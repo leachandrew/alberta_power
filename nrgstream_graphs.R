@@ -91,6 +91,23 @@ nrgstream_gen<-nrgstream_gen[!is.na(nrgstream_gen$gen),]
 nrgstream_gen<-nrgstream_gen[!is.na(nrgstream_gen$time),] 
 #here, we have two sets of trade data - the AB-BC and AB-MON data and the grouped AB-WECC data
 
+
+bc_tie <-filter(nrgstream_gen, AESO_Name =="AB - BC Hydro  Imp/Exp Hr Avg MW" | AESO_Name =="AB - Montana Imp/Exp Hr Avg MW")
+
+
+bc_tie %>% mutate(year=year(time))%>%
+  group_by(year)%>%
+  summarize(imp_val=sum(gen*Price*(gen>0)/10^6,na.rm = T),exp_val=sum(gen*Price*(gen<0)/10^6,na.rm = T), net_value=sum(gen*Price/10^6,na.rm = T),flow=sum(gen,na.rm=T))
+
+
+scgt <-filter(nrgstream_gen, Plant_Type=="SCGT",Capacity>25,year(time)==2022)%>%
+  mutate(cf=gen/Capacity,on_line=(gen>0)*1) %>% 
+  mutate(year=year(time))%>% group_by(ID,AESO_Name,year)%>%
+  summarise(cf=sum(gen,na.rm=T)/sum(Capacity,na.rm=T),on_line=sum(on_line))
+
+  
+
+
 #take out AB-BC and AB-MON
 #nrgstream_gen<-filter(nrgstream_gen, AESO_Name !="AB - BC Hydro  Imp/Exp Hr Avg MW",AESO_Name !="AB - Montana Imp/Exp Hr Avg MW")
 
@@ -133,6 +150,41 @@ ggsave(file="images/wind_cdf.png")
 
 
 
+shep<-nrgstream_gen %>% filter(ID=="EGC1",date>=ymd("2015-01-01"))%>%
+  mutate(Capacity=868,cf=gen/Capacity,month=month(date),year=year(date)) %>%
+  group_by(year,month)%>%
+  summarize(rev=sum(Price*gen,na.rm=T), cf=sum(gen,na.rm=T)/sum(Capacity,na.rm=T))%>%
+  mutate(date=ymd(paste(year,month,15,sep="-")))
+  
+
+ggplot(shep,aes(date,cf))+
+  #geom_density(aes(fill="Wind Power Generation",colour=year(time)),alpha=0.5)+
+  #stat_density(geom="line",position="identity",aes(group=Year_ID,colour=Year_ID),size=1.5)+
+  scale_x_date(expand=c(0,0), breaks = pretty_breaks(10))+
+  scale_y_continuous(expand=c(0,0),labels = scales::percent)+
+  geom_line()+
+  expand_limits(y=1)+
+  ajl_line()+
+  labs(x="",y="Capacity Factor (%)",
+       title="Capacity Factor, Shepard Combined Cycle Gas Plant",
+       caption="Source: AESO Data, Accessed via NRGStream, Graph by Andrew Leach")
+ggsave(file="images/shep.png",bg="white")
+
+
+ggplot(shep%>%filter(date!=ymd("2023-08-15")),aes(date,rev/10^6))+
+  #geom_density(aes(fill="Wind Power Generation",colour=year(time)),alpha=0.5)+
+  #stat_density(geom="line",position="identity",aes(group=Year_ID,colour=Year_ID),size=1.5)+
+  scale_x_date(expand=c(0,0), breaks = pretty_breaks(10))+
+  scale_y_continuous(expand=c(0,0))+
+  geom_line()+
+  expand_limits(y=1)+
+  ajl_line()+
+  labs(x="",y="Monthly Deemed Revenue ($ millions)",
+       title="Monthly Deemed Revenue, Shepard Combined Cycle Gas Plant",
+       caption="Source: AESO Data, Accessed via NRGStream, Graph by Andrew Leach")
+ggsave(file="images/shep_rev.png",bg="white")
+
+
 trade_set<-c("AB - BC Hydro Imp Hr Avg MW", "AB - Montana Imp Hr Avg MW",   "AB - Saskpower Imp AB Hr Avg MW",
              "AB - BC Hydro Exp Hr Avg MW", "AB - Montana Exp Hr Avg MW",   "AB - Saskpower Exp AB Hr Avg MW")
 
@@ -145,7 +197,7 @@ sub_samp<-filter(nrgstream_gen, time >= as.Date("2010-01-1"))
 
 df_test<-filter(sub_samp,is.na(gen))
 
-df1 <- sub_samp %>% filter(! NRG_Stream %in% trade_excl)%>% group_by(Plant_Type,time) %>% 
+df1 <- sub_samp %>% filter(! NRG_Stream %in% trade_excl,Plant_Type!="WIND_FCAST")%>% group_by(Plant_Type,time) %>% 
   summarise(meancap = mean(Cap_Fac),total_gen=sum(gen,na.rm = T),total_rev=sum(Revenue,na.rm = T),p_mean=mean(Price,na.rm=T)) %>% ungroup()
 df1$Day <- date(df1$time)
 df1$Year <- as.factor(year(df1$time))
@@ -180,8 +232,7 @@ df2$Plant_Type<-fct_relevel(df2$Plant_Type, "EXPORT",after=Inf)
 
 df2 <-df2 %>% mutate(ei=deemed_ei(Plant_Type,as.character(Year)), oba=oba_type(Plant_Type,as.character(Year)), 
                      ctax=ctax_year(as.character(Year)),ctax_net=(deemed_ei(Plant_Type,as.character(Year))-oba_type(Plant_Type,as.character(Year)))*ctax_year(as.character(Year)),
-                     ctax_net_rev=avg_rev-ctax_net,
-                     policy=ifelse(as.character(Year)>="2018","CCIR","SGER"))
+                     ctax_net_rev=avg_rev-ctax_net)
 
 #df3$Plant_Type_New<-factor(df3$Plant_Type_New)
 
@@ -191,7 +242,10 @@ df2 <-df2 %>% mutate(ei=deemed_ei(Plant_Type,as.character(Year)), oba=oba_type(P
 
 
 
-set_png(file="images/price_capture_avg.png", width = 1400, height = 750)
+
+
+
+#set_png(file="images/price_capture_avg.png", width = 1400, height = 750)
 my_palette<-c(colors_tableau10()[8],colors_tableau10_medium()[4],colors_tableau10()[4],colors_tableau10_light()[4],colors_tableau10()[7],colors_tableau10()[1],colors_tableau10()[3],colors_tableau10()[2],colors_tableau10()[9],colors_tableau10_light()[9])
 
 ggplot(df2,aes(Year,capture-p_mean,colour=Plant_Type,fill=Plant_Type),alpha=0.5)+
@@ -1072,7 +1126,7 @@ if(png==1)#set these to only turn on if you're making PNG graphs
 
 
 clean_forwards<-function(forwards_sent,type){
-#forwards_sent<-read.csv(file="off_peak_forwards.csv",header = TRUE, stringsAsFactors=FALSE,skip=1)
+#forwards_sent<-read.xlsx(xlsxFile = "nrgstream/NGX_forwards.xlsx", sheet = "forwards_flat", startRow = 1,skipEmptyRows = TRUE,detectDates = TRUE)
 #date_format<-guess_formats(forwards_sent[,1])
 #forwards_sent[,1]<-as.Date(forwards_sent[,1],format=date_format)
 #forwards_sent[,2]<-as.Date(forwards_sent[,2],format=date_format)
@@ -1097,6 +1151,18 @@ off_peak_forwards <- clean_forwards(read.xlsx(xlsxFile = "nrgstream/NGX_forwards
 #all_forwards<-arrange(rbind(forwards,peak_forwards,ext_peak_forwards,off_peak_forwards),c("Trade_Date","Inst_Date","Type"))
 all_forwards<-rbind(forwards,peak_forwards,ext_peak_forwards,off_peak_forwards)
 all_forwards<-all_forwards%>%filter(Trade_Date<as.Date("2018-01-01"))
+
+flat_forwards<-proc_forwards("nrgstream/flat_forwards_18_22.csv","FLAT")
+peak_forwards<-proc_forwards("nrgstream/peak_forwards_18_22.csv","PEAK")
+ext_peak_forwards<-proc_forwards("nrgstream/ext_peak_forwards_18_22.csv","EXT_PEAK")
+off_peaks<-proc_forwards("nrgstream/off_peak_forwards_18_22.csv","OFF_PEAK")
+#stack new ones
+all_forwards<-rbind(all_forwards,flat_forwards,peak_forwards,ext_peak_forwards,off_peaks)
+all_forwards<-all_forwards%>% arrange(Trade_Date,Inst_Date,Type)
+
+all_forwards<-all_forwards %>% group_by(Trade_Date,Inst_Date,Type) %>% summarise(Settle = mean(Settle),Open_Int_MW=mean(Open_Int_MW),Volume_MW=mean(Volume_MW))%>%
+  select(c("Trade_Date","Inst_Date","Settle","Volume_MW","Open_Int_MW","Type"))
+
 save(all_forwards,file="nrgstream/forwards.RData")
 }
 
@@ -1110,8 +1176,8 @@ proc_forwards<-function(file_sent,type){
   forwards[,2]<-as.Date(forwards[,2],format=formats)
   forwards<-forwards[,-c(3,4,5)]
   colnames(forwards)<-c("Trade_Date","Inst_Date","Settle","Volume_MW","Open_Int_MW")
-  forwards$Inst_Year<-year(forwards$Inst_Date)
-  forwards$Inst_Month<-month(forwards$Inst_Date)
+  #forwards$Inst_Year<-year(forwards$Inst_Date)
+  #forwards$Inst_Month<-month(forwards$Inst_Date)
   forwards$Type<-type
   return(forwards)
 }
@@ -1122,15 +1188,15 @@ update_forwards<-function(forwards_sent){
   #testing
   #forwards_sent<-all_forwards
   #clip all_forwards
-  clipped_forwards<-forwards_sent%>%filter(Trade_Date<as.Date("2018-01-01"))
+  clipped_forwards<-forwards_sent%>%filter(Trade_Date<as.Date("2023-01-01"))
   #load new ones
-  forwards<-proc_forwards("nrgstream/forwards2018.csv","FLAT")
+  flat_forwards<-proc_forwards("nrgstream/flat_forwards.csv","FLAT")
   peak_forwards<-proc_forwards("nrgstream/peak_forwards.csv","PEAK")
   ext_peak_forwards<-proc_forwards("nrgstream/ext_peak_forwards.csv","EXT_PEAK")
   off_peaks<-proc_forwards("nrgstream/off_peak_forwards.csv","OFF_PEAK")
   #stack new ones
-  new_forwards<-rbind(clipped_forwards,forwards,peak_forwards,ext_peak_forwards,off_peaks)
-  new_forwards<-arrange(new_forwards,Trade_Date,Inst_Date,Type)
+  new_forwards<-rbind(clipped_forwards,flat_forwards,peak_forwards,ext_peak_forwards,off_peaks)%>%
+    arrange(Trade_Date,Inst_Date,Type)
   
 }
 
@@ -1146,6 +1212,10 @@ save(all_forwards,file="nrgstream/forwards.RData")
 
 
 df1 <- all_forwards %>% group_by(Trade_Date,Inst_Date,Inst_Year,Type) %>% summarise(Settle = mean(Settle))
+
+df2 <- all_forwards %>% group_by(Trade_Date,Inst_Date,Inst_Year,Type) %>% summarise(n=n(),test=list(Settle))
+
+
 #df1 <- test %>% group_by(Trade_Date,Inst_Date,Inst_Year,Type) %>% summarise(Settle = mean(Settle))
 
 #df1=melt(df1,id=c("Trade_Date","Inst_Year"),variable.name = "term",value.name = "settle")
@@ -1158,21 +1228,30 @@ today_date<-max(all_forwards$Trade_Date)
 df1$Inst_Year<-factor(df1$Inst_Year,levels = sort(unique(df1$Inst_Year)))
 
 
-dates<-c(today_date,today_date-years(1),today_date-years(2),today_date-years(3),today_date-years(4))
-dates<-c(today_date,today_date-years(1))
+dates<-c(today_date,ymd("2023-08-01"),ymd("2021-10-11"),ymd("2019-4-30"))
 
-png<-1
-if(png==1)
-  set_png(file="images/forwards.png")
 
-ggplot(subset(df1,Trade_Date %in% dates)) +
+# png<-1
+# if(png==1)
+#   set_png(file="images/forwards.png")
+test<-
+  all_forwards %>% filter(Trade_Date %in% dates,Type=="FLAT") %>%
+  mutate(Trade_Date=factor(Trade_Date))%>%
+  mutate(Trade_Date=fct_recode(Trade_Date,"Kenney sworn-in"="2019-04-30"),
+         Trade_Date=fct_recode(Trade_Date,"Smith sworn-in"="2021-10-11"),
+         Trade_Date=fct_recode(Trade_Date,"Day prior to moratorium"= "2023-08-01"),
+         Trade_Date=fct_recode(Trade_Date,"This week"= "2023-08-14")
+         )%>%
+ggplot() +
   #geom_line(data=subset(df1,Trade_Date %in% dates & Type=="OFF_PEAK"),aes(Inst_Date,Settle,colour=as.factor(Trade_Date),group=as.factor(Trade_Date),linetype=Type),size=2)+
-  geom_line(data=subset(df1,Trade_Date %in% dates & Type=="FLAT"),aes(Inst_Date,Settle,colour=as.factor(Trade_Date),group=as.factor(Trade_Date),linetype=Type),size=2)+
-  geom_line(data=subset(df1,Trade_Date %in% dates & Type=="PEAK"),aes(Inst_Date,Settle,colour=as.factor(Trade_Date),group=as.factor(Trade_Date),linetype=Type),size=2)+
+  geom_line(aes(Inst_Date,Settle,colour=factor(Trade_Date),group=Trade_Date),size=2)+
+  #geom_line(data=subset(df1,Trade_Date %in% dates & Type=="PEAK"),aes(Inst_Date,Settle,colour=as.factor(Trade_Date),group=as.factor(Trade_Date),linetype=Type),size=2)+
   #geom_line(aes(Inst_Year,Peak_Settle,colour=as.factor(Trade_Date),group=as.factor(Trade_Date),linetype="dashed"),size=2)+
-  scale_y_continuous(limits=c(0,100))+
-  scale_color_brewer("Trade Date",palette = "Set1",guide=guide_legend(nrow=2,order=1))+
-  scale_linetype("Contract",guide=guide_legend(nrow=3,order=1))+ # Change linetypes
+  scale_y_continuous(expand=c(0,0))+
+  scale_x_date(expand=c(0,0),date_breaks = "2 years",date_labels = "%Y")+
+  #guides(color=guide_legend(nrow = 1))+
+  expand_limits(y=c(0,205))+
+  scale_color_brewer("",palette = "Set1",guide=guide_legend(nrow=1,order=1))+
   theme_minimal()+theme(    
     legend.position = "bottom",
     legend.key.width=unit(3,"line"),
@@ -1185,11 +1264,87 @@ ggplot(subset(df1,Trade_Date %in% dates)) +
     text = element_text(size = 16,face = "bold"),
     axis.text = element_text(size = 16,face = "bold", colour="black")
   )+    labs(y="Settlement Price ($/MWh)",x="\nInstrument Date",
-             title="Alberta Power Forward Curves (Calendar Strip)",
-             caption="Source: Data via NRGStream\nGraph by Andrew Leach")
+             title="Alberta Power Forward Curves (flat contract, calendar strip)",
+             caption="Source: NGX data via NRGStream, graph by Andrew Leach")
 
-if(png==1)#set these to only turn on if you're making PNG graphs
-  dev.off()
+# if(png==1)#set these to only turn on if you're making PNG graphs
+#   dev.off()
+
+
+    all_forwards %>%
+    ungroup()%>%
+    mutate(
+    year=year(Trade_Date),
+    month=month(Trade_Date),
+    )%>%
+  filter(Type=="FLAT",month%in% c(1,4,7,10),year<2019,year>2014)%>%
+      group_by(month,year,Inst_Date)%>%
+      summarize(Settle=mean(Settle,na.rm=T))%>%
+      mutate(month=as_factor(month.abb[month]) ,
+             year=as_factor(year) )%>%
+  
+  ggplot() +
+  #geom_line(data=subset(df1,Trade_Date %in% dates & Type=="OFF_PEAK"),aes(Inst_Date,Settle,colour=as.factor(Trade_Date),group=as.factor(Trade_Date),linetype=Type),size=2)+
+  geom_line(aes(Inst_Date,Settle,colour=year,group=interaction(month,year)),size=.5)+
+      guides(color=guide_legend(nrow = 1))+
+      theme(legend.position="bottom")+
+      scale_color_viridis("",discrete = T,option="cividis",direction = -1)
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+
+
+
+
+
+
+#geom_line(data=subset(df1,Trade_Date %in% dates & Type=="PEAK"),aes(Inst_Date,Settle,colour=as.factor(Trade_Date),group=as.factor(Trade_Date),linetype=Type),size=2)+
+  #geom_line(aes(Inst_Year,Peak_Settle,colour=as.factor(Trade_Date),group=as.factor(Trade_Date),linetype="dashed"),size=2)+
+  scale_y_continuous(expand=c(0,0))+
+  scale_x_date(expand=c(0,0),date_breaks = "2 years",date_labels = "%Y")+
+  #guides(color=guide_legend(nrow = 1))+
+  expand_limits(y=c(0,205))+
+  scale_color_brewer("",palette = "Set1",guide=guide_legend(nrow=1,order=1))+
+  theme_minimal()+theme(    
+    legend.position = "bottom",
+    legend.key.width=unit(3,"line"),
+    legend.margin=margin(c(0,0,0,0),unit="cm"),
+    legend.text = element_text(colour="black", size = 16, face = "bold"),
+    plot.caption = element_text(size = 14, face = "italic"),
+    plot.title = element_text(face = "bold"),
+    plot.subtitle = element_text(size = 16, face = "italic"),
+    panel.grid.minor = element_blank(),
+    text = element_text(size = 16,face = "bold"),
+    axis.text = element_text(size = 16,face = "bold", colour="black")
+  )+    labs(y="Settlement Price ($/MWh)",x="\nInstrument Date",
+             title="Alberta Power Forward Curves (flat contract, calendar strip)",
+             caption="Source: NGX data via NRGStream, graph by Andrew Leach")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 dates<-c(today_date)
 

@@ -285,7 +285,7 @@ load(file="nrgstream/nrgstream_gen.RData")
 get_plant_info()
 #use this to update
 
-nrgstream_gen<-filter(nrgstream_gen,year(Time)<=2021)
+nrgstream_gen<-filter(nrgstream_gen,year(Time)<2022)
 #nrgstream_gen<-data_update(nrgstream_gen,2021)
 nrgstream_gen<-data_update(nrgstream_gen,2022)
 nrgstream_gen<-data_update(nrgstream_gen,2023)

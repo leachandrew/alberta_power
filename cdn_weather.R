@@ -2,6 +2,8 @@
 
 hourly_data_pull<-function(stn_id,min_yr,max_yr,stn_string="NA"){
 #hourly data
+  #year_index<-2022
+  #month_index<-12
   #testing
   #min_yr<-2019
   #max_yr<-2020
@@ -19,14 +21,14 @@ for(year_index in seq(min_yr,max_yr)) {
   for(month_index in seq(1,12)) {
   
   url = paste("http://climate.weather.gc.ca/climate_data/bulk_data_e.html?format=csv&stationID=",stn_id,"&Year=",year_index,"&Month=",sprintf("%02d",month_index),"&timeframe=1",sep="")
-  test<-read.csv(url, skip = 0)%>% clean_names() %>% select(long=i_longitude_x,lat=latitude_y,
+  test<-read.csv(url, skip = 0)%>% clean_names() %>% select(long=longitude_x,lat=latitude_y,
                                           stn="station_name",climate_id,
                                           date_time="date_time_lst",
                                           year,                
                                           month,
                                           day,
                                           time="time_lst",
-                                          temp="temp_a_c")
+                                          temp="temp_c")
   data_store[[paste(month.abb[month_index],"-",year_index,sep = "")]]<-test
   #index_id<-index_id+1
 }}
