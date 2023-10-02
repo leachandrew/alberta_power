@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023) (preloaded format=pdflatex 2023.10.2)  2 OCT 2023 12:28
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023) (preloaded format=pdflatex 2023.10.2)  2 OCT 2023 13:08
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1183,14 +1183,15 @@ Package pdftex.def Info: ../images/peak_prices.png  used on input line 526.
  [18
 
  <../images/peak_prices.png>]
-<../images/forwards.png, id=283, 240.83977pt x 204.16275pt>
-File: ../images/forwards.png Graphic file (type png)
-<use ../images/forwards.png>
-Package pdftex.def Info: ../images/forwards.png  used on input line 532.
-(pdftex.def)             Requested size: 240.83917pt x 204.16225pt.
+<../images/aeso_fwd_prices-1.png, id=283, 722.7pt x 361.35pt>
+File: ../images/aeso_fwd_prices-1.png Graphic file (type png)
+<use ../images/aeso_fwd_prices-1.png>
+Package pdftex.def Info: ../images/aeso_fwd_prices-1.png  used on input line 53
+2.
+(pdftex.def)             Requested size: 722.69823pt x 361.34912pt.
  [19
 
- <../images/forwards.png>]
+ <../images/aeso_fwd_prices-1.png>]
 <../images/balancingpool.png, id=297, 682.55pt x 439.6425pt>
 File: ../images/balancingpool.png Graphic file (type png)
 <use ../images/balancingpool.png>
@@ -1214,8 +1215,7 @@ File: ../images/lcoe_lazard_22.png Graphic file (type png)
 <use ../images/lcoe_lazard_22.png>
 Package pdftex.def Info: ../images/lcoe_lazard_22.png  used on input line 567.
 (pdftex.def)             Requested size: 855.19293pt x 523.09586pt.
-
-[23
+ [23
 
  <../images/lcoe_lazard_22.png>]
 <../images/ab_solar.png, id=345, 434.05019pt x 443.08392pt>
@@ -1232,7 +1232,8 @@ File: ../images/aeso_mix_plot-1.png Graphic file (type png)
 Package pdftex.def Info: ../images/aeso_mix_plot-1.png  used on input line 579.
 
 (pdftex.def)             Requested size: 722.69823pt x 361.34912pt.
- [25
+
+[25
 
  <../images/aeso_mix_plot-1.png>]
 <../images/aeso_renew_plot-1.png, id=372, 722.7pt x 361.35pt>
@@ -1250,7 +1251,8 @@ File: ../images/aeso_renew_gen_plot-1.png Graphic file (type png)
 Package pdftex.def Info: ../images/aeso_renew_gen_plot-1.png  used on input lin
 e 591.
 (pdftex.def)             Requested size: 722.69823pt x 361.34912pt.
- [27
+
+[27
 
  <../images/aeso_renew_gen_plot-1.png>]
 <../images/small_solar.png, id=398, 894.34125pt x 444.66125pt>
@@ -1267,7 +1269,8 @@ File: ../images/price_capture_renew.png Graphic file (type png)
 Package pdftex.def Info: ../images/price_capture_renew.png  used on input line 
 601.
 (pdftex.def)             Requested size: 1011.77753pt x 505.88875pt.
- [29
+
+[29
 
  <../images/price_capture_renew.png>]
 <../images/eia_solar.png, id=424, 1011.78pt x 505.89pt>
@@ -1283,7 +1286,8 @@ File: ../images/eia_coal.png Graphic file (type png)
 <use ../images/eia_coal.png>
 Package pdftex.def Info: ../images/eia_coal.png  used on input line 613.
 (pdftex.def)             Requested size: 1011.77753pt x 505.88875pt.
- [31
+
+[31
 
  <../images/eia_coal.png>]
 <../images/lazard_decline.png, id=451, 859.49678pt x 525.24803pt>
@@ -1323,7 +1327,7 @@ Package rerunfilecheck Info: File `power_slides_law.out' has not changed.
  ) 
 Here is how much of TeX's memory you used:
  27373 strings out of 477476
- 546839 string characters out of 5824244
+ 546902 string characters out of 5824244
  1864388 words of memory out of 5000000
  46958 multiletter control sequences out of 15000+600000
  525447 words of font info for 62 fonts, out of 8000000 for 9000
@@ -1339,7 +1343,7 @@ pk> </Users/aleach/Library/texlive/2023basic/texmf-var/fonts/pk/ljfour/jknappen
 /ec/ecss1095.600pk> </Users/aleach/Library/texlive/2023basic/texmf-var/fonts/pk
 /ljfour/jknappen/ec/ecss1440.600pk> </Users/aleach/Library/texlive/2023basic/te
 xmf-var/fonts/pk/ljfour/jknappen/ec/ecss0600.600pk>
-Output written on power_slides_law.pdf (36 pages, 7149606 bytes).
+Output written on power_slides_law.pdf (36 pages, 7156105 bytes).
 PDF statistics:
  825 PDF objects out of 1000 (max. 8388607)
  458 compressed objects within 5 object streams
