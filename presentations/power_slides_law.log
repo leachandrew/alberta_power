@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023) (preloaded format=pdflatex 2023.10.2)  2 OCT 2023 13:08
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023) (preloaded format=pdflatex 2023.10.2)  2 OCT 2023 13:45
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1263,53 +1263,60 @@ Package pdftex.def Info: ../images/small_solar.png  used on input line 596.
  [28
 
  <../images/small_solar.png>]
-<../images/price_capture_renew.png, id=412, 1011.78pt x 505.89pt>
-File: ../images/price_capture_renew.png Graphic file (type png)
-<use ../images/price_capture_renew.png>
-Package pdftex.def Info: ../images/price_capture_renew.png  used on input line 
-601.
-(pdftex.def)             Requested size: 1011.77753pt x 505.88875pt.
+<../images/microgen.png, id=412, 702.4644pt x 467.5869pt>
+File: ../images/microgen.png Graphic file (type png)
+<use ../images/microgen.png>
+Package pdftex.def Info: ../images/microgen.png  used on input line 601.
+(pdftex.def)             Requested size: 702.46269pt x 467.58575pt.
 
 [29
 
- <../images/price_capture_renew.png>]
-<../images/eia_solar.png, id=424, 1011.78pt x 505.89pt>
-File: ../images/eia_solar.png Graphic file (type png)
-<use ../images/eia_solar.png>
-Package pdftex.def Info: ../images/eia_solar.png  used on input line 606.
+ <../images/microgen.png>]
+<../images/price_capture_renew.png, id=424, 1011.78pt x 505.89pt>
+File: ../images/price_capture_renew.png Graphic file (type png)
+<use ../images/price_capture_renew.png>
+Package pdftex.def Info: ../images/price_capture_renew.png  used on input line 
+607.
 (pdftex.def)             Requested size: 1011.77753pt x 505.88875pt.
  [30
 
+ <../images/price_capture_renew.png>]
+<../images/eia_solar.png, id=436, 1011.78pt x 505.89pt>
+File: ../images/eia_solar.png Graphic file (type png)
+<use ../images/eia_solar.png>
+Package pdftex.def Info: ../images/eia_solar.png  used on input line 612.
+(pdftex.def)             Requested size: 1011.77753pt x 505.88875pt.
+ [31
+
  <../images/eia_solar.png>]
-<../images/eia_coal.png, id=437, 1011.78pt x 505.89pt>
+<../images/eia_coal.png, id=450, 1011.78pt x 505.89pt>
 File: ../images/eia_coal.png Graphic file (type png)
 <use ../images/eia_coal.png>
-Package pdftex.def Info: ../images/eia_coal.png  used on input line 613.
+Package pdftex.def Info: ../images/eia_coal.png  used on input line 619.
 (pdftex.def)             Requested size: 1011.77753pt x 505.88875pt.
-
-[31
-
- <../images/eia_coal.png>]
-<../images/lazard_decline.png, id=451, 859.49678pt x 525.24803pt>
-File: ../images/lazard_decline.png Graphic file (type png)
-<use ../images/lazard_decline.png>
-Package pdftex.def Info: ../images/lazard_decline.png  used on input line 619.
-(pdftex.def)             Requested size: 859.49469pt x 525.24675pt.
  [32
 
- <../images/lazard_decline.png>]
-<../images/monthly_ghgs.png, id=464, 778.29231pt x 416.9423pt>
-File: ../images/monthly_ghgs.png Graphic file (type png)
-<use ../images/monthly_ghgs.png>
-Package pdftex.def Info: ../images/monthly_ghgs.png  used on input line 625.
-(pdftex.def)             Requested size: 778.29042pt x 416.94128pt.
+ <../images/eia_coal.png>]
+<../images/lazard_decline.png, id=463, 859.49678pt x 525.24803pt>
+File: ../images/lazard_decline.png Graphic file (type png)
+<use ../images/lazard_decline.png>
+Package pdftex.def Info: ../images/lazard_decline.png  used on input line 625.
+(pdftex.def)             Requested size: 859.49469pt x 525.24675pt.
  [33
 
- <../images/monthly_ghgs.png (PNG copy)>] [34
+ <../images/lazard_decline.png>]
+<../images/monthly_ghgs.png, id=476, 778.29231pt x 416.9423pt>
+File: ../images/monthly_ghgs.png Graphic file (type png)
+<use ../images/monthly_ghgs.png>
+Package pdftex.def Info: ../images/monthly_ghgs.png  used on input line 631.
+(pdftex.def)             Requested size: 778.29042pt x 416.94128pt.
+ [34
 
-] [35
+ <../images/monthly_ghgs.png (PNG copy)>] [35
 
 ] [36
+
+] [37
 
 ]
 \tf@nav=\write6
@@ -1321,15 +1328,16 @@ Package pdftex.def Info: ../images/monthly_ghgs.png  used on input line 625.
 \tf@snm=\write8
 \openout8 = `power_slides_law.snm'.
 
- (./power_slides_law.aux)
+
+(./power_slides_law.aux)
 Package rerunfilecheck Info: File `power_slides_law.out' has not changed.
 (rerunfilecheck)             Checksum: 569508C57516077C9E88B752736FF76D;767.
  ) 
 Here is how much of TeX's memory you used:
- 27373 strings out of 477476
- 546902 string characters out of 5824244
+ 27382 strings out of 477476
+ 547096 string characters out of 5824244
  1864388 words of memory out of 5000000
- 46958 multiletter control sequences out of 15000+600000
+ 46964 multiletter control sequences out of 15000+600000
  525447 words of font info for 62 fonts, out of 8000000 for 9000
  319 hyphenation exceptions out of 8191
  101i,16n,104p,391b,622s stack positions out of 10000i,1000n,20000p,200000b,200000s
@@ -1343,10 +1351,10 @@ pk> </Users/aleach/Library/texlive/2023basic/texmf-var/fonts/pk/ljfour/jknappen
 /ec/ecss1095.600pk> </Users/aleach/Library/texlive/2023basic/texmf-var/fonts/pk
 /ljfour/jknappen/ec/ecss1440.600pk> </Users/aleach/Library/texlive/2023basic/te
 xmf-var/fonts/pk/ljfour/jknappen/ec/ecss0600.600pk>
-Output written on power_slides_law.pdf (36 pages, 7156105 bytes).
+Output written on power_slides_law.pdf (37 pages, 7283587 bytes).
 PDF statistics:
- 825 PDF objects out of 1000 (max. 8388607)
- 458 compressed objects within 5 object streams
- 79 named destinations out of 1000 (max. 500000)
- 248 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 840 PDF objects out of 1000 (max. 8388607)
+ 471 compressed objects within 5 object streams
+ 81 named destinations out of 1000 (max. 500000)
+ 253 words of extra memory for PDF output out of 10000 (max. 10000000)
 
