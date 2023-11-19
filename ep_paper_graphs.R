@@ -86,23 +86,28 @@ ggsave(file=paste("images/hourly_loads.png",sep=""),width = 14,height=7,dpi=300,
 
 peak_data<-forecast_data %>%filter(!is.na(actual_posted_pool_price),!is.na(actual_ail))%>% 
   assign_date_time_days()%>%
+  filter(year>=2004)%>%
   assign_peaks()%>%
   left_join(renew_gen)%>%
   ungroup()%>%
-  mutate(high_renew=(renew_gen>=1000))%>%
+  mutate(high_renew=(renew_gen>=1000),load_net_renew=actual_ail-renew_gen)%>%
   group_by(year,month) %>% 
   summarize(ail=mean(actual_ail,na.rm = T),peak_ail=max(actual_ail),trough_ail=min(actual_ail),
             q75_price=quantile(actual_posted_pool_price, probs=c(.95)),
             q25_price=quantile(actual_posted_pool_price, probs=c(.05)),
             q75_ail=quantile(actual_ail, probs=c(.95)),
             q25_ail=quantile(actual_ail, probs=c(.05)),
+            mean_net_load=mean(load_net_renew,na.rm=T),
+            q95_net=quantile(load_net_renew, probs=c(.95),na.rm = T),
+            q05_net=quantile(load_net_renew, probs=c(.05),na.rm = T),
             renew_price=sum(actual_posted_pool_price*actual_ail*(high_renew==TRUE),na.rm = T)/sum(actual_ail*(high_renew==TRUE),na.rm = T),
             mean_peak_price=sum(actual_posted_pool_price*actual_ail*(on_peak==TRUE),na.rm = T)/sum(actual_ail*(on_peak==TRUE),na.rm = T),
             mean_off_peak_price=sum(actual_posted_pool_price*actual_ail*(on_peak==FALSE),na.rm = T)/sum(actual_ail*(on_peak==FALSE),na.rm = T),
             mean_peak_ail=sum(actual_ail*(on_peak==TRUE),na.rm = T)/sum((on_peak==TRUE),na.rm = T),
             mean_off_peak_ail=sum(actual_ail*(on_peak==FALSE),na.rm = T)/sum((on_peak==FALSE),na.rm = T),
             mean_price=sum(actual_posted_pool_price*actual_ail,na.rm = T)/sum(actual_ail,na.rm = T),peak_price=max(actual_posted_pool_price),trough_price=min(actual_posted_pool_price)
-  )%>%  
+  )%>% 
+  ungroup()%>%
   mutate(date=ymd(paste(year,month,1,sep="-"))) 
   
 
@@ -176,15 +181,17 @@ ggsave("images/ppa.png",height = 7,width=14,dpi=250,bg="white")
 
 
 
-bottom_panel<-ggplot(peak_data%>%filter(year>=2004)) +
+bottom_panel<-
+  ggplot(peak_data%>%filter(year>=2004)) +
   #geom_line(aes(date,ail,colour="basic"),size=1.5)+
   geom_line(aes(date,mean_peak_ail,linetype="A"),size=.85,color="black")+
   geom_line(aes(date,mean_off_peak_ail,linetype="B"),size=.85,color="blue")+
+  #geom_line(aes(date,load_net_renew,linetype="C"),size=.85,color="darkgreen")+
   #geom_ribbon(aes(date,ymax=peak_ail,ymin=trough_ail,fill="Range of Monthly Values"),alpha=.5)+
   geom_ribbon(aes(date,ymax=q75_ail,ymin=q25_ail,fill="Two-tailed 90th percentile range"),alpha=.5)+
   #scale_color_manual("",values = c("black"),labels=c("Average Monthly Price"))+
   scale_fill_manual("",values = c("grey50"))+
-  scale_linetype_manual("",values = c("solid","11"),labels=c("Peak hours average","Off-peak hours average"))+
+  scale_linetype_manual("",values = c("solid","11","3111"),labels=c("Peak hours average","Off-peak hours average","Internal Load Net of Renewables"))+
   
   scale_x_date(expand=c(0,0),breaks="2 year",labels = date_format("%b\n%Y",tz="America/Denver"))+
   scale_y_continuous(expand=c(0,0),breaks = pretty_breaks())+
@@ -200,6 +207,35 @@ bottom_panel<-ggplot(peak_data%>%filter(year>=2004)) +
   )+    labs(y="Internal Load (MW)",x="")
 bottom_panel
 #caption="Source: SolarPeople system data via Neurio API\nGraph by Andrew Leach")
+
+renew_panel<-
+  ggplot(peak_data%>%filter(year>=2004)) +
+  #geom_line(aes(date,ail,colour="basic"),size=1.5)+
+  geom_line(aes(date,mean_net_load,linetype="A"),size=.85,color="darkgreen")+
+  #geom_line(aes(date,mean_off_peak_ail,linetype="B"),size=.85,color="blue")+
+  #geom_line(aes(date,load_net_renew,linetype="C"),size=.85,color="darkgreen")+
+  #geom_ribbon(aes(date,ymax=peak_ail,ymin=trough_ail,fill="Range of Monthly Values"),alpha=.5)+
+  geom_ribbon(aes(date,ymax=q95_net,ymin=q05_net,fill="Two-tailed 90th percentile range of hourly data"),alpha=.5)+
+  #scale_color_manual("",values = c("black"),labels=c("Average Monthly Price"))+
+  scale_fill_manual("",values = c("grey50"))+
+  scale_linetype_manual("",values = c("solid","11","3111"),labels=c("Average internal load net of renewables"))+
+  
+  scale_x_date(expand=c(0,0),breaks="2 year",labels = date_format("%b\n%Y",tz="America/Denver"))+
+  scale_y_continuous(expand=c(0,0),breaks = pretty_breaks())+
+  expand_limits(y=11200)+
+  guides(linetype = guide_legend(override.aes = list(color = c("darkgreen")),order=1),color="none")+
+  paper_theme()+
+  
+  theme(legend.position="bottom",
+        #axis.title.y = element_text(margin = margin(t = 0, r = 5, b = 0, l = 0, unit = "pt")),
+        legend.margin=margin(c(0,0,0,0),unit="cm"),
+        legend.key.width = unit(1.3,"cm"),
+        #legend.text = element_text(colour="black", size = 12, face = "bold"),
+  )+    labs(y="Internal Load net of Renewable Generation (MW)",x="")
+renew_panel
+#caption="Source: SolarPeople system data via Neurio API\nGraph by Andrew Leach")
+
+
 
 # sample period September 1, 2009 - December 31, 2019
 
@@ -229,6 +265,22 @@ bottom_panel+
   theme(plot.margin = margin(t = 0.5, r = 1, b = 0, l = 1,unit= "cm"),
         axis.text.x = element_text(vjust=-0.5))
 ggsave(file=paste("images/loads_clean.png",sep=""),width = 14,,height=7,dpi=300,bg="white")
+
+
+bottom_panel+
+  #annotate("rect",xmin=ymd("2009-09-01"),xmax=ymd("2019-12-31"),ymin=-Inf,ymax=Inf, alpha=0.1, fill="black")+
+  #annotate("text",x=ymd("2009-09-01")+((ymd("2019-12-31")-ymd("2009-09-01"))/2),y=11800,label = "Sample period")+
+  theme(plot.margin = margin(t = 0.5, r = 1, b = 0, l = 1,unit= "cm"),
+        axis.text.x = element_text(vjust=-0.5))
+ggsave(file=paste("images/loads_clean.png",sep=""),width = 14,,height=7,dpi=300,bg="white")
+
+
+renew_panel+
+  #annotate("rect",xmin=ymd("2009-09-01"),xmax=ymd("2019-12-31"),ymin=-Inf,ymax=Inf, alpha=0.1, fill="black")+
+  #annotate("text",x=ymd("2009-09-01")+((ymd("2019-12-31")-ymd("2009-09-01"))/2),y=11800,label = "Sample period")+
+  theme(plot.margin = margin(t = 0.5, r = 1, b = 0, l = 1,unit= "cm"),
+        axis.text.x = element_text(vjust=-0.5))
+ggsave(file=paste("images/renew_clean.png",sep=""),width = 14,,height=7,dpi=300,bg="white")
 
 
 p_grid<-plot_grid(
@@ -2004,3 +2056,59 @@ lto_renew<-lto_gen %>% filter(calendar_year==2023,fuel_type %in% renew) %>%
 #   NULL
 # gen_rep_graph
 # ggsave(file="images/gen_rep.png", width = 14,height=9,dpi = 600,bg="white")
+
+
+
+
+ggplot(renew_gen%>%mutate(Year_ID=as_factor(year(time))),aes(renew_gen))+
+  #geom_density(aes(fill="Wind Power Generation",colour=year(time)),alpha=0.5)+
+  #stat_density(geom="line",position="identity",aes(group=Year_ID,colour=Year_ID),size=1.5)+
+  stat_ecdf(geom = "step",aes(group=Year_ID,colour=Year_ID),size=1.5)+
+  scale_x_continuous(limits=range(df1$total_gen),expand=c(0,0),breaks = pretty_breaks())+
+  scale_y_continuous(expand=c(0,0),labels = scales::percent)+
+  scale_color_viridis("",discrete=TRUE)+
+  ajl_line()+
+  labs(x="Wind Generation (MW)",y="% of hours generation < X MW",
+       title="Cumulative Density Function, Wind Energy (2010-2017 Avg)",
+       caption="Source: AESO Data, Accessed via NRGStream, Graph by Andrew Leach")
+ggsave(file="images/wind_cdf.png")
+
+
+
+
+
+ggplot(
+  renew_gen%>%mutate(Year_ID=as_factor(year(time)),month=as_factor(month.abb[month(time)]),h24mean=rollmean(renew_gen,24,na.pad = T))%>%
+  filter(time>max(time)-years(5),!is.na(h24mean)),
+  aes(h24mean))+
+  facet_wrap(~month)+
+  #geom_density(aes(fill="Wind Power Generation",colour=year(time)),alpha=0.5)+
+  #stat_density(geom="line",position="identity",aes(group=Year_ID,colour=Year_ID),size=1.5)+
+  stat_ecdf(geom = "step",aes(group=Year_ID,colour=Year_ID),size=1.5)+
+  #scale_x_continuous(limits=range(df1$total_gen),expand=c(0,0),breaks = pretty_breaks())+
+  #scale_y_continuous(expand=c(0,0),labels = scales::percent)+
+  scale_color_viridis("",discrete=TRUE)+
+  ajl_line()+
+  labs(x="24-hour trailing average wind and solar generation (MW)",y="% of hours where previous 24hr average generation < X MW",
+       title="Cumulative Density Function, Wind and Solar Generation (2022-23)",
+       caption="Source: AESO Data, Accessed via NRGStream, Graph by Andrew Leach")
+ggsave(file="images/wind_cdf.png")
+
+
+ggplot(
+  renew_gen%>%mutate(Year_ID=as_factor(year(time)),month=as_factor(month.abb[month(time)]),h24mean=roll::roll_min(renew_gen,24))%>%
+    filter(time>max(time)-years(5),!is.na(h24mean)),
+  aes(h24mean))+
+  facet_wrap(~month)+
+  #geom_density(aes(fill="Wind Power Generation",colour=year(time)),alpha=0.5)+
+  #stat_density(geom="line",position="identity",aes(group=Year_ID,colour=Year_ID),size=1.5)+
+  stat_ecdf(geom = "step",aes(group=Year_ID,colour=Year_ID),size=1.5)+
+  #scale_x_continuous(limits=range(df1$total_gen),expand=c(0,0),breaks = pretty_breaks())+
+  #scale_y_continuous(expand=c(0,0),labels = scales::percent)+
+  scale_color_viridis("",discrete=TRUE)+
+  ajl_line()+
+  labs(x="24-hour trailing average wind and solar generation (MW)",y="% of hours where previous 24hr average generation < X MW",
+       title="Cumulative Density Function, Wind and Solar Generation (2022-23)",
+       caption="Source: AESO Data, Accessed via NRGStream, Graph by Andrew Leach")
+
+
