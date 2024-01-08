@@ -144,7 +144,7 @@ load("data/forecast_data.RData")
   #storage objects for testing purposes
   #merit_store<-merit_aug
   
-  save(hourly_renew_aug, file="data/hourly_renew_aug.RData")  
+  #save(hourly_renew_aug, file="data/hourly_renew_aug.RData")  
   
   #use this to revert to stored merit_aug so you don't have to re-load
   #merit_aug<-merit_store
@@ -234,8 +234,8 @@ merit_aug<-merit_aug %>%
   
 #check
 anci<-merit_aug %>% filter(is.na(Plant_Type))%>% 
-  #select(asset_id, Plant_Type) %>% 
-  #distinct()
+  select(asset_id, Plant_Type) %>% 
+  distinct()%>%
   I()
   
 
@@ -351,9 +351,11 @@ anci<-merit_aug %>% filter(is.na(Plant_Type))%>%
   #Repair offer control
   
   key_firms<-c("ATCO","TransAlta","TransCanada","ENMAX","Capital Power","Heartland","Balancing Pool")
-  
-  merit_aug<-merit_aug%>% #filter(date<ymd("2013-06-05"))%>%
-    mutate(offer_sum=case_when(
+  # 
+  merit_aug<-
+  #   test<-
+    merit_aug%>% #
+    mutate(month=month(date),year=year(date),offer_sum=case_when(
       grepl("TransAlta",offer_control)~"TransAlta",
       grepl("TransCanada",offer_control)~"TransCanada",
       grepl("ENMAX",offer_control)~"ENMAX",
@@ -371,8 +373,34 @@ anci<-merit_aug %>% filter(is.na(Plant_Type))%>%
       asset_id=="WB4"~"University of Alberta", #never appears so assigned
       asset_id=="TMR"~"Transmission Must Run", #never appears so assigned
       asset_id=="RB2"~"ATCO", #never appears so assigned
+      asset_id=="BLS1"~"ATCO", #never appears so assigned
       TRUE~offer_control #if it's not one of these, leave it the same
-    ))%>% group_by(asset_id)%>%
+    ))%>% 
+    #filter(year>=2013)%>%
+    #filter(!Plant_Type %in% c("WIND","SOLAR","COGEN"))%>%
+    #group_by(month,year,offer_sum)%>% summarize(offer_mw=sum(available_mw))%>%
+    #arrange(month,year,-offer_mw)%>%
+    #summarize(firm_5=sum(offer_mw[1:5],na.rm=T)/sum(offer_mw,na.rm=T),
+    #          firm_4=sum(offer_mw[1:4],na.rm=T)/sum(offer_mw,na.rm=T),
+    #          firm_3=sum(offer_mw[1:3],na.rm=T)/sum(offer_mw,na.rm=T),
+    #          hhi=10000*sum((offer_mw/sum(offer_mw,na.rm=T))^2),
+    #          date=ymd(paste(year,month,1,sep="-")))%>%
+    #  ungroup()
+    
+    
+    #test%>% pivot_longer(-c(date,month,year),values_to = "value",names_to="measure")%>%
+    #  filter(measure!="hhi")%>%
+    #  ggplot()+
+    #  geom_line(aes(date,value,group=measure,colour=measure))+
+    #  scale_color_manual("",values=colors_ua10())
+  
+    
+    
+    
+    
+    
+    
+    group_by(asset_id)%>%
       fill(offer_sum,.direction="up")%>%  #carry offer control info backwards
       mutate(key_firm=offer_sum %in% key_firms,
            key_firm_no_bp=offer_sum %in%key_firms[(key_firms != "Balancing Pool")])%>%

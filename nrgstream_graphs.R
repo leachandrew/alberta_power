@@ -259,7 +259,7 @@ ggplot(df2,aes(Year,capture-p_mean,colour=Plant_Type,fill=Plant_Type),alpha=0.5)
   labs(x="",y="Revenue Relative to Mean Price ($/MWh)",
        title="Energy Price Capture Differential ($/MWh, 2007-2018)",
        caption="Source: AESO Data, accessed via NRGStream\nGraph by @andrew_leach")
-dev.off()
+#dev.off()
 
 ggplot(df2%>%filter(!Plant_Type %in% c("IMPORT","EXPORT")),aes(Year,capture,colour=Plant_Type,fill=Plant_Type),alpha=0.5)+
   geom_col(aes(Year,capture,colour=Plant_Type,fill=Plant_Type),size=1.5,position = position_dodge(width = .9),width = .6)+
@@ -278,7 +278,6 @@ ggplot(df2%>%filter(!Plant_Type %in% c("IMPORT","EXPORT")),aes(Year,capture,colo
 ggsave("images/capture.png",dpi=300,bg="white",width = 14,height=9)
 
 
-set_png(file="images/price_capture_pct.png", width = 1400, height = 750)
 my_palette<-c(colors_tableau10()[8],colors_tableau10_medium()[4],colors_tableau10()[4],colors_tableau10_light()[4],colors_tableau10()[7],colors_tableau10()[1],colors_tableau10()[3],colors_tableau10()[2],colors_tableau10()[9],colors_tableau10_light()[9])
 ggplot(df2,aes(Year,capture/p_mean*100-100,colour=Plant_Type,fill=Plant_Type),alpha=0.5)+
   geom_col(aes(Year,capture/p_mean*100-100,colour=Plant_Type,fill=Plant_Type),size=1.5,position = position_dodge(width = .9),width = .6)+
@@ -291,7 +290,7 @@ ggplot(df2,aes(Year,capture/p_mean*100-100,colour=Plant_Type,fill=Plant_Type),al
   labs(x="",y="Revenue Relative to Average Price (%)",
        title="Energy Price Capture Differential (%, 2007-2019)",
        caption="Source: AESO Data, accessed via NRGStream\nGraph by @andrew_leach")
-dev.off()
+ggsave("images/capture_pct.png",dpi=300,bg="white",width = 14,height=9)
 
 
 df3 <- df1 %>% filter(Plant_Type %in% gen_set) %>%
@@ -438,8 +437,10 @@ plot_b<-ggplot(filter(df2,as.character(Year)>=2014),aes(Year,capture,colour=Plan
 library(patchwork)
 library(cowplot)
 
-set_png(file="images/price_diff_ctax.png",width=1600,height = 1200)
+
 (plot_a + theme(legend.position = "none"))/(plot_b+guides(fill=guide_legend(nrow=1,byrow=TRUE),colour=guide_legend(nrow=1,byrow=TRUE)))
+ggsave("images/price_diff_ctax.png",dpi=300,bg="white",width = 14,height=9)
+
 dev.off()
 
 
