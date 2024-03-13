@@ -1,6 +1,6 @@
 \documentclass{beamer}
 
-\usepackage{graphicx,hyperref,fes,url}
+\usepackage{graphicx,hyperref,url,fes}
 \usepackage[english]{babel}
 \usepackage[latin1]{inputenc}
 %\usepackage{times}
@@ -38,17 +38,9 @@
   Future Energy Systems Symposium\\
   University of Alberta}
 
-% Add a date and possibly the name of the event to the slides
-%  - again first a short version to be shown at the bottom of each slide
-%  - second the full date and event name for the title slide
-
-\renewcommand{\(}{\begin{columns}}
-\renewcommand{\)}{\end{columns}}
-\newcommand{\<}[1]{\begin{column}{#1}}
-\renewcommand{\>}{\end{column}}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
+% The main document
 
 
 
@@ -56,11 +48,6 @@
 \newcommand{\co}{$\text{CO}_{2}\,$}
 \newcommand{\tx}{$G_{2\times\text{CO}_2}$}
 \newcommand{\Real}{\mathbb R}
-
-
-
-% The main document
-
 
 
 \begin{document}
@@ -181,7 +168,7 @@
 \begin{frame}{Carbon Pricing Policy and Power Generation Sources}
    \tikz [remember picture,overlay]
     \node[yshift=-.5cm,xshift=0cm] at (current page.center)
-       {\includegraphics[width=.9\paperwidth]{../../alberta_power/gen_ghg_price.png}}; \vspace{1cm}
+       {\includegraphics[width=.9\paperwidth]{../../alberta_power/images/gen_ghg_price.png}}; \vspace{1cm}
    \vfill
 \end{frame}
 
@@ -189,7 +176,7 @@
 \begin{frame}{Carbon Intensity of Alberta Power}
    \tikz [remember picture,overlay]
     \node[yshift=-.5cm,xshift=0cm] at (current page.center)
-       {\includegraphics[width=.9\paperwidth]{../../alberta_power/monthly_ghg_mwh.png}}; \vspace{1cm}
+       {\includegraphics[width=.9\paperwidth]{../../alberta_power/images/monthly_ghg_mwh.png}}; \vspace{1cm}
    \vfill
 \end{frame}
 
@@ -290,12 +277,24 @@ The project currently involves 5 PhD students and 1 MSc, 5 faculty (1 in MECE, 3
 
 
 
-\begin{frame}{Secanell Group}
-   \tikz [remember picture,overlay]
-    \node[yshift=-.5cm,xshift=0cm] at (current page.center)
-      {\includegraphics[height=3in]{../../secanell_1}}; \vspace{1cm}
+\section{Other FES Theme 06 Research}
+\begin{frame} Secanell group
+\begin{block}{}
+\footnotesize{\begin{itemize}
+  \item Design, procurement and installation of low and high temperature electrolysis fabrication and testing facilities
+  \item Fabrication of single-cell low temperature electrolyzer prototypes using iridium and iridium oxide catalysts
+  \item Demonstrated, for the first time, the use of inkjet printing as a feasible technology to fabricate low temperature electrolyzer cells  (https://doi.org/10.1149/2.1101807jes)
+   \item Development of a novel nano-pompon-like iridium catalyst superstructure for low temperature fuel cell electrolyzers (https://doi.org/10.1016/j.jcat.2019.01.018)
+   \item Development of a novel technique for characterization of iridium catalyst degradation (https://doi.org/10.1016/j.jcat.2019.01.018)
+ \item Development of novel micro-structures for high temperature solid oxide electrolyzers and fuel cells (https://doi.org/10.1016/j.electacta.2018.02.055)
+  \end{itemize}}
+The project currently involves 5 PhD students and 1 MSc, 5 faculty (1 in MECE, 3 in CHEME and 1 in Chem). We are also collaborating with Ionomr, a firm in BC (https://ionomr.com/).
+  \end{block}
    \vfill
 \end{frame}
+
+
+
 
 \section{Other FES Theme 06 Research}
 \begin{frame} Secanell group
@@ -314,36 +313,6 @@ The project currently involves 5 PhD students and 1 MSc, 5 faculty (1 in MECE, 3
 \end{frame}
 
 
-\begin{frame}{Secanell Group}
-   \tikz [remember picture,overlay]
-    \node[yshift=-.5cm,xshift=0cm] at (current page.center)
-      {\includegraphics[height=3in]{../../secanell_2}}; \vspace{1cm}
-   \vfill
-\end{frame}
-
-
-\section{Other FES Theme 06 Research}
-\begin{frame} Secanell group
-\begin{block}{}
-\footnotesize{\begin{itemize}
-  \item Design, procurement and installation of low and high temperature electrolysis fabrication and testing facilities
-  \item Fabrication of single-cell low temperature electrolyzer prototypes using iridium and iridium oxide catalysts
-  \item Demonstrated, for the first time, the use of inkjet printing as a feasible technology to fabricate low temperature electrolyzer cells  (https://doi.org/10.1149/2.1101807jes)
-   \item Development of a novel nano-pompon-like iridium catalyst superstructure for low temperature fuel cell electrolyzers (https://doi.org/10.1016/j.jcat.2019.01.018)
-   \item Development of a novel technique for characterization of iridium catalyst degradation (https://doi.org/10.1016/j.jcat.2019.01.018)
- \item Development of novel micro-structures for high temperature solid oxide electrolyzers and fuel cells (https://doi.org/10.1016/j.electacta.2018.02.055)
-  \end{itemize}}
-The project currently involves 5 PhD students and 1 MSc, 5 faculty (1 in MECE, 3 in CHEME and 1 in Chem). We are also collaborating with Ionomr, a firm in BC (https://ionomr.com/).
-  \end{block}
-   \vfill
-\end{frame}
-
-\begin{frame}{Secanell Group}
-   \tikz [remember picture,overlay]
-    \node[yshift=-.5cm,xshift=0cm] at (current page.center)
-      {\includegraphics[width=4.5in]{../../secanell_3}}; \vspace{1cm}
-   \vfill
-\end{frame}
 
 \section{Other FES Theme 06 Research}
 \begin{frame} Secanell group

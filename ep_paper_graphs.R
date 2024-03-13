@@ -8,18 +8,18 @@ library(cowplot)
 
 #load(file="data/metered_vols_data.Rdata")
 load(file="nrgstream/nrgstream_gen.Rdata") 
-nrgstream_gen <- nrgstream_gen %>% 
+nrgstream_gen <- nrgstream_gen %>% clean_names()
   #ng_conv(id_sent=ID)%>%
-  rename(time=Time)
+  #rename(time=time)
 
-renew_gen<-nrgstream_gen%>%filter(Plant_Type%in%c("WIND","SOLAR"))%>%
-  select(time,Plant_Type,gen)%>%
-  group_by(time,Plant_Type)%>%
+renew_gen<-nrgstream_gen%>%filter(plant_type%in%c("WIND","SOLAR"))%>%
+  select(time,plant_type,gen)%>%
+  group_by(time,plant_type)%>%
   summarize(gen=sum(gen,na.rm = T))%>%
   group_by(time)%>%
   mutate(renew_gen=sum(gen,na.rm = T))%>%
   ungroup()%>%
-  pivot_wider(names_from = Plant_Type,values_from=gen)
+  pivot_wider(names_from = plant_type,values_from=gen)
 
 
 
@@ -338,32 +338,32 @@ ggsave("images/prices_and_loads_ep.png",width = 14,height=8,bg="white",dpi = 300
 
 #align variable names
 df2 <- nrgstream_gen %>% filter(date<floor_date(max(date),"month"))%>% #trim to last full month of data
-  select(time,vol=gen,ID,AESO_Name,Plant_Type,Plant_Fuel,Capacity) %>%
-  filter(Plant_Type %in% c("COAL","COGEN","NGCC","WIND","SCGT","NGCONV","TRADE","HYDRO","SOLAR","OTHER"))%>%
+  select(time,vol=gen,id,aeso_name,plant_type,plant_fuel,capacity) %>%
+  filter(plant_type %in% c("COAL","COGEN","NGCC","WIND","SCGT","NGCONV","TRADE","HYDRO","SOLAR","OTHER"))%>%
   #filter(year(time)>=2010) %>% 
   left_join(forecast_data) %>% filter(!is.na(date))%>%
   #strip the AB-WECC tie since it's duplicate of AB-MT and AB-BC
-  filter(!ID %in% c("AB_WECC","AB_WECC_Exp","AB_WECC_Imp"))%>%
-  #mutate(Plant_Type=as.character(Plant_Type))%>%
+  filter(!id %in% c("AB_WECC","AB_WECC_Exp","AB_WECC_Imp"))%>%
+  #mutate(plant_type=as.character(plant_type))%>%
   #mutate(Plant_Fuel=as.character(Plant_Fuel))%>%
   mutate(hour=hour(time))%>%
   select(-c("forecast_pool_price","day_ahead_forecasted_ail",        
                 "forecasted_actual_ail_difference","start_date"))%>%
   #filter(date>Sys.Date()-years(10))%>%
   mutate(month=month(time),year=year(time))%>%   
-  mutate(Plant_Type=as_factor(Plant_Type),
+  mutate(plant_type=as_factor(plant_type),
          # Relevel to the end
-         Plant_Type=fct_other(Plant_Type,keep = c("COAL","COGEN","SCGT","NGCC","NGCONV","WIND","SOLAR","HYDRO","TRADE"),other_level = "OTHER"),
-         Plant_Type=fct_relevel(Plant_Type, "OTHER", after = Inf),
-         Plant_Type=fct_recode(Plant_Type, "NET IMPORTS"="TRADE"),
-         Plant_Type=fct_relevel(Plant_Type, "NET IMPORTS", after = Inf),
+         plant_type=fct_other(plant_type,keep = c("COAL","COGEN","SCGT","NGCC","NGCONV","WIND","SOLAR","HYDRO","TRADE"),other_level = "OTHER"),
+         plant_type=fct_relevel(plant_type, "OTHER", after = Inf),
+         plant_type=fct_recode(plant_type, "NET IMPORTS"="TRADE"),
+         plant_type=fct_relevel(plant_type, "NET IMPORTS", after = Inf),
          NULL
   )%>%
   #summarize by hour to get total gen and revenue by fuel, 
-  group_by(year,month,date,hour,Plant_Type) %>% summarise(capacity=sum(Capacity,na.rm = T),gen=sum(vol,na.rm = T),rev=sum(vol*actual_posted_pool_price),price=mean(actual_posted_pool_price)) %>% 
+  group_by(year,month,date,hour,plant_type) %>% summarise(capacity=sum(capacity,na.rm = T),gen=sum(vol,na.rm = T),rev=sum(vol*actual_posted_pool_price),price=mean(actual_posted_pool_price)) %>% 
   #summarize by year and month to get mean gen and capture price by fuel, 
   group_by(year,month) %>% mutate(mkt_price=sum(price*gen)/sum(gen))%>%
-  group_by(year,month,Plant_Type,mkt_price) %>% summarise(Capacity=mean(capacity,na.rm = T),capture = sum(rev,na.rm=T)/sum(gen,na.rm = T),gen=mean(gen,na.rm = T))%>% 
+  group_by(year,month,plant_type,mkt_price) %>% summarise(capacity=mean(capacity,na.rm = T),capture = sum(rev,na.rm=T)/sum(gen,na.rm = T),gen=mean(gen,na.rm = T))%>% 
   ungroup() %>%
   mutate(date=ymd(paste(year,month,15,sep="-")))
   
@@ -374,26 +374,26 @@ df2 <- nrgstream_gen %>% filter(date<floor_date(max(date),"month"))%>% #trim to 
   
   
     
-  gen_fuel <- df2 %>% mutate(Plant_Type=factor(Plant_Type,levels=AB_plant_order))%>%
+  gen_fuel <- df2 %>% mutate(plant_type=factor(plant_type,levels=AB_plant_order))%>%
     filter(date>ymd("2005-01-01"))%>%
-    mutate(Plant_Type=fct_collapse(Plant_Type,
+    mutate(plant_type=fct_collapse(plant_type,
      "OTHER"=c("OTHER","HYDRO"),
      "NATURAL GAS"=c("SCGT","NGCC","NGCONV","COGEN"),
      #"COGENERATION"=c("COGEN"),
      "NET IMPORTS"="TRADE"
      ),
-     Plant_Type=fct_relevel(Plant_Type,"COGENERATION",after = 1))%>% 
-    group_by(date,month,year,Plant_Type) %>% summarise(gen=sum(gen,na.rm = T),
+     plant_type=fct_relevel(plant_type,"COGENERATION",after = 1))%>% 
+    group_by(date,month,year,plant_type) %>% summarise(gen=sum(gen,na.rm = T),
                                                       )%>%
     ungroup() %>%
-    group_by(Plant_Type) %>%
+    group_by(plant_type) %>%
     mutate(gen12m=zoo::rollmean(gen,12,fill=NA))%>%
     #filter(date>ymd("2014-12-31"))%>%
-    ggplot(aes(date,gen, col = Plant_Type,lty=Plant_Type)) +
+    ggplot(aes(date,gen, col = plant_type,lty=plant_type)) +
     geom_line(size=1.25)+
     #geom_line(aes(y=gen12m),size=1.25)+
     #geom_point(aes(date,gen*ifelse(month%%2==0,1,NA)),size=2.5)+
-    #geom_dl(aes(label=Plant_Type),method=list("last.bumpup",dl.trans(x=x+0.3),cex = .85))+
+    #geom_dl(aes(label=plant_type),method=list("last.bumpup",dl.trans(x=x+0.3),cex = .85))+
     scale_color_manual("",values= AB_palette)+
     #scale_fill_manual("",values= AB_palette)+
     scale_linetype_manual("",values= c("solid","21","solid","21","solid","21","solid"))+
@@ -429,25 +429,25 @@ df2 <- nrgstream_gen %>% filter(date<floor_date(max(date),"month"))%>% #trim to 
   
   
   rev_fuel <- 
-    df2 %>% #mutate(Plant_Type=factor(Plant_Type,levels=AB_plant_order))%>%
+    df2 %>% #mutate(plant_type=factor(plant_type,levels=AB_plant_order))%>%
     filter(date>=ymd("2015-01-01"))%>%
-    filter(Plant_Type%in%c("WIND","SOLAR"))%>%
+    filter(plant_type%in%c("WIND","SOLAR"))%>%
     ungroup()%>%
     rename(MARKET=mkt_price)%>%
-    select(date,MARKET,Plant_Type,capture)%>%
-    pivot_wider(names_from = Plant_Type,values_from = capture)%>%
-    pivot_longer(-date,names_to = "Plant_Type",values_to = "capture")%>%
-    group_by(Plant_Type)%>%
+    select(date,MARKET,plant_type,capture)%>%
+    pivot_wider(names_from = plant_type,values_from = capture)%>%
+    pivot_longer(-date,names_to = "plant_type",values_to = "capture")%>%
+    group_by(plant_type)%>%
     mutate(rev12m=zoo::rollmean(capture,12,fill=NA))%>%
     
     ggplot() +
-    geom_line(aes(date,capture, col = Plant_Type,lty=Plant_Type),size=1.25)+
-    #geom_line(aes(date,rev12m, col = Plant_Type,lty=Plant_Type),size=1.25)+
+    geom_line(aes(date,capture, col = plant_type,lty=plant_type),size=1.25)+
+    #geom_line(aes(date,rev12m, col = plant_type,lty=plant_type),size=1.25)+
     #geom_line(aes(date,mkt_price,col="MARKET",lty="MARKET"),size=1.25)+
     
     #geom_line(aes(y=gen12m),size=1.25)+
     #geom_point(aes(date,gen*ifelse(month%%2==0,1,NA)),size=2.5)+
-    #geom_dl(aes(label=Plant_Type),method=list("last.bumpup",dl.trans(x=x+0.3),cex = .85))+
+    #geom_dl(aes(label=plant_type),method=list("last.bumpup",dl.trans(x=x+0.3),cex = .85))+
     scale_color_manual("",values= AB_palette)+
     #scale_fill_manual("",values= AB_palette)+
     scale_linetype_manual("",values= c("solid","21","solid","21","solid","21","solid"))+
@@ -488,27 +488,27 @@ df2 <- nrgstream_gen %>% filter(date<floor_date(max(date),"month"))%>% #trim to 
     scale_color_manual("",values= color_palette)
   ggsave(file="images/gen_fuel_color.png", width = 14, height=8,dpi = 300,bg="white")
   
-  gen_trimmed <- df2 %>% mutate(Plant_Type=factor(Plant_Type,levels=AB_plant_order))%>%
+  gen_trimmed <- df2 %>% mutate(plant_type=factor(plant_type,levels=AB_plant_order))%>%
     filter(date>ymd("2005-01-01"))%>%
-    mutate(Plant_Type=fct_collapse(Plant_Type,
+    mutate(plant_type=fct_collapse(plant_type,
                                    "OTHER"=c("OTHER","HYDRO"),
                                    "NATURAL GAS"=c("SCGT","NGCC","NGCONV","COGEN"),
                                    #"COGENERATION"=c("COGEN"),
                                    "NET IMPORTS"="TRADE"
     ),
-    Plant_Type=fct_relevel(Plant_Type,"COGENERATION",after = 1))%>% 
-    group_by(date,month,year,Plant_Type) %>% summarise(gen=sum(gen,na.rm = T),
+    plant_type=fct_relevel(plant_type,"COGENERATION",after = 1))%>% 
+    group_by(date,month,year,plant_type) %>% summarise(gen=sum(gen,na.rm = T),
     )%>%
     ungroup() %>%
-    filter(!Plant_Type %in% c("NET IMPORTS","OTHER"))%>%
-    group_by(Plant_Type) %>%
+    filter(!plant_type %in% c("NET IMPORTS","OTHER"))%>%
+    group_by(plant_type) %>%
     mutate(gen12m=zoo::rollmean(gen,12,fill=NA))%>%
     #filter(date>ymd("2014-12-31"))%>%
-    ggplot(aes(date,gen, col = Plant_Type,lty=Plant_Type)) +
+    ggplot(aes(date,gen, col = plant_type,lty=plant_type)) +
     geom_line(size=1.25)+
     #geom_line(aes(y=gen12m),size=1.25)+
     #geom_point(aes(date,gen*ifelse(month%%2==0,1,NA)),size=2.5)+
-    #geom_dl(aes(label=Plant_Type),method=list("last.bumpup",dl.trans(x=x+0.3),cex = .85))+
+    #geom_dl(aes(label=plant_type),method=list("last.bumpup",dl.trans(x=x+0.3),cex = .85))+
     scale_color_manual("",values= AB_palette)+
     #scale_fill_manual("",values= AB_palette)+
     scale_linetype_manual("",values= c("solid","21","solid","21","solid","21","solid"))+
@@ -550,27 +550,27 @@ df2 <- nrgstream_gen %>% filter(date<floor_date(max(date),"month"))%>% #trim to 
   ggsave(file="images/gen_trimmed_color.png", width = 14, height=8,dpi = 300,bg="white")
   
   
-  area_fuel <- df2 %>% mutate(Plant_Type=factor(Plant_Type,levels=AB_plant_order))%>%
+  area_fuel <- df2 %>% mutate(plant_type=factor(plant_type,levels=AB_plant_order))%>%
     filter(date>ymd("2005-01-01"))%>%
-    mutate(Plant_Type=fct_collapse(Plant_Type,
+    mutate(plant_type=fct_collapse(plant_type,
                                    "RENEWABLES"=c("WIND","HYDRO","SOLAR","OTHER"),
                                    "NATURAL GAS"=c("SCGT","NGCC","NGCONV","COGEN"),
                                    #"COGENERATION"=c("COGEN"),
                                    "NET IMPORTS"="TRADE"
     ),
-    Plant_Type=fct_relevel(Plant_Type,"COGENERATION",after = 1))%>% 
-    group_by(date,month,year,Plant_Type) %>% summarise(gen=sum(gen,na.rm = T),
+    plant_type=fct_relevel(plant_type,"COGENERATION",after = 1))%>% 
+    group_by(date,month,year,plant_type) %>% summarise(gen=sum(gen,na.rm = T),
     )%>%
     ungroup() %>%
-    #filter(!Plant_Type %in% c("NET IMPORTS","OTHER"))%>%
-    group_by(Plant_Type) %>%
+    #filter(!plant_type %in% c("NET IMPORTS","OTHER"))%>%
+    group_by(plant_type) %>%
     mutate(gen12m=zoo::rollmean(gen,12,fill=NA))%>%
     #filter(date>ymd("2014-12-31"))%>%
-    ggplot(aes(date,gen,fill = Plant_Type)) +
+    ggplot(aes(date,gen,fill = plant_type)) +
     geom_area(size=.5,position="stack",color="black")+
     #geom_line(aes(y=gen12m),size=1.25)+
     #geom_point(aes(date,gen*ifelse(month%%2==0,1,NA)),size=2.5)+
-    #geom_dl(aes(label=Plant_Type),method=list("last.bumpup",dl.trans(x=x+0.3),cex = .85))+
+    #geom_dl(aes(label=plant_type),method=list("last.bumpup",dl.trans(x=x+0.3),cex = .85))+
     scale_fill_manual("",values=c("black","grey50",colors_tableau10()[3],colors_tableau10()[6],"grey60","grey60"))+
     #scale_fill_manual("",values= AB_palette)+
     scale_linetype_manual("",values= c("solid","21","solid","21","solid","21","solid"))+
@@ -614,30 +614,30 @@ df2 <- nrgstream_gen %>% filter(date<floor_date(max(date),"month"))%>% #trim to 
   
   
   
-  share_fuel <- df2 %>% mutate(Plant_Type=factor(Plant_Type,levels=AB_plant_order))%>%
+  share_fuel <- df2 %>% mutate(plant_type=factor(plant_type,levels=AB_plant_order))%>%
     filter(date>ymd("2005-01-01"))%>%
-    filter(Plant_Type!="NET IMPORTS")%>%
-    mutate(Plant_Type=fct_collapse(Plant_Type,
+    filter(plant_type!="NET IMPORTS")%>%
+    mutate(plant_type=fct_collapse(plant_type,
                                    "WWS"=c("WIND","HYDRO","SOLAR"),
                                    #"RENEWABLES"=c("WIND","HYDRO","SOLAR","OTHER"),
                                    "NATURAL GAS"=c("SCGT","NGCC","NGCONV","COGEN"),
                                    #"COGENERATION"=c("COGEN"),
                                    "NET IMPORTS"="TRADE"
     ),
-    Plant_Type=fct_relevel(Plant_Type,"COGENERATION",after = 1))%>% 
-    group_by(date,month,year,Plant_Type) %>% summarise(gen=sum(gen,na.rm = T),
+    plant_type=fct_relevel(plant_type,"COGENERATION",after = 1))%>% 
+    group_by(date,month,year,plant_type) %>% summarise(gen=sum(gen,na.rm = T),
     )%>%
     ungroup() %>%
-    #filter(!Plant_Type %in% c("NET IMPORTS","OTHER"))%>%
+    #filter(!plant_type %in% c("NET IMPORTS","OTHER"))%>%
     group_by(date)%>%
     mutate(total_gen=sum(gen),
            share_gen=gen/total_gen)%>%
     #filter(date>ymd("2014-12-31"))%>%
-    ggplot(aes(date,share_gen*100,fill = Plant_Type)) +
+    ggplot(aes(date,share_gen*100,fill = plant_type)) +
     geom_area(size=.5,position="stack",color="black")+
     #geom_line(aes(y=gen12m),size=1.25)+
     #geom_point(aes(date,gen*ifelse(month%%2==0,1,NA)),size=2.5)+
-    #geom_dl(aes(label=Plant_Type),method=list("last.bumpup",dl.trans(x=x+0.3),cex = .85))+
+    #geom_dl(aes(label=plant_type),method=list("last.bumpup",dl.trans(x=x+0.3),cex = .85))+
     scale_fill_manual("",values=c("black","grey50",colors_tableau10()[3],colors_tableau10()[6],"grey60","grey60"))+
     #scale_fill_manual("",values= AB_palette)+
     scale_linetype_manual("",values= c("solid","21","solid","21","solid","21","solid"))+
@@ -679,31 +679,31 @@ df2 <- nrgstream_gen %>% filter(date<floor_date(max(date),"month"))%>% #trim to 
     scale_color_manual("",values= color_palette)
   ggsave(file="images/share_area.png", width = 14, height=8,dpi = 300,bg="white")
   
-  share_ws <- df2 %>% mutate(Plant_Type=factor(Plant_Type,levels=AB_plant_order))%>%
+  share_ws <- df2 %>% mutate(plant_type=factor(plant_type,levels=AB_plant_order))%>%
     filter(date>ymd("2005-01-01"))%>%
-    filter(Plant_Type!="NET IMPORTS")%>%
-    mutate(Plant_Type=fct_collapse(Plant_Type,
+    filter(plant_type!="NET IMPORTS")%>%
+    mutate(plant_type=fct_collapse(plant_type,
                                    #"WS"=c("WIND","SOLAR"),
                                    #"RENEWABLES"=c("WIND","HYDRO","SOLAR","OTHER"),
                                    "NATURAL GAS"=c("SCGT","NGCC","NGCONV","COGEN"),
                                    #"COGENERATION"=c("COGEN"),
                                    "NET IMPORTS"="TRADE"
     ),
-    Plant_Type=fct_relevel(Plant_Type,"COGENERATION",after = 1))%>% 
-    group_by(date,month,year,Plant_Type) %>% summarise(gen=sum(gen,na.rm = T),
+    plant_type=fct_relevel(plant_type,"COGENERATION",after = 1))%>% 
+    group_by(date,month,year,plant_type) %>% summarise(gen=sum(gen,na.rm = T),
     )%>%
     ungroup() %>%
-    #filter(!Plant_Type %in% c("NET IMPORTS","OTHER"))%>%
+    #filter(!plant_type %in% c("NET IMPORTS","OTHER"))%>%
     group_by(date)%>%
     mutate(total_gen=sum(gen),
            share_gen=gen/total_gen)%>%
     
-    filter(Plant_Type%in% c("WIND","SOLAR"))%>%
-    ggplot(aes(date,share_gen*100,fill = Plant_Type)) +
+    filter(plant_type%in% c("WIND","SOLAR"))%>%
+    ggplot(aes(date,share_gen*100,fill = plant_type)) +
     geom_area(size=.5,position="stack",color="black")+
     #geom_line(aes(y=gen12m),size=1.25)+
     #geom_point(aes(date,gen*ifelse(month%%2==0,1,NA)),size=2.5)+
-    #geom_dl(aes(label=Plant_Type),method=list("last.bumpup",dl.trans(x=x+0.3),cex = .85))+
+    #geom_dl(aes(label=plant_type),method=list("last.bumpup",dl.trans(x=x+0.3),cex = .85))+
     scale_fill_manual("",values=c(colors_tableau10()[3],"yellow","grey60","grey60"))+
     #scale_fill_manual("",values= AB_palette)+
     scale_linetype_manual("",values= c("solid","21","solid","21","solid","21","solid"))+
@@ -785,8 +785,8 @@ df2 <- nrgstream_gen %>% filter(date<floor_date(max(date),"month"))%>% #trim to 
   REP_projects<-c("RIV1","CRR2","WHT1","WRW1")
                              
   gen_rep <- nrgstream_gen %>% filter(date<floor_date(max(date),"month"))%>% #trim to last full month of data
-    select(time=Time,vol=gen,ID,AESO_Name,Plant_Type,Plant_Fuel,Capacity) %>%
-    filter(Plant_Type %in% c("WIND"),!is.na(vol))%>%
+    select(time=time,vol=gen,ID,AESO_Name,plant_type,Plant_Fuel,Capacity) %>%
+    filter(plant_type %in% c("WIND"),!is.na(vol))%>%
     #filter(year(time)>=2010) %>% 
     left_join(forecast_data) %>% filter(!is.na(date))%>%
     mutate(hour=hour(time))%>%
@@ -794,57 +794,57 @@ df2 <- nrgstream_gen %>% filter(date<floor_date(max(date),"month"))%>% #trim to 
               "forecasted_actual_ail_difference","start_date"))%>%
     #filter(date>Sys.Date()-years(10))%>%
     mutate(month=month(time),year=year(time))%>%   
-    mutate(Plant_Type=case_when(
+    mutate(plant_type=case_when(
       ID == "RIV1" ~ "REP_WIND",
       ID == "CRR2" ~ "REP_WIND",
       ID == "WHT1" ~ "REP_WIND",
       ID == "WRW1" ~ "REP_WIND",
-      TRUE ~ Plant_Type
+      TRUE ~ plant_type
     ),
-    Plant_Type=case_when(
+    plant_type=case_when(
       ID == "RTL1" ~ "PPA_WIND",
       ID == "WHT2" ~ "PPA_WIND",
-      TRUE ~ Plant_Type
+      TRUE ~ plant_type
     ),           NULL  ) %>%
     #summarize by hour to get total gen and revenue by fuel, 
-    group_by(year,month,date,hour,Plant_Type) %>% 
+    group_by(year,month,date,hour,plant_type) %>% 
     summarise(capacity=sum(Capacity,na.rm = T),
               gen=sum(vol,na.rm = T),
               rev=sum(vol*actual_posted_pool_price)) %>%
     #summarize by year and month to get mean gen and capture price by fuel, 
-    group_by(year,month,Plant_Type) %>% 
+    group_by(year,month,plant_type) %>% 
     summarise(Capacity=mean(capacity,na.rm = T),
               rev = sum(rev),
               avg_gen=mean(gen,na.rm = T),
               tot_gen=sum(gen))%>% 
     ungroup()%>%
     #create zeros where needed
-    complete(year,month,Plant_Type)%>%
+    complete(year,month,plant_type)%>%
     mutate(Capacity=ifelse(is.na(Capacity),0,Capacity),
            tot_gen=ifelse(is.na(tot_gen),0,tot_gen),
            rev=ifelse(is.na(rev),0,rev),
            avg_gen=ifelse(is.na(avg_gen),0,avg_gen))%>%
-    group_by(year,month,Plant_Type,Capacity) %>% 
+    group_by(year,month,plant_type,Capacity) %>% 
     summarise(gen=avg_gen,capture=rev/tot_gen)%>%
     ungroup() %>%
     mutate(date=ymd(paste(year,month,15,sep="-")))%>%
     filter(date<=ymd("2022-07-31"))%>%
     mutate(
-           Plant_Type=factor(Plant_Type),
-           Plant_Type=fct_recode(Plant_Type,"Pre-REP Projects"= "WIND"),
-           Plant_Type=fct_recode(Plant_Type,"REP Projects"= "REP_WIND"),
-           Plant_Type=fct_recode(Plant_Type,"Post-REP Projects"= "PPA_WIND"),
-           Plant_Type=fct_relevel(Plant_Type,"REP Projects",after =  Inf),
-           Plant_Type=fct_relevel(Plant_Type,"Post-REP Projects",after =  Inf)
+           plant_type=factor(plant_type),
+           plant_type=fct_recode(plant_type,"Pre-REP Projects"= "WIND"),
+           plant_type=fct_recode(plant_type,"REP Projects"= "REP_WIND"),
+           plant_type=fct_recode(plant_type,"Post-REP Projects"= "PPA_WIND"),
+           plant_type=fct_relevel(plant_type,"REP Projects",after =  Inf),
+           plant_type=fct_relevel(plant_type,"Post-REP Projects",after =  Inf)
            )
   
   
 
 
 rep_colors=c(colors_tableau10_light()[3],colors_tableau10()[8],colors_tableau10()[3])
-rep_gen<-gen_rep %>% mutate(Plant_Type=fct_rev(Plant_Type))%>%
+rep_gen<-gen_rep %>% mutate(plant_type=fct_rev(plant_type))%>%
     ggplot()+
-    geom_area(aes(date,gen,group=Plant_Type,fill=Plant_Type),position="stack",color="black",size=0.5)+
+    geom_area(aes(date,gen,group=plant_type,fill=plant_type),position="stack",color="black",size=0.5)+
     scale_fill_manual("",values = rep_colors)+
     scale_x_date(expand=c(0,0),breaks="2 year",labels = date_format("%b\n%Y",tz="America/Denver"))+
     expand_limits(x=ymd("2004-01-01"))+
@@ -868,9 +868,9 @@ rep_gen<-gen_rep %>% mutate(Plant_Type=fct_rev(Plant_Type))%>%
   
   
     
-rep_cap<-gen_rep %>% mutate(Plant_Type=fct_rev(Plant_Type))%>%
+rep_cap<-gen_rep %>% mutate(plant_type=fct_rev(plant_type))%>%
   ggplot()+
-  geom_area(aes(date,Capacity,group=Plant_Type,fill=Plant_Type),position="stack",color="black",size=0.5)+
+  geom_area(aes(date,Capacity,group=plant_type,fill=plant_type),position="stack",color="black",size=0.5)+
   scale_fill_manual("",values = rep_colors)+
   scale_x_date(expand=c(0,0),breaks="2 year",labels = date_format("%b\n%Y",tz="America/Denver"))+
   expand_limits(x=ymd("2004-01-01"))+
@@ -923,24 +923,24 @@ rep_cap
     trade_excl<-c("AB - WECC Imp Hr Avg MW", "AB - WECC Exp Hr Avg MW","AB - WECC Imp/Exp Hr Avg MW")
     
     ep_capture<- nrgstream_gen %>%
-      select(time,ID,gen,Plant_Type)%>%
+      select(time,ID,gen,plant_type)%>%
       
       
-      filter(year(time) >= 2004,Plant_Type %in% c("WIND","SOLAR"))%>% 
+      filter(year(time) >= 2004,plant_type %in% c("WIND","SOLAR"))%>% 
       left_join(forecast_data%>%select(time,price=actual_posted_pool_price,ail=actual_ail))%>%
-      group_by(Plant_Type,time,price,ail) %>% 
+      group_by(plant_type,time,price,ail) %>% 
       summarise(total_gen=sum(gen,na.rm = T),total_rev=sum(gen*price,na.rm = T)) %>%
       ungroup()%>%
       mutate(year=as.factor(year(time)))%>%
-      group_by(Plant_Type,year) %>% 
+      group_by(plant_type,year) %>% 
       summarize(avg_rev=sum(total_rev)/sum(total_gen,na.rm=TRUE))%>%
       ungroup()%>%
-      complete(year,Plant_Type,fill = list(avg_rev = NA))%>%
+      complete(year,plant_type,fill = list(avg_rev = NA))%>%
       bind_rows(forecast_data%>%select(time,price=actual_posted_pool_price,ail=actual_ail)%>%
                   filter(year(time)>=2004)%>%
                   mutate(year=as.factor(year(time)))%>%
                   group_by(year)%>%
-                  summarize(Plant_Type="Market average",avg_rev=sum(ail*price,na.rm = T)/sum(ail,na.rm=T)))
+                  summarize(plant_type="Market average",avg_rev=sum(ail*price,na.rm = T)/sum(ail,na.rm=T)))
       #mutate(premium=ifelse(avg_rev!=0,avg_rev-mkt_rev,0))
       
     
@@ -949,15 +949,15 @@ rep_cap
 
     ep_capture_data <- ep_capture %>% 
       mutate(year=fct_recode(year,"2023\n(YTD)"="2023"),
-             Plant_Type=fct_recode(Plant_Type,"Solar"="SOLAR"),
-             Plant_Type=fct_recode(Plant_Type,"Wind"="WIND"),
-             Plant_Type=fct_relevel(Plant_Type,"Solar",after=Inf),
+             plant_type=fct_recode(plant_type,"Solar"="SOLAR"),
+             plant_type=fct_recode(plant_type,"Wind"="WIND"),
+             plant_type=fct_relevel(plant_type,"Solar",after=Inf),
              )
       ep_capture_plot<-ggplot(ep_capture_data)+
-      geom_col(aes(year,avg_rev,fill=Plant_Type),position = position_dodge(width = .9),width = .6,color="black",size=.5,alpha=0.5)+
+      geom_col(aes(year,avg_rev,fill=plant_type),position = position_dodge(width = .9),width = .6,color="black",size=.5,alpha=0.5)+
       #geom_col(aes(Year,p_mean),position = "identity",fill=NA,color="black")+
-      #geom_line(dataaes(Year,capture,fill=Plant_Type),position = position_dodge(width = .9),width = .6,color="black",size=.5)+
-      #geom_text(aes(y=-10,label=Plant_Type),angle=90,size=2)+
+      #geom_line(dataaes(Year,capture,fill=plant_type),position = position_dodge(width = .9),width = .6,color="black",size=.5)+
+      #geom_text(aes(y=-10,label=plant_type),angle=90,size=2)+
       #  scale_color_viridis("Plant Type",discrete=TRUE)+
       #  scale_fill_viridis("Plant Type",discrete=TRUE)+
       #scale_color_manual("",values=colors_tableau10())+
@@ -975,7 +975,7 @@ rep_cap
       )
       ep_capture_plot+
       geom_col(data=ep_capture_data %>% filter (year!="2023\n(YTD)"),
-               aes(year,avg_rev,fill=Plant_Type),position = position_dodge(width = .9),width = .6,color="black",size=.5,alpha=1)
+               aes(year,avg_rev,fill=plant_type),position = position_dodge(width = .9),width = .6,color="black",size=.5,alpha=1)
       
     ggsave("images/price_capture_renew.png",width=14,height=7,dpi=300,bg="white")
 # 0.97801* 1.00000 * 1.00733 *  1.05572 
@@ -994,7 +994,7 @@ rep_cap
     REP_projects<-c("RIV1","CRR2","WHT1","WRW1","CYP1")
     
     rep_cf<- nrgstream_gen %>%
-      select(time=Time,ID,gen,Capacity)%>%
+      select(time=time,ID,gen,Capacity)%>%
       filter(year(time) >= 2019,ID %in% REP_projects)%>%
       filter(!is.na(gen))%>%
       group_by(ID)%>%
@@ -1002,7 +1002,7 @@ rep_cap
     
     
     plant_capture<- nrgstream_gen %>%
-      select(time=Time,ID,gen)%>%
+      select(time=time,ID,gen)%>%
       filter(year(time) >= 2019,ID %in% REP_projects)%>% 
       #filter(time<=ymd("2022-04-30"))%>% #check for initial submission values
       #filter(time<=ymd("2022-03-31"))%>% #check vs annual report
@@ -1127,7 +1127,7 @@ rep_cap
         ID=fct_relevel(ID,"Market"),
         ID=fct_recode(ID,"Market Generation-Weighted Average Price"="Market"),
         ID=fct_recode(ID,"Whitla 1 (REP1)"="WHT1","Castle Rock Ridge 2 (REP1)"="CRR2","Riverview Wind (REP1)"="RIV1","Windrise Wind (REP3)"="WRW1"),
-        #Plant_Type=fct_reorder(Plant_Type,startup,min),
+        #plant_type=fct_reorder(plant_type,startup,min),
       )
       
     
@@ -1228,7 +1228,7 @@ rep_cap
 
     rep_plant_cpi_graph_data<-plant_capture %>%
       filter(as.numeric(as.character(year))>=2019)%>%
-      #group_by(Plant_Type)%>%
+      #group_by(plant_type)%>%
       #mutate(startup=as.numeric(as.character(Year[min(which(!is.na(capture)))]))
       #)      %>%
       ungroup()  %>%
@@ -1238,7 +1238,7 @@ rep_cap
              ID=fct_relevel(ID,"Market average"),
              #ID=fct_recode(ID,"Market Generation-Weighted Average"="MARKET"),
              ID=fct_recode(ID,"Whitla 1 (REP1)"="WHT1","Castle Rock Ridge 2 (REP1)"="CRR2","Riverview Wind (REP1)"="RIV1","Windrise Wind (REP3)"="WRW1"),
-             #Plant_Type=fct_reorder(Plant_Type,startup,min),
+             #plant_type=fct_reorder(plant_type,startup,min),
       )
     
     rep_plant_cpi_graph<-ggplot(rep_plant_cpi_graph_data)+
@@ -1296,11 +1296,11 @@ rep_cap
     
 
     my_palette<-c("black",grey.colors(2,start=0.4,end = .7))
-    df2 %>% filter(Plant_Type %in% c("MARKET","WIND","SOLAR"))%>%
+    df2 %>% filter(plant_type %in% c("MARKET","WIND","SOLAR"))%>%
       mutate(Year=fct_recode(Year,"2022*"="2022"),
-             Plant_Type=fct_recode(Plant_Type,"Market"="MARKET","Wind"="WIND","Solar"="SOLAR"
+             plant_type=fct_recode(plant_type,"Market"="MARKET","Wind"="WIND","Solar"="SOLAR"
                                     ))%>%
-        ggplot(aes(Year,capture,group=Plant_Type,color=Plant_Type))+
+        ggplot(aes(Year,capture,group=plant_type,color=plant_type))+
       geom_errorbar(aes(ymin = q05, ymax = q95), size=1.25,width = .5,position=position_dodge(width=0.7))+
       geom_point(aes(shape="Mean"),size=3.25,position=position_dodge(width=0.7))+
       #geom_errorbar(aes(ymin = q50, ymax = q50), width = .75,position=position_dodge(width=0.9),size=1)+
@@ -1322,16 +1322,16 @@ rep_cap
     
 
    #wind_plants
-    df5 <- nrgstream_gen %>%rename(time=Time)%>% 
-      filter(year(time) >= 2010,Plant_Type=="WIND",year(time)<=2022)%>%
+    df5 <- nrgstream_gen %>%rename(time=time)%>% 
+      filter(year(time) >= 2010,plant_type=="WIND",year(time)<=2022)%>%
       filter(gen!=0)%>%
       group_by(ID,time) %>% 
       summarise(#in_service=min(time),
                 total_gen=sum(gen,na.rm = T),total_rev=sum(Revenue,na.rm = T),p_mean=mean(Price)) %>%
       ungroup()%>%
       mutate(Year = as.factor(year(time)))%>%
-      rename(Plant_Type=ID)%>%
-      group_by(Plant_Type,Year) %>%
+      rename(plant_type=ID)%>%
+      group_by(plant_type,Year) %>%
       mutate(avg_rev=total_rev/total_gen)%>%
       summarise(gen=sum(total_gen),
                 capture = sum(total_rev)/sum(total_gen),
@@ -1344,7 +1344,7 @@ rep_cap
     df5<-df5 %>% bind_rows(df3) #add the market prices
     
     #create all combos
-    combos<- df5 %>% ungroup()%>%expand(Plant_Type,Year)
+    combos<- df5 %>% ungroup()%>%expand(plant_type,Year)
     
     plant_capture<-combos %>% left_join(df5)
       #mutate(capture=replace_na(capture,0))
@@ -1355,20 +1355,20 @@ rep_cap
  #27 plants plus market
     
      plant_cap_graph<-plant_capture %>% 
-       filter(Plant_Type!="TAY2")%>%
-      group_by(Plant_Type)%>%
+       filter(plant_type!="TAY2")%>%
+      group_by(plant_type)%>%
        mutate(startup=as.numeric(as.character(Year[min(which(!is.na(capture)))]))
        )%>%
        ungroup()  %>%
       mutate(Year=fct_recode(Year,"2022\n(YTD)"="2022"),
-             Plant_Type=fct_recode(Plant_Type,"Market"="MARKET"),
-             Plant_Type=fct_recode(Plant_Type,"RIV1*"="RIV1"),
-             Plant_Type=fct_recode(Plant_Type,"WRW1*"="WRW1"),
-             Plant_Type=fct_recode(Plant_Type,"WHT1*"="WHT1"),
-             Plant_Type=fct_recode(Plant_Type,"CRR2*"="CRR2"),
-             Plant_Type=fct_reorder(Plant_Type,startup,min),
-             Plant_Type=fct_relevel(Plant_Type,"Market"))%>%
-      ggplot(aes(Year,capture,group=Plant_Type,fill=Plant_Type))+
+             plant_type=fct_recode(plant_type,"Market"="MARKET"),
+             plant_type=fct_recode(plant_type,"RIV1*"="RIV1"),
+             plant_type=fct_recode(plant_type,"WRW1*"="WRW1"),
+             plant_type=fct_recode(plant_type,"WHT1*"="WHT1"),
+             plant_type=fct_recode(plant_type,"CRR2*"="CRR2"),
+             plant_type=fct_reorder(plant_type,startup,min),
+             plant_type=fct_relevel(plant_type,"Market"))%>%
+      ggplot(aes(Year,capture,group=plant_type,fill=plant_type))+
       #geom_errorbar(aes(ymin = q05, ymax = q95), size=.75,width = .25,position=position_dodge(width=0.8))+
       #geom_point(aes(shape="Mean"),size=2.25,position=position_dodge(width=0.9))+
       geom_col(aes(shape="Mean"),size=.25,position=position_dodge(width=0.9),color="black")+
@@ -1410,31 +1410,31 @@ rep_cap
      
   #just the REP plants
     rep_plant_cap_graph<-plant_capture %>% 
-      filter(Plant_Type%in% c("MARKET",REP_projects),as.numeric(as.character(Year))>=2019)%>%
-      group_by(Plant_Type)%>%
+      filter(plant_type%in% c("MARKET",REP_projects),as.numeric(as.character(Year))>=2019)%>%
+      group_by(plant_type)%>%
       mutate(startup=as.numeric(as.character(Year[min(which(!is.na(capture)))]))
       )%>%
       ungroup()  %>%
       #add environmental attributes
       mutate(env_attr=case_when(
-        (Plant_Type %in% REP_projects)& Year==2019 ~30*.37,
-        (Plant_Type %in% REP_projects)& Year==2020 ~30*.37,
-        (Plant_Type %in% REP_projects)& Year==2021 ~40*.37,
-        (Plant_Type %in% REP_projects)& Year==2022 ~50*.37,
+        (plant_type %in% REP_projects)& Year==2019 ~30*.37,
+        (plant_type %in% REP_projects)& Year==2020 ~30*.37,
+        (plant_type %in% REP_projects)& Year==2021 ~40*.37,
+        (plant_type %in% REP_projects)& Year==2022 ~50*.37,
         TRUE~0
       ))%>%
       #reset factor levels
       mutate(Year=fct_recode(Year,"2022 (YTD)"="2022"),
-             Plant_Type=fct_relevel(Plant_Type,"WHT1","CRR2","RIV1","WRW1"),
-             Plant_Type=fct_relevel(Plant_Type,"MARKET"),
-             Plant_Type=fct_recode(Plant_Type,"Market Generation-Weighted Average"="MARKET"),
-             Plant_Type=fct_recode(Plant_Type,"Whitla 1 (WHT1)"="WHT1","Castle Rock Ridge 2 (CRR2)"="CRR2","Riverview Wind (RIV1)"="RIV1","Windrise Wind (WRW1)"="WRW1"),
-             #Plant_Type=fct_reorder(Plant_Type,startup,min),
+             plant_type=fct_relevel(plant_type,"WHT1","CRR2","RIV1","WRW1"),
+             plant_type=fct_relevel(plant_type,"MARKET"),
+             plant_type=fct_recode(plant_type,"Market Generation-Weighted Average"="MARKET"),
+             plant_type=fct_recode(plant_type,"Whitla 1 (WHT1)"="WHT1","Castle Rock Ridge 2 (CRR2)"="CRR2","Riverview Wind (RIV1)"="RIV1","Windrise Wind (WRW1)"="WRW1"),
+             #plant_type=fct_reorder(plant_type,startup,min),
              )%>%
-      ggplot(aes(Year,capture,group=Plant_Type))+
+      ggplot(aes(Year,capture,group=plant_type))+
       #geom_errorbar(aes(ymin = q05, ymax = q95), size=.75,width = .25,position=position_dodge(width=0.8))+
       #geom_point(aes(shape="Mean"),size=2.25,position=position_dodge(width=0.9))+
-      geom_col(aes(fill=Plant_Type),size=.25,position=position_dodge(width=0.9),color="black")+
+      geom_col(aes(fill=plant_type),size=.25,position=position_dodge(width=0.9),color="black")+
       geom_col(aes(y=capture+env_attr,color="Environmental Attribute Value (TIER output-based allocation of emissions credits)"),fill=NA,alpha=0.5,size=.5,position=position_dodge(width=0.9))+
       #geom_errorbar(aes(ymin = q50, ymax = q50), width = .75,position=position_dodge(width=0.9),size=1)+
       #geom_point(aes(Year,q50,shape="Median"),size=3.25,position=position_dodge(width=0.7))+
@@ -1516,30 +1516,30 @@ rep_cap
     }
     
     rep_plant_cpi_graph<-plant_capture %>%
-      filter(Plant_Type%in% c("MARKET",REP_projects),as.numeric(as.character(Year))>=2019)%>%
-      group_by(Plant_Type)%>%
+      filter(plant_type%in% c("MARKET",REP_projects),as.numeric(as.character(Year))>=2019)%>%
+      group_by(plant_type)%>%
       mutate(startup=as.numeric(as.character(Year[min(which(!is.na(capture)))]))
       )%>%
       ungroup()  %>%
       #add environmental attributes
       mutate(env_attr=case_when(
-        (Plant_Type %in% REP_projects)& Year==2019 ~30*.37,
-        (Plant_Type %in% REP_projects)& Year==2020 ~30*.37,
-        (Plant_Type %in% REP_projects)& Year==2021 ~40*.37,
-        (Plant_Type %in% REP_projects)& Year==2022 ~50*.37,
+        (plant_type %in% REP_projects)& Year==2019 ~30*.37,
+        (plant_type %in% REP_projects)& Year==2020 ~30*.37,
+        (plant_type %in% REP_projects)& Year==2021 ~40*.37,
+        (plant_type %in% REP_projects)& Year==2022 ~50*.37,
         TRUE~0
       ))%>%
       #reset factor levels
       mutate(Year=fct_recode(Year,"2022 (YTD)"="2022"),
-             Plant_Type=fct_relevel(Plant_Type,"WHT1","CRR2","RIV1","WRW1"),
-             Plant_Type=fct_relevel(Plant_Type,"MARKET"),
-             Plant_Type=fct_recode(Plant_Type,"Market Generation-Weighted Average"="MARKET"),
-             Plant_Type=fct_recode(Plant_Type,"Whitla 1 (WHT1)"="WHT1","Castle Rock Ridge 2 (CRR2)"="CRR2","Riverview Wind (RIV1)"="RIV1","Windrise Wind (WRW1)"="WRW1"),
-             #Plant_Type=fct_reorder(Plant_Type,startup,min),
+             plant_type=fct_relevel(plant_type,"WHT1","CRR2","RIV1","WRW1"),
+             plant_type=fct_relevel(plant_type,"MARKET"),
+             plant_type=fct_recode(plant_type,"Market Generation-Weighted Average"="MARKET"),
+             plant_type=fct_recode(plant_type,"Whitla 1 (WHT1)"="WHT1","Castle Rock Ridge 2 (CRR2)"="CRR2","Riverview Wind (RIV1)"="RIV1","Windrise Wind (WRW1)"="WRW1"),
+             #plant_type=fct_reorder(plant_type,startup,min),
       )%>%
       ggplot()+
-      geom_col(aes(Plant_Type,capture,fill=Plant_Type),size=.25,position=position_dodge(width=0.9),color="black")+
-      geom_col(aes(Plant_Type,y=capture+env_attr,color="Deemed environmental attribute value (TIER output-based allocation of emissions credits (0.37t/MWh) at annual carbon prices)"),fill=NA,alpha=0.5,size=.5,position=position_dodge(width=0.9))+
+      geom_col(aes(plant_type,capture,fill=plant_type),size=.25,position=position_dodge(width=0.9),color="black")+
+      geom_col(aes(plant_type,y=capture+env_attr,color="Deemed environmental attribute value (TIER output-based allocation of emissions credits (0.37t/MWh) at annual carbon prices)"),fill=NA,alpha=0.5,size=.5,position=position_dodge(width=0.9))+
       geom_hline(aes(yintercept=37*(.8+.2*cpi(Year)),lty="REP1 RESA Strike Price"),color="black",size=1.5)+
       geom_hline(aes(yintercept=38.69*(.8+.2*cpi(Year)),lty="REP2 RESA Strike Price"),color="black",size=1.5)+
       geom_hline(aes(yintercept=40.14*(.8+.2*cpi(Year)),lty="REP3 RESA Strike Price"),color="black",size=1.5)+
@@ -1569,20 +1569,20 @@ rep_cap
     
     
     rep_plant_cpi_totals<-plant_capture %>%
-      filter(Plant_Type%in% c("MARKET",REP_projects),as.numeric(as.character(Year))>=2019)%>%
-      group_by(Plant_Type)%>%
+      filter(plant_type%in% c("MARKET",REP_projects),as.numeric(as.character(Year))>=2019)%>%
+      group_by(plant_type)%>%
       mutate(startup=as.numeric(as.character(Year[min(which(!is.na(capture)))]))
       )%>%
       ungroup()  %>%
       #add environmental attributes
       mutate(env_attr=case_when(
-        (Plant_Type %in% REP_projects)& Year==2019 ~30*.37,
-        (Plant_Type %in% REP_projects)& Year==2020 ~30*.37,
-        (Plant_Type %in% REP_projects)& Year==2021 ~40*.37,
-        (Plant_Type %in% REP_projects)& Year==2022 ~50*.37,
+        (plant_type %in% REP_projects)& Year==2019 ~30*.37,
+        (plant_type %in% REP_projects)& Year==2020 ~30*.37,
+        (plant_type %in% REP_projects)& Year==2021 ~40*.37,
+        (plant_type %in% REP_projects)& Year==2022 ~50*.37,
         TRUE~0
       ))%>%
-      mutate(REP=rep(Plant_Type))%>%
+      mutate(REP=rep(plant_type))%>%
       mutate(strike=case_when(
         (REP == "REP1") ~41.36*cpi(as.character(Year)),
         (REP == "REP2") ~38.69*cpi(as.character(Year)),
@@ -1591,14 +1591,14 @@ rep_cap
       ))%>%
       #reset factor levels
       mutate(Year=fct_recode(Year,"2022 (YTD)"="2022"),
-             Plant_Type=fct_relevel(Plant_Type,"WHT1","CRR2","RIV1","WRW1"),
-             Plant_Type=fct_relevel(Plant_Type,"MARKET"),
-             Plant_Type=fct_recode(Plant_Type,"Market Generation-Weighted Average"="MARKET"),
-             Plant_Type=fct_recode(Plant_Type,"Whitla 1 (WHT1)"="WHT1","Castle Rock Ridge 2 (CRR2)"="CRR2","Riverview Wind (RIV1)"="RIV1","Windrise Wind (WRW1)"="WRW1"),
-             #Plant_Type=fct_reorder(Plant_Type,startup,min),
+             plant_type=fct_relevel(plant_type,"WHT1","CRR2","RIV1","WRW1"),
+             plant_type=fct_relevel(plant_type,"MARKET"),
+             plant_type=fct_recode(plant_type,"Market Generation-Weighted Average"="MARKET"),
+             plant_type=fct_recode(plant_type,"Whitla 1 (WHT1)"="WHT1","Castle Rock Ridge 2 (CRR2)"="CRR2","Riverview Wind (RIV1)"="RIV1","Windrise Wind (WRW1)"="WRW1"),
+             #plant_type=fct_reorder(plant_type,startup,min),
       )%>%
       filter(REP != "Not in REP",!is.na(gen))%>%
-      select(Plant_Type,Year,gen,capture,startup,env_attr,strike)%>%
+      select(plant_type,Year,gen,capture,startup,env_attr,strike)%>%
       mutate(AESO_net=(capture-strike)*gen/10^6,
              govt_net=env_attr*gen/10^6,
              total_net=AESO_net+govt_net)
@@ -1621,7 +1621,7 @@ rep_cap
     
     
     #trade_excl<-c("AB - WECC Imp Hr Avg MW", "AB - WECC Exp Hr Avg MW","AB - WECC Imp/Exp Hr Avg MW")
-    rep_plant_capture <- nrgstream_gen %>%rename(time=Time)%>% 
+    rep_plant_capture <- nrgstream_gen %>%rename(time=time)%>% 
       filter(year(time) >= 2010,! NRG_Stream %in% trade_excl)%>% 
       filter(ID %in% REP_projects)%>%
       group_by(ID,time) %>% 
@@ -1630,21 +1630,21 @@ rep_cap
       filter(total_rev>0)
   
     
-    market_capture=nrgstream_gen %>%rename(time=Time)%>%
+    market_capture=nrgstream_gen %>%rename(time=time)%>%
       filter(year(time) >= 2010,
-            Plant_Type %in% c("COAL","COGEN","HYDRO","NGCC", "OTHER", "SCGT","SOLAR","WIND")
+            plant_type %in% c("COAL","COGEN","HYDRO","NGCC", "OTHER", "SCGT","SOLAR","WIND")
       )%>% 
       select(time,Price,ID,gen)%>%
       mutate(ID="AESO",Revenue=Price*gen)%>%
       group_by(ID,time)%>%
       summarise(total_gen=sum(gen,na.rm = T),total_rev=sum(Revenue,na.rm = T),avg_rev=sum(total_rev/total_gen,na.rm = T),p_mean=mean(Price)) 
   
-    renew_capture=nrgstream_gen %>%rename(time=Time)%>%
+    renew_capture=nrgstream_gen %>%rename(time=time)%>%
       filter(year(time) >= 2010,
-             Plant_Type %in% c("SOLAR","WIND")
+             plant_type %in% c("SOLAR","WIND")
       )%>% 
-      select(time,Price,ID,gen,Plant_Type)%>%
-      mutate(ID=Plant_Type,Revenue=Price*gen)%>%
+      select(time,Price,ID,gen,plant_type)%>%
+      mutate(ID=plant_type,Revenue=Price*gen)%>%
       mutate(Revenue=Price*gen)%>%
       group_by(ID,time)%>%
       summarise(total_gen=sum(gen,na.rm = T),total_rev=sum(Revenue,na.rm = T),avg_rev=sum(total_rev/total_gen,na.rm = T),p_mean=mean(Price)) %>%
@@ -1757,8 +1757,8 @@ gt1<-paper_capture%>% select(ID,year,avg_rev)%>%
   
   load("data/renew_vols.RData")
   
-  renew_gen<-renew_vols%>% group_by(date,he,Plant_Type)%>%
-    summarize(gen=sum(dispatched_mw))%>%pivot_wider(names_from = Plant_Type, values_from = gen)%>%
+  renew_gen<-renew_vols%>% group_by(date,he,plant_type)%>%
+    summarize(gen=sum(dispatched_mw))%>%pivot_wider(names_from = plant_type, values_from = gen)%>%
     left_join(mkt_data %>% select(date,he,time))%>%
     select(time,WIND,SOLAR)
   
@@ -1896,7 +1896,7 @@ mkt_snapshot<-get_forecast_report(day,day+months(1))%>%
          pay_to_aeso=strike*actual_posted_pool_price,
          pay_to_gen=(1-strike)*actual_posted_pool_price,
          )%>%
-  left_join(whitla_gen %>% select(time=Time,whitla_gen=gen))%>%
+  left_join(whitla_gen %>% select(time=time,whitla_gen=gen))%>%
   mutate(power_value=whitla_gen*actual_posted_pool_price,
          whitla_flow=(pay_to_gen-pay_to_aeso)*whitla_gen,
          whitla_rev=40*whitla_gen,
@@ -2011,18 +2011,18 @@ lto_renew<-lto_gen %>% filter(calendar_year==2023,fuel_type %in% renew) %>%
 # 
 # 
 # gen_rep_graph<-gen_rep%>% filter(year>=2010)%>%
-#   filter(Plant_Type%in% c("WIND","REP_WIND","PPA_WIND"))%>%
-#   mutate(Plant_Type=fct_recode(Plant_Type,"Wind excl. REP Projects"= "WIND"))%>%
-#   mutate(Plant_Type=fct_recode(Plant_Type,"Total wind incl. REP Projects"= "REP_WIND"))%>%
-#   mutate(Plant_Type=fct_relevel(Plant_Type,"Wind excl. REP Projects",after =  Inf))%>%
-#   group_by(Plant_Type) %>%
+#   filter(plant_type%in% c("WIND","REP_WIND","PPA_WIND"))%>%
+#   mutate(plant_type=fct_recode(plant_type,"Wind excl. REP Projects"= "WIND"))%>%
+#   mutate(plant_type=fct_recode(plant_type,"Total wind incl. REP Projects"= "REP_WIND"))%>%
+#   mutate(plant_type=fct_relevel(plant_type,"Wind excl. REP Projects",after =  Inf))%>%
+#   group_by(plant_type) %>%
 #   mutate(gen6m=zoo::rollmean(gen,6,fill=NA))%>%
-#   ggplot(aes(date,gen, col = Plant_Type,lty=Plant_Type,fill=Plant_Type,group=Plant_Type)) +
+#   ggplot(aes(date,gen, col = plant_type,lty=plant_type,fill=plant_type,group=plant_type)) +
 #   #geom_line(size=1.25,position = "stack")+
 #   #geom_line(size=1.25,position = "identity")+
 #   geom_line(aes(y=gen6m),size=1.25,position = "stack")+
 #   #geom_point(aes(date,gen*ifelse(month%%2==0,1,NA)),size=2.5)+
-#   #geom_dl(aes(label=Plant_Type),method=list("last.bumpup",dl.trans(x=x+0.3),cex = .85))+
+#   #geom_dl(aes(label=plant_type),method=list("last.bumpup",dl.trans(x=x+0.3),cex = .85))+
 #   #scale_color_manual("",values= AB_palette)+
 #   
 #   #scale_fill_manual("",values= AB_palette)+

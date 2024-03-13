@@ -287,16 +287,18 @@ load(file="nrgstream/nrgstream_gen.RData")
 get_plant_info()
 #use this to update
 
-nrgstream_gen<-filter(nrgstream_gen,year(Time)<2023)
+nrgstream_gen<-filter(nrgstream_gen,year(Time)<2024)
 ##nrgstream_gen<-data_update(nrgstream_gen,2021)
 #nrgstream_gen<-data_update(nrgstream_gen,2022)
-nrgstream_gen<-data_update(nrgstream_gen,2023)
+#nrgstream_gen<-data_update(nrgstream_gen,2023)
 nrgstream_gen<-data_update(nrgstream_gen,2024)
 
 nrgstream_gen<-ng_conv(nrgstream_gen)
 
 
-#test_data<-nrgstream_gen %>% filter(is.na(Plant_Type))
+#nrgstream_gen<-nrgstream_gen%>%clean_names()
+
+#test_data<-nrgstream_gen %>% filter(is.na(plant_type))
 
 
 save(nrgstream_gen, file= "nrgstream/nrgstream_gen.RData")
