@@ -1,5 +1,5 @@
 #get weather info for power papers
-
+source("power_paper_base.R")
 hourly_data_pull<-function(stn_id,min_yr,max_yr,stn_string="NA"){
 #hourly data
   #year_index<-2022
@@ -21,14 +21,16 @@ for(year_index in seq(min_yr,max_yr)) {
   for(month_index in seq(1,12)) {
   
   url = paste("http://climate.weather.gc.ca/climate_data/bulk_data_e.html?format=csv&stationID=",stn_id,"&Year=",year_index,"&Month=",sprintf("%02d",month_index),"&timeframe=1",sep="")
-  test<-read.csv(url, skip = 0)%>% clean_names() %>% select(long=longitude_x,lat=latitude_y,
-                                          stn="station_name",climate_id,
-                                          date_time="date_time_lst",
-                                          year,                
-                                          month,
-                                          day,
-                                          time="time_lst",
-                                          temp="temp_c")
+  test<-read.csv(url, skip = 0)%>% clean_names() %>% 
+                                          # select(long=longitude_x,lat=latitude_y,
+                                          # stn="station_name",climate_id,
+                                          # date_time="date_time_lst",
+                                          # year,                
+                                          # month,
+                                          # day,
+                                          # time="time_lst",
+                                          # temp="temp_c")%>%
+    I()
   data_store[[paste(month.abb[month_index],"-",year_index,sep = "")]]<-test
   #index_id<-index_id+1
 }}
@@ -40,6 +42,11 @@ temp_data$stn_id<-stn_id
 temp_data$stn<-stn_string
 temp_data
 }
+
+blatch<-hourly_data_pull(27214,min_yr = 2019,max_yr = 2023)
+save(blatch,file="blatch.Rdata")
+#blatch<-hourly_data_pull(27214,min_yr = 2024,max_yr = 2024)
+
 
 all_weather_data<-function(min_yr=2009,max_yr=2021){
   #min_yr<-2009
@@ -167,6 +174,8 @@ update_weather_data<-function(data_sent){
 }
 
 #save(data_sent,file="ab_power_temps.RData")  
+
+
 
 
 
