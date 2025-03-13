@@ -5,7 +5,8 @@ library(stringr)
 
 lto_data <- read_excel("data/aesoLTO.xlsx")
 colnames(lto_data)[1] <- "date"
-df1<-lto_data %>% pivot_longer(-date, names_to = "forecast",values_to = "peak") %>% na.omit()%>% 
+df1<-lto_data %>% pivot_longer(-c(date, Actual),names_to = "forecast",values_to = "peak") %>% 
+  filter(!is.na(peak))%>%
   group_by(forecast)%>%mutate(split=forecast)%>%
   separate(split,into = c("year","case"),extra="merge")%>%
   #filter(
@@ -16,7 +17,7 @@ df1<-lto_data %>% pivot_longer(-date, names_to = "forecast",values_to = "peak") 
   #forecast != "2014.EnviroShift",forecast != "2014.EnergyTrans",
   #forecast != "2016L",
 #) %>%
-  mutate(forecast=as_factor(forecast),forecast=fct_relevel(forecast,"Actual",after = Inf),
+  mutate(forecast=as_factor(forecast),
          forecast=fct_relevel(forecast,"2021 Reference Case",after = 18))
 
 #set_png(file="images/AESO_LTO.png", width = 1400, height = 750)
@@ -48,6 +49,35 @@ ggplot(df1) +
              caption="Data via AESO, graph by Andrew Leach.")
 ggsave("aeso_lto.png",width=14,height=6,dpi=300,bg="white")
 ggsave("aeso_lto_small.png",width=16,height=9,dpi=150)
+
+ggplot(df1) +
+  geom_line(aes(date,peak,group = forecast,color="Previous AESO Forecasts",linetype="Previous AESO Forecasts"),size=.7) +
+  geom_line(aes(date,Actual,colour="Historic Peak Loads",linetype="Historic Peak Loads"),size=2) +
+  scale_colour_manual(NULL,values=c("Black","grey60","Black"))+
+  #                    guide=guide_legend(override.aes = list(lty = c("solid", "solid","21"),size=c(2,.7,2) ) ))+
+  scale_linetype_manual(NULL,values=c("solid","solid","21")) +
+  theme_minimal()+theme(
+    legend.key.width=unit(2,"line"),
+    legend.position = "bottom",
+    legend.margin=margin(c(0,0,0,0),unit="cm"),
+    legend.text = element_text(colour="black", size = 14, face = "bold"),
+    plot.caption = element_text(size = 12, face = "italic",hjust = 0),
+    plot.title = element_text(face = "bold",size=18),
+    plot.subtitle = element_text(size = 16, face = "italic"),
+    panel.grid.minor = element_blank(),
+    text = element_text(size = 16,face = "bold"),
+    axis.text = element_text(size = 16,face = "bold", colour="black")
+  )+    labs(y="Alberta Peak Internal Load (MW)",x="",
+             title="The AESO is uniquely positioned and qualified to assess the future evolution of Alberta's electricity grid",
+             caption="Data via AESO, graph by Andrew Leach.")
+ggsave("aeso_lto_new.png",width=14,height=6,dpi=300,bg="white")
+
+
+
+
+
+
+
 
 lto_capacity <- read.xlsx(xlsxFile = "Reports/AESO/2017-LTO-data-file.xlsx", sheet = "Generation Capacity by Type", startRow = 1,skipEmptyRows = TRUE,detectDates = TRUE)
 scenarios<-lto_capacity$`Capacity.by.Scenario.and.Fuel.Type.(MW)`[grep("Year",lto_capacity$`Capacity.by.Scenario.and.Fuel.Type.(MW)`)-1]
