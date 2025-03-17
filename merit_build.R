@@ -9,7 +9,7 @@ start_time<-Sys.time()
 
 options(scipen=999)
 
-update<-0 #add new data
+update<-1 #add new data
 save<-1 #save files at the end
 synth<-0 #synthetic plants?
   synth_type<-1  #5 is a target facility, focus_id,4 is facility,3 is offer control by type, 2 is by offer_control,1 is by plant_fuel, 0 is full merit as synthetic plant
@@ -66,7 +66,8 @@ load("data/forecast_data.RData")
   
   #store them
   exports<-merit_aug %>% group_by(date,he)%>%
-    summarize(hourly_exports=sum(dispatched_mw*(import_export=="E")))
+    summarize(hourly_exports=sum(dispatched_mw*(import_export=="E")))%>%
+    ungroup()
   #drop them
     merit_aug<-merit_aug %>% filter(import_export!="E")
     
@@ -81,7 +82,7 @@ load("data/forecast_data.RData")
   if(update==1)
    {
    load(file="data/metered_vols_data.Rdata" ) 
-    #all_vols<-all_vols %>% filter(year<2022)
+    #all_vols<-all_vols %>% filter(year<2024)
     all_vols<-update_vols(all_vols)
     save(all_vols,file="data/metered_vols_data.Rdata" ) 
     #isolate renewable (non-hydro and biomass) volumes from metered volumes - the ones that default bid to zero
@@ -168,7 +169,7 @@ load("data/forecast_data.RData")
   
 #merit_aug<-merit_store  
 #merit_aug<-merit_small
-
+#test<-plant_data()
   
 merit_aug<-merit_aug %>% left_join(plant_data(),by=c("asset_id"="ID"))%>%
   mutate(year=year(date))%>%
@@ -183,6 +184,8 @@ merit_aug<-merit_aug %>% left_join(plant_data(),by=c("asset_id"="ID"))%>%
                            year(date)==2021 ~ "TIER_40",
                            year(date)==2022 ~ "TIER_50",
                            year(date)==2023 ~ "TIER_65",
+                           year(date)==2024 ~ "TIER_80",
+                           year(date)==2025 ~ "TIER_95",
                            TRUE ~ "TIER_50")
     )%>%
   select(-year)# take out the year value since it will create duplication with older code snippets later for full data set
@@ -202,8 +205,10 @@ merit_aug<-merit_aug %>% left_join(plant_data(),by=c("asset_id"="ID"))%>%
 #Repair coal-to-gas-conversions with script in power_paper_base
 merit_aug<-merit_aug %>% 
     mutate(Plant_Type=case_when( 
-      (asset_id=="HRM") & (effective_date_time>=ymd("2020-05-08")) ~ "SCGT",  #Milner change to gas effective 
-      #SH1 Sheerness #1 and SH2 Sheerness #2 -July 30, 2021.https://www.aeso.ca/market/market-upefffective_data_times/2021/sh1-sheerness-1-and-sh2-sheerness-2-change-in-fuel-type-notice/
+      (asset_id=="GN3") & (effective_date_time>=ymd("2024-06-18")) ~ "NGCONV",  #GN3 change to gas effective
+      (asset_id=="HRM") & (effective_date_time>=ymd("2020-05-08")) ~ "SCGT",  #Milner change to gas effective
+      (asset_id=="HRM") & (effective_date_time>=ymd("2023-09-21")) ~ "CCGT",  #Milner change to gas effective 
+      #SH1 Sheerness #1 and SH2 Sheerness #2 -July 30, 2021.https://www.aeso.ca/market/market-upeffective_date_times/2021/sh1-sheerness-1-and-sh2-sheerness-2-change-in-fuel-type-notice/
       (asset_id %in% c("SH1","SH2")) & (effective_date_time>=ymd("2021-07-30")) ~ "NGCONV",
       #KH3 January 11, 2022
       (asset_id =="KH1") & (effective_date_time>=ymd("2022-01-11")) ~ "NGCONV",
@@ -217,6 +222,9 @@ merit_aug<-merit_aug %>%
       #Sundance #6 (SD6)	401	0	0 February 19, 2021
       (asset_id =="SD6") & (effective_date_time>=ymd("2021-02-19")) ~ "NGCONV",
       (asset_id =="SD4") & (effective_date_time>=ymd("2022-01-4")) ~ "NGCONV",
+      
+      # GN1 and GN2 are fine since they were new IDs
+      
       TRUE ~ Plant_Type),
       Capacity=case_when(
         (asset_id=="HRM") & (effective_date_time>=ymd("2020-04-23"))&(effective_date_time<ymd("2020-05-08")) ~ 185,  #Milner change to gas effective 
@@ -326,15 +334,22 @@ anci<-merit_aug %>% filter(is.na(Plant_Type))%>%
     total_import_capability=case_when(
       is.na(bc_matl_import_capability) ~ bc_import_capability+sk_import_capability,
       TRUE                      ~  bc_matl_import_capability+ sk_import_capability
-    )
+    ),
+    total_import_capability=case_when(
+      is.na(system_import_capability)~total_import_capability,
+      TRUE ~ system_import_capability),
+    total_export_capability=case_when(
+      is.na(system_export_capability)~total_export_capability,
+      TRUE ~ system_export_capability)
     
   )%>%
     #trim columns
-    select(-sk_export_capability,-bc_export_capability,-bc_import_capability,
+    select(-system_export_capability,-system_import_capability,
+           -sk_import_capability,-sk_export_capability,-bc_export_capability,-bc_import_capability,
            -matl_export_capability,-matl_import_capability,-bc_matl_export_capability,
-           -bc_matl_import_capability,-start_date)%>%
+           -bc_matl_import_capability,-start_date)
     #assign peaks
-    assign_date_time_days()
+    mkt_data <- mkt_data %>%assign_date_time_days()
   
   save(hourly_summary,file="data/hourly_summary.RData")
   save(mkt_data,file="data/market_data.RData")
@@ -355,7 +370,7 @@ anci<-merit_aug %>% filter(is.na(Plant_Type))%>%
   merit_aug<-
   #   test<-
     merit_aug%>% #
-    mutate(month=month(date),year=year(date),offer_sum=case_when(
+    mutate(offer_sum=case_when(
       grepl("TransAlta",offer_control)~"TransAlta",
       grepl("TransCanada",offer_control)~"TransCanada",
       grepl("ENMAX",offer_control)~"ENMAX",
@@ -407,7 +422,8 @@ anci<-merit_aug %>% filter(is.na(Plant_Type))%>%
     mutate(offer_sum=as_factor(offer_sum),
            offer_sum=fct_other(offer_sum,keep = key_firms),
            #offer_sum=as.character(offer_sum))
-           NULL)
+           NULL)%>%
+  ungroup()
 
 
   
@@ -667,9 +683,9 @@ anci<-merit_aug %>% filter(is.na(Plant_Type))%>%
       
       # merge in companion market data and NIT gas prices
       
-      merit_aug<-merit_aug %>% left_join(mkt_data,by=c("date","he")) 
-      merit_aug<-merit_aug %>% ungroup()%>% left_join(ngx_data_read(),by=c("date")) %>%
-        mutate(nit_settle_cad_gj=na.locf(nit_settle_cad_gj))
+      merit_aug<-merit_aug %>% left_join(mkt_data,by=c("date","he")) %>%
+      left_join(ngx_data_read(),by=c("date")) %>%
+      mutate(nit_settle_cad_gj=na.locf(nit_settle_cad_gj))
       
       #clean up memory
       #rm(mkt_data)
@@ -678,7 +694,7 @@ anci<-merit_aug %>% filter(is.na(Plant_Type))%>%
       
       print(paste("Market Data Merged. Elapsed time is",time_length(interval(start_time, Sys.time()), "seconds"),"seconds"))
 
-test<-tail(merit_aug,1000)
+#test<-tail(merit_aug,1000)
       
       if(save==1)
       {
@@ -725,3 +741,28 @@ test<-tail(merit_aug,1000)
       
       paste("Built and saved merit data set, elapsed time is",time_length(interval(start_time, Sys.time()), "seconds"),"seconds")  
     
+assignment_data<-merit_aug %>% filter(date>=ymd("2024-01-10"),date<=ymd("2024-01-17"))%>%
+  select(date,he,alberta_internal_load=actual_ail,pool_price=actual_posted_pool_price,import_export,AESO_Name,Capacity,asset_id,block_number,price,from,to,size,available_mw,dispatched,dispatched_mw,flexible,Plant_Type,Plant_Fuel)
+assignment_data%>%write_csv("merit_data.csv")
+
+
+
+
+marco_data<-merit_aug %>% filter(date==ymd("2024-04-10"),size>0)%>%select(date,he,asset_id,size,price,dispatched,flexible)%>%
+  group_by(date,he)%>%
+  arrange(date,he,price,size,asset_id)%>%
+  mutate(block=row_number(),
+         merit=cumsum(size),
+         mkt_price=max(price*(dispatched=="Y")         ))%>%
+  #fix the estimated ail using the last block in each hour. Assume half the last flexible block is dispatched
+  mutate(
+    dispatched_mw=case_when(
+        block==which(block==max(block*(dispatched=="Y")*(flexible=="Y"))) ~ size*.5,
+        dispatched=="Y" ~ size,
+        dispatched =="N" ~ 0))%>%
+  mutate(ail=sum(dispatched_mw),
+  dispatched_merit=cumsum(dispatched_mw))
+
+marco_data%>%write_csv("marco_data.csv")
+
+

@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (MiKTeX 23.4) (preloaded format=pdflatex 2023.9.1)  12 MAR 2024 19:00
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (MiKTeX 23.4) (preloaded format=pdflatex 2023.9.1)  23 FEB 2025 21:29
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1186,7 +1186,7 @@ kerncmss.fd
 File: ot1mathkerncmss.fd 2020/01/31 Fontinst v1.933 font definitions for OT1/ma
 thkerncmss.
 )
-<../images/grid_storage.png, id=109, 688.7159pt x 465.45322pt>
+<../images/grid_storage.png, id=98, 688.7159pt x 465.45322pt>
 File: ../images/grid_storage.png Graphic file (type png)
 <use ../images/grid_storage.png>
 Package pdftex.def Info: ../images/grid_storage.png  used on input line 313.
@@ -1224,7 +1224,7 @@ Overfull \vbox (23.44017pt too high) detected at line 355
 ] [9
 
 ]
-<../images/cali_nodes.png, id=232, 586.32965pt x 392.77174pt>
+<../images/cali_nodes.png, id=207, 586.32965pt x 392.77174pt>
 File: ../images/cali_nodes.png Graphic file (type png)
 <use ../images/cali_nodes.png>
 Package pdftex.def Info: ../images/cali_nodes.png  used on input line 471.
@@ -1243,7 +1243,7 @@ Overfull \vbox (6.09764pt too high) detected at line 471
  <../images/cali_nodes.png>] [11
 
 ]
-<../images/merit_type.png, id=267, 778.29231pt x 416.9423pt>
+<../images/merit_type.png, id=238, 778.29231pt x 416.9423pt>
 File: ../images/merit_type.png Graphic file (type png)
 <use ../images/merit_type.png>
 Package pdftex.def Info: ../images/merit_type.png  used on input line 492.
@@ -1251,7 +1251,7 @@ Package pdftex.def Info: ../images/merit_type.png  used on input line 492.
  [12
 
  <../images/merit_type.png (PNG copy)>]
-<../images/merit_offer.png, id=285, 778.29231pt x 416.9423pt>
+<../images/merit_offer.png, id=254, 778.29231pt x 416.9423pt>
 File: ../images/merit_offer.png Graphic file (type png)
 <use ../images/merit_offer.png>
 Package pdftex.def Info: ../images/merit_offer.png  used on input line 497.
@@ -1259,7 +1259,7 @@ Package pdftex.def Info: ../images/merit_offer.png  used on input line 497.
 [13
 
  <../images/merit_offer.png (PNG copy)>]
-<../images/bids.png, id=304, 667.1077pt x 444.73846pt>
+<../images/bids.png, id=271, 667.1077pt x 444.73846pt>
 File: ../images/bids.png Graphic file (type png)
 <use ../images/bids.png>
 Package pdftex.def Info: ../images/bids.png  used on input line 502.
@@ -1267,172 +1267,52 @@ Package pdftex.def Info: ../images/bids.png  used on input line 502.
  [14
 
  <../images/bids.png (PNG copy)>]
-<../images/hourly_loads.png, id=322, 1011.78pt x 505.89pt>
-File: ../images/hourly_loads.png Graphic file (type png)
-<use ../images/hourly_loads.png>
-Package pdftex.def Info: ../images/hourly_loads.png  used on input line 508.
+<../images/loads_clean.png, id=287, 1011.78pt x 505.89pt>
+File: ../images/loads_clean.png Graphic file (type png)
+<use ../images/loads_clean.png>
+Package pdftex.def Info: ../images/loads_clean.png  used on input line 507.
 (pdftex.def)             Requested size: 1011.77753pt x 505.88875pt.
  [15
 
- <../images/hourly_loads.png>]
-<../images/loads_clean.png, id=340, 1011.78pt x 505.89pt>
-File: ../images/loads_clean.png Graphic file (type png)
-<use ../images/loads_clean.png>
-Package pdftex.def Info: ../images/loads_clean.png  used on input line 514.
+ <../images/loads_clean.png>]
+<../images/peak_prices.png, id=303, 1011.78pt x 505.89pt>
+File: ../images/peak_prices.png Graphic file (type png)
+<use ../images/peak_prices.png>
+Package pdftex.def Info: ../images/peak_prices.png  used on input line 514.
 (pdftex.def)             Requested size: 1011.77753pt x 505.88875pt.
  [16
 
- <../images/loads_clean.png>]
-<../images/hourly_prices.png, id=358, 1011.78pt x 505.89pt>
-File: ../images/hourly_prices.png Graphic file (type png)
-<use ../images/hourly_prices.png>
-Package pdftex.def Info: ../images/hourly_prices.png  used on input line 520.
-(pdftex.def)             Requested size: 1011.77753pt x 505.88875pt.
- [17
-
- <../images/hourly_prices.png>]
-<../images/peak_prices.png, id=376, 1011.78pt x 505.89pt>
-File: ../images/peak_prices.png Graphic file (type png)
-<use ../images/peak_prices.png>
-Package pdftex.def Info: ../images/peak_prices.png  used on input line 526.
-(pdftex.def)             Requested size: 1011.77753pt x 505.88875pt.
- [18
-
- <../images/peak_prices.png>]
-<../images/aeso_fwd_prices-1.png, id=394, 722.7pt x 361.35pt>
-File: ../images/aeso_fwd_prices-1.png Graphic file (type png)
-<use ../images/aeso_fwd_prices-1.png>
-Package pdftex.def Info: ../images/aeso_fwd_prices-1.png  used on input line 53
-2.
-(pdftex.def)             Requested size: 722.69823pt x 361.34912pt.
- [19
-
- <../images/aeso_fwd_prices-1.png>]
-<../images/balancingpool.png, id=414, 682.55pt x 439.6425pt>
-File: ../images/balancingpool.png Graphic file (type png)
-<use ../images/balancingpool.png>
-Package pdftex.def Info: ../images/balancingpool.png  used on input line 539.
-(pdftex.def)             Requested size: 682.54834pt x 439.64142pt.
- [20
-
- <../images/balancingpool.png>] [21
+ <../images/peak_prices.png>] [17
 
 ]
-<../images/lcoe_22.png, id=448, 614.295pt x 363.07071pt>
-File: ../images/lcoe_22.png Graphic file (type png)
-<use ../images/lcoe_22.png>
-Package pdftex.def Info: ../images/lcoe_22.png  used on input line 561.
-(pdftex.def)             Requested size: 614.29349pt x 363.06981pt.
- [22
+<../images/gen_mix_short.png, id=333, 1011.78pt x 505.89pt>
+File: ../images/gen_mix_short.png Graphic file (type png)
+<use ../images/gen_mix_short.png>
+Package pdftex.def Info: ../images/gen_mix_short.png  used on input line 533.
+(pdftex.def)             Requested size: 1011.77753pt x 505.88875pt.
 
- <../images/lcoe_22.png>]
-<../images/lcoe_lazard_22.png, id=467, 855.195pt x 523.09714pt>
-File: ../images/lcoe_lazard_22.png Graphic file (type png)
-<use ../images/lcoe_lazard_22.png>
-Package pdftex.def Info: ../images/lcoe_lazard_22.png  used on input line 567.
-(pdftex.def)             Requested size: 855.19293pt x 523.09586pt.
- [23
+[18
 
- <../images/lcoe_lazard_22.png>]
-<../images/ab_solar.png, id=486, 434.05019pt x 443.08392pt>
-File: ../images/ab_solar.png Graphic file (type png)
-<use ../images/ab_solar.png>
-Package pdftex.def Info: ../images/ab_solar.png  used on input line 572.
-(pdftex.def)             Requested size: 434.04912pt x 443.08284pt.
- [24
+ <../images/gen_mix_short.png>]
+<../images/renew_mix.png, id=349, 1011.78pt x 505.89pt>
+File: ../images/renew_mix.png Graphic file (type png)
+<use ../images/renew_mix.png>
+Package pdftex.def Info: ../images/renew_mix.png  used on input line 539.
+(pdftex.def)             Requested size: 1011.77753pt x 505.88875pt.
+ [19
 
- <../images/ab_solar.png>]
-<../images/aeso_mix_plot-1.png, id=505, 722.7pt x 361.35pt>
-File: ../images/aeso_mix_plot-1.png Graphic file (type png)
-<use ../images/aeso_mix_plot-1.png>
-Package pdftex.def Info: ../images/aeso_mix_plot-1.png  used on input line 579.
-
-(pdftex.def)             Requested size: 722.69823pt x 361.34912pt.
-
-[25
-
- <../images/aeso_mix_plot-1.png>]
-<../images/aeso_renew_plot-1.png, id=525, 722.7pt x 361.35pt>
-File: ../images/aeso_renew_plot-1.png Graphic file (type png)
-<use ../images/aeso_renew_plot-1.png>
-Package pdftex.def Info: ../images/aeso_renew_plot-1.png  used on input line 58
-5.
-(pdftex.def)             Requested size: 722.69823pt x 361.34912pt.
- [26
-
- <../images/aeso_renew_plot-1.png>]
-<../images/aeso_renew_gen_plot-1.png, id=544, 722.7pt x 361.35pt>
-File: ../images/aeso_renew_gen_plot-1.png Graphic file (type png)
-<use ../images/aeso_renew_gen_plot-1.png>
-Package pdftex.def Info: ../images/aeso_renew_gen_plot-1.png  used on input lin
-e 591.
-(pdftex.def)             Requested size: 722.69823pt x 361.34912pt.
-
-[27
-
- <../images/aeso_renew_gen_plot-1.png>]
-<../images/small_solar.png, id=563, 894.34125pt x 444.66125pt>
-File: ../images/small_solar.png Graphic file (type png)
-<use ../images/small_solar.png>
-Package pdftex.def Info: ../images/small_solar.png  used on input line 596.
-(pdftex.def)             Requested size: 894.33907pt x 444.66016pt.
- [28
-
- <../images/small_solar.png>]
-<../images/microgen.png, id=582, 702.4644pt x 467.5869pt>
-File: ../images/microgen.png Graphic file (type png)
-<use ../images/microgen.png>
-Package pdftex.def Info: ../images/microgen.png  used on input line 601.
-(pdftex.def)             Requested size: 702.46269pt x 467.58575pt.
-
-[29
-
- <../images/microgen.png>]
-<../images/price_capture_renew.png, id=600, 1011.78pt x 505.89pt>
+ <../images/renew_mix.png>]
+<../images/price_capture_renew.png, id=366, 1011.78pt x 505.89pt>
 File: ../images/price_capture_renew.png Graphic file (type png)
 <use ../images/price_capture_renew.png>
 Package pdftex.def Info: ../images/price_capture_renew.png  used on input line 
-607.
+545.
 (pdftex.def)             Requested size: 1011.77753pt x 505.88875pt.
- [30
+ [20
 
- <../images/price_capture_renew.png>]
-<../images/eia_solar.png, id=618, 1011.78pt x 505.89pt>
-File: ../images/eia_solar.png Graphic file (type png)
-<use ../images/eia_solar.png>
-Package pdftex.def Info: ../images/eia_solar.png  used on input line 612.
-(pdftex.def)             Requested size: 1011.77753pt x 505.88875pt.
- [31
+ <../images/price_capture_renew.png>] [21
 
- <../images/eia_solar.png>]
-<../images/eia_coal.png, id=638, 1011.78pt x 505.89pt>
-File: ../images/eia_coal.png Graphic file (type png)
-<use ../images/eia_coal.png>
-Package pdftex.def Info: ../images/eia_coal.png  used on input line 619.
-(pdftex.def)             Requested size: 1011.77753pt x 505.88875pt.
- [32
-
- <../images/eia_coal.png>]
-<../images/lazard_decline.png, id=657, 859.49678pt x 525.24803pt>
-File: ../images/lazard_decline.png Graphic file (type png)
-<use ../images/lazard_decline.png>
-Package pdftex.def Info: ../images/lazard_decline.png  used on input line 625.
-(pdftex.def)             Requested size: 859.49469pt x 525.24675pt.
- [33
-
- <../images/lazard_decline.png>]
-<../images/monthly_ghgs.png, id=676, 778.29231pt x 416.9423pt>
-File: ../images/monthly_ghgs.png Graphic file (type png)
-<use ../images/monthly_ghgs.png>
-Package pdftex.def Info: ../images/monthly_ghgs.png  used on input line 631.
-(pdftex.def)             Requested size: 778.29042pt x 416.94128pt.
- [34
-
- <../images/monthly_ghgs.png (PNG copy)>] [35
-
-] [36
-
-] [37
+] [22
 
 ]
 \tf@nav=\write6
@@ -1444,16 +1324,15 @@ Package pdftex.def Info: ../images/monthly_ghgs.png  used on input line 631.
 \tf@snm=\write8
 \openout8 = `power_slides_law.snm'.
 
-
-(power_slides_law.aux)
+ (power_slides_law.aux)
 Package rerunfilecheck Info: File `power_slides_law.out' has not changed.
-(rerunfilecheck)             Checksum: 569508C57516077C9E88B752736FF76D;767.
+(rerunfilecheck)             Checksum: 5E871B10D9D1C1A3DE81F2265875CD91;577.
  ) 
 Here is how much of TeX's memory you used:
- 27717 strings out of 476331
- 559578 string characters out of 5787294
- 1864660 words of memory out of 5000000
- 47468 multiletter control sequences out of 15000+600000
+ 27554 strings out of 476331
+ 556102 string characters out of 5787294
+ 1863660 words of memory out of 5000000
+ 47350 multiletter control sequences out of 15000+600000
  524169 words of font info for 62 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  128i,16n,122p,393b,622s stack positions out of 10000i,1000n,20000p,200000b,200000s
@@ -1466,9 +1345,9 @@ jfour/jknappen/ec/dpi600\ecss0800.pk> <C:\Users\aleach\AppData\Local\MiKTeX\fon
 ts/pk/ljfour/jknappen/ec/dpi600\ecss1095.pk> <C:\Users\aleach\AppData\Local\MiK
 TeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecss1440.pk> <C:\Users\aleach\AppData\Lo
 cal\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecss0600.pk>
-Output written on power_slides_law.pdf (37 pages, 7061833 bytes).
+Output written on power_slides_law.pdf (22 pages, 4523879 bytes).
 PDF statistics:
- 1056 PDF objects out of 1200 (max. 8388607)
- 81 named destinations out of 1000 (max. 500000)
- 253 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 699 PDF objects out of 1000 (max. 8388607)
+ 50 named destinations out of 1000 (max. 500000)
+ 175 words of extra memory for PDF output out of 10000 (max. 10000000)
 

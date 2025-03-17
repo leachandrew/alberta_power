@@ -1,82 +1,5 @@
 source("power_paper_base.R")
 
-oba_type<-function(plant_sent,year_sent){
-  grid_avg<-0.65
-  #nested case_when
-  oba_12<-
-    case_when(
-      plant_sent == "HYDRO" ~ grid_avg,
-      plant_sent == "COAL" ~ 1.07125*0.88,
-      plant_sent == "COGEN" ~ 0.418,
-      plant_sent == "NGCC" ~ 0.42*.88,
-      plant_sent == "SCGT" ~ 0.6*.88,
-      plant_sent == "SOLAR" ~ grid_avg,
-      plant_sent == "WIND" ~ grid_avg,
-      TRUE                      ~  0 
-    )
-  oba_20<-
-    case_when(
-      plant_sent == "HYDRO" ~ grid_avg,
-      plant_sent == "COAL" ~ 1.07125*0.8,
-      plant_sent == "COGEN" ~ 0.418,
-      plant_sent == "NGCC" ~ 0.42*.8,
-      plant_sent == "SCGT" ~ 0.6*.8,
-      plant_sent == "SOLAR" ~ grid_avg,
-      plant_sent == "WIND" ~ grid_avg,
-      TRUE                      ~  0 
-    )
-  oba_15<-
-    case_when(
-      plant_sent == "HYDRO" ~ grid_avg,
-      plant_sent == "COAL" ~ 1.07125*0.85,
-      plant_sent == "COGEN" ~ 0.418,
-      plant_sent == "NGCC" ~ 0.42*.85,
-      plant_sent == "SCGT" ~ 0.6*.85,
-      plant_sent == "SOLAR" ~ grid_avg,
-      plant_sent == "WIND" ~ grid_avg,
-      TRUE                      ~  0 
-    )
-  case_when(
-    year_sent <=2015     ~ oba_12,
-    year_sent ==2016     ~ oba_15,
-    year_sent ==2017    ~ oba_20,
-    TRUE                      ~  0.37 
-  )
-}
-
-
-ctax_year<-function(year_sent){
-  case_when(
-    year_sent <= 2015 ~ 15,
-    year_sent == 2016 ~ 20,
-    year_sent == 2017 ~ 30,
-    year_sent == 2018 ~ 30,
-    year_sent == 2019 ~ 30,
-    year_sent == 2020 ~ 30,
-    year_sent == 2021 ~ 40,
-    year_sent == 2022 ~ 50,
-    year_sent == 2023 ~ 65,
-    
-    TRUE                      ~  30 
-  )
-}
-
-deemed_ei<-function(plant_sent,year_sent){
-  case_when(
-    plant_sent == "HYDRO" ~ 0,
-    plant_sent == "COAL" ~ 1.07125,
-    plant_sent == "COGEN" ~ 0.06,
-    plant_sent == "NGCC" ~ 0.42,
-    plant_sent == "SCGT" ~ 0.6,
-    plant_sent == "SOLAR" ~ 0,
-    plant_sent == "WIND" ~ 0,
-    TRUE                      ~  0 
-  )
-}
-
-
-
-
 
 load("nrgstream/nrgstream_gen.RData") ## which is here *equivalent* to
 
@@ -441,7 +364,6 @@ library(cowplot)
 (plot_a + theme(legend.position = "none"))/(plot_b+guides(fill=guide_legend(nrow=1,byrow=TRUE),colour=guide_legend(nrow=1,byrow=TRUE)))
 ggsave("images/price_diff_ctax.png",dpi=300,bg="white",width = 14,height=9)
 
-dev.off()
 
 
 

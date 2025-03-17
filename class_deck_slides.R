@@ -1,11 +1,12 @@
 source("power_paper_base.R")
+
 source("aeso_scrapes.R")
 
 library(directlabels)
 library(cowplot)
 
 
-econ_course<-"../../Courses/econ_366_w24/slides/elec/"
+econ_course<-"../../Courses/econ_366_w25/slides/elec/"
 
 
 #load(file="data/metered_vols_data.Rdata")
@@ -13,6 +14,20 @@ load(file="nrgstream/nrgstream_gen.Rdata")
 nrgstream_gen <- nrgstream_gen %>% clean_names()
   #ng_conv(id_sent=ID)%>%
   #rename(time=time)
+
+update_forecasts()
+load(file="data/forecast_data.Rdata") 
+forecast_data <- forecast_data %>% filter (he!="02*")
+
+
+
+
+
+
+
+
+
+
 
 renew_gen<-nrgstream_gen%>%filter(plant_type%in%c("WIND","SOLAR"))%>%
   select(time,plant_type,gen)%>%
@@ -24,9 +39,6 @@ renew_gen<-nrgstream_gen%>%filter(plant_type%in%c("WIND","SOLAR"))%>%
   pivot_wider(names_from = plant_type,values_from=gen)
 
 
-update_forecasts()
-load(file="data/forecast_data.Rdata") 
-forecast_data <- forecast_data %>% filter (he!="02*")
 
 
 hourly_patterns<-forecast_data %>% 
@@ -38,10 +50,11 @@ hourly_patterns<-forecast_data %>%
 
 library(gghighlight)
 
-hourly_graph<-  ggplot(hourly_patterns%>%filter(year>=year(Sys.Date())-11)) +
+hourly_graph<-  
+  ggplot(hourly_patterns%>%filter(year>=year(Sys.Date())-11)) +
   geom_line(aes(factor(hour),price,group=factor(year),color=factor(year)),size=.85)+
-  geom_line(data=hourly_patterns %>% filter(year==2023),aes(factor(hour),price,group=factor(year),color=factor(year)),size=1.5)+
-  geom_line(data=hourly_patterns %>% filter(year==2024),aes(factor(hour),price,group=factor(year),color=factor(year)),size=2.5)+
+  geom_line(data=hourly_patterns %>% filter(year==2024),aes(factor(hour),price,group=factor(year),color=factor(year)),size=1.5)+
+  geom_line(data=hourly_patterns %>% filter(year==2025),aes(factor(hour),price,group=factor(year),color=factor(year)),size=2.5)+
   scale_color_viridis("",option = "C",discrete = T,direction=-1)+
   scale_y_continuous(expand=c(0,0))+
   paper_theme()+
@@ -67,8 +80,8 @@ ggsave(file=paste(econ_course,"images/hourly_prices.png",sep=""),width = 14,heig
 
 hourly_graph<-  ggplot(hourly_patterns%>%filter(year>=year(Sys.Date())-11)) +
   geom_line(aes(factor(hour),ail,group=factor(year),color=factor(year)),size=.85)+
-  geom_line(data=hourly_patterns %>% filter(year==2023),aes(factor(hour),ail,group=factor(year),color=factor(year)),size=1.25)+
-  geom_line(data=hourly_patterns %>% filter(year==2024),aes(factor(hour),ail,group=factor(year),color=factor(year)),size=2.5)+
+  geom_line(data=hourly_patterns %>% filter(year==2024),aes(factor(hour),ail,group=factor(year),color=factor(year)),size=1.25)+
+  geom_line(data=hourly_patterns %>% filter(year==2025),aes(factor(hour),ail,group=factor(year),color=factor(year)),size=2.5)+
   scale_color_viridis("",option = "C",discrete = T,direction=-1)+
   scale_y_continuous(expand=c(0,0))+
   paper_theme()+
@@ -107,8 +120,14 @@ peak_data<-forecast_data %>%filter(!is.na(actual_posted_pool_price),!is.na(actua
             q75_ail=quantile(actual_ail, probs=c(.95)),
             q25_ail=quantile(actual_ail, probs=c(.05)),
             mean_net_load=mean(load_net_renew,na.rm=T),
-            q95_net=quantile(load_net_renew, probs=c(.95),na.rm = T),
-            q05_net=quantile(load_net_renew, probs=c(.05),na.rm = T),
+            q95_net=quantile(load_net_renew, probs=c(.9999),na.rm = T),
+            q05_net=quantile(load_net_renew, probs=c(.00001),na.rm = T),
+            
+            q95_net=max(load_net_renew),
+            q05_net=min(load_net_renew),
+            
+            
+            
             renew_price=sum(actual_posted_pool_price*actual_ail*(high_renew==TRUE),na.rm = T)/sum(actual_ail*(high_renew==TRUE),na.rm = T),
             mean_peak_price=sum(actual_posted_pool_price*actual_ail*(on_peak==TRUE),na.rm = T)/sum(actual_ail*(on_peak==TRUE),na.rm = T),
             mean_off_peak_price=sum(actual_posted_pool_price*actual_ail*(on_peak==FALSE),na.rm = T)/sum(actual_ail*(on_peak==FALSE),na.rm = T),
@@ -255,7 +274,7 @@ renew_panel<-
   #geom_line(aes(date,mean_off_peak_ail,linetype="B"),size=.85,color="blue")+
   #geom_line(aes(date,load_net_renew,linetype="C"),size=.85,color="darkgreen")+
   #geom_ribbon(aes(date,ymax=peak_ail,ymin=trough_ail,fill="Range of Monthly Values"),alpha=.5)+
-  geom_ribbon(aes(date,ymax=q95_net,ymin=q05_net,fill="Two-tailed 90th percentile range of hourly data"),alpha=.5)+
+  geom_ribbon(aes(date,ymax=q95_net,ymin=q05_net,fill="Range of hourly data"),alpha=.5)+
   #scale_color_manual("",values = c("black"),labels=c("Average Monthly Price"))+
   scale_fill_manual("",values = c("grey50"))+
   scale_linetype_manual("",values = c("solid","11","3111"),labels=c("Average internal load net of renewables"))+
@@ -308,7 +327,7 @@ ggsave(file=paste(econ_course,"images/renew_clean.png",sep=""),width = 14,height
 
 p_grid<-plot_grid(
   top_panel+
-    expand_limits(y=500)+
+    expand_limits(y=1000)+
     #annotate("rect",xmin=ymd("2009-09-01"),xmax=ymd("2019-12-31"),ymin=-Inf,ymax=Inf, alpha=0.1, fill="black")+
     #annotate("text",x=ymd("2009-09-01")+((ymd("2019-12-31")-ymd("2009-09-01"))/2),y=1030,label = "Sample period")+
     coord_cartesian(clip = 'off')+    # This keeps the labels from disappearing
@@ -329,14 +348,14 @@ p_grid<-plot_grid(
 )
 p_grid
 ggsave("images/prices_and_loads_ep.png",width = 14,height=8,bg="white",dpi = 300)
-ggsave(file=paste(econ_course,"prices_and_loads_ep.png",sep=""),width = 14,height=7,dpi=300,bg="white")
+ggsave(file=paste(econ_course,"images/prices_and_loads_ep.png",sep=""),width = 14,height=7,dpi=300,bg="white")
 
 
 
 #direct label graph
 
 #align variable names
-df2 <- nrgstream_gen %>% filter(date<floor_date(max(date),"month"))%>% #trim to last full month of data
+df2 <- nrgstream_gen %>% filter(date<=floor_date(max(date),"month"))%>% #trim to last full month of data
   select(time,vol=gen,id,aeso_name,plant_type,plant_fuel,capacity) %>%
   filter(plant_type %in% c("COAL","COGEN","NGCC","WIND","SCGT","NGCONV","TRADE","HYDRO","SOLAR","OTHER"))%>%
   #filter(year(time)>=2010) %>% 
@@ -359,16 +378,22 @@ df2 <- nrgstream_gen %>% filter(date<floor_date(max(date),"month"))%>% #trim to 
          NULL
   )%>%
   #summarize by hour to get total gen and revenue by fuel, 
-  group_by(year,month,date,hour,plant_type) %>% 
+  group_by(year,month,date,hour,plant_type,actual_ail) %>% 
     summarise(capacity=sum(capacity,na.rm = T),
               gen=sum(vol,na.rm = T),
               rev=sum(vol*actual_posted_pool_price,na.rm = T),
-              price=mean(actual_posted_pool_price,na.rm = T)) %>% 
+              price=mean(actual_posted_pool_price,na.rm = T),
+              ail=mean(actual_ail,na.rm = T)) %>% 
   #summarize by year and month to get mean gen and capture price by fuel, 
+  group_by(year,month,date,hour) %>% 
+  mutate(total_gen=sum(gen,na.rm = T))%>%
   group_by(year,month) %>% 
-  mutate(mkt_price=sum(price*gen)/sum(gen))%>%
+  mutate(mkt_price=sum(gen*price,na.rm = T)/sum(gen,na.rm = T))%>%
   group_by(year,month,plant_type,mkt_price) %>% 
-  summarise(capacity=mean(capacity,na.rm = T),
+  summarise(share=sum(gen,na.rm=T)/sum(total_gen,na.rm = T),
+            ail=mean(ail,na.rm=T),
+            total_gen=mean(total_gen,na.rm = T),
+            capacity=mean(capacity,na.rm = T),
             capture = sum(rev,na.rm=T)/sum(gen,na.rm = T),
             gen=mean(gen,na.rm = T))%>% 
   ungroup() %>%
@@ -393,11 +418,8 @@ AB_palette<- c("black","black","grey60","grey60","grey30","grey30","grey30","gre
      ),
     #plant_type=fct_relevel(plant_type,"COGENERATION",after = 1),
     plant_type=fct_relevel(plant_type,"NATURAL GAS","COAL","RENEWABLES","NET IMPORTS",after = 0))%>% 
-    group_by(date,month,year,plant_type) %>% summarise(gen=sum(gen,na.rm = T),
-                                                      )%>%
+    group_by(date,month,year,plant_type) %>% summarise(gen=sum(gen,na.rm = T))%>%
     ungroup() %>%
-    group_by(plant_type) %>%
-    mutate(gen12m=zoo::rollmean(gen,12,fill=NA))%>%
     #filter(date>ymd("2014-12-31"))%>%
     ggplot(aes(date,gen, col = plant_type,lty=plant_type)) +
     geom_line(size=1.25)+
@@ -434,6 +456,7 @@ AB_palette<- c("black","black","grey60","grey60","grey30","grey30","grey30","gre
     NULL
   gen_fuel
   ggsave(file="images/gen_fuel.png", width = 14, height=8,dpi = 300,bg="white")
+  ggsave(file=paste(econ_course,"images/gen_fuel.png",sep=""),width = 14,height=7,dpi=300,bg="white")
   
   
   
@@ -471,7 +494,7 @@ AB_palette<- c("black","black","grey60","grey60","grey30","grey30","grey30","gre
     
     theme(legend.position = "bottom",
           legend.key.width = unit(3.1,"line"))+
-    labs(x="",y="Monthly Average Hourly Generation or Net Imports (MW)",
+    labs(x="",y="Monthly Average Revenue ($/MWh)",
          #title="Coal and Gas Generation and Carbon Prices (MW, 2007-2015)",
          #title="Alberta Power Generation by Plant Type (MW, 2015-2020)",
          #caption="Source: AESO data, authors' calculations."
@@ -490,6 +513,48 @@ AB_palette<- c("black","black","grey60","grey60","grey30","grey30","grey30","gre
   ggsave(file="images/rev_fuel.png", width = 14, height=8,dpi = 300,bg="white")
   
   
+  rev_fuel_2 <- 
+    df2 %>% #mutate(plant_type=factor(plant_type,levels=AB_plant_order))%>%
+    filter(date>=ymd("2015-01-01"))%>%
+    filter(plant_type%in%c("WIND","SOLAR"))%>%
+    ungroup()%>%
+    rename(MARKET=mkt_price)%>%
+    select(date,MARKET,plant_type,capture)%>%
+    ggplot() +
+    geom_line(aes(date,capture-MARKET, col = plant_type,lty=plant_type),size=1.25)+
+    #geom_line(aes(date,rev12m, col = plant_type,lty=plant_type),size=1.25)+
+    #geom_line(aes(date,mkt_price,col="MARKET",lty="MARKET"),size=1.25)+
+    
+    #geom_line(aes(y=gen12m),size=1.25)+
+    #geom_point(aes(date,gen*ifelse(month%%2==0,1,NA)),size=2.5)+
+    #geom_dl(aes(label=plant_type),method=list("last.bumpup",dl.trans(x=x+0.3),cex = .85))+
+    scale_color_manual("",values= AB_palette)+
+    scale_linetype_manual("",values= c("solid","21","solid","21","solid","21","solid"))+
+    paper_theme()+
+    scale_x_date(date_labels = "%b\n%Y",date_breaks = "12 months",expand=c(0,0))+
+    expand_limits(x = as.Date(c("2015-01-01", "2023-1-30")))+
+    #expand_limits(y =-500)+
+    scale_y_continuous(expand = c(0,0),breaks=pretty_breaks(6))+
+    
+    theme(legend.position = "bottom",
+          legend.key.width = unit(3.1,"line"))+
+    labs(x="",y="Monthly Average Premium (Discount) to Average Market Prices ($/MWh)",
+         #title="Coal and Gas Generation and Carbon Prices (MW, 2007-2015)",
+         #title="Alberta Power Generation by Plant Type (MW, 2015-2020)",
+         #caption="Source: AESO data, authors' calculations."
+         NULL)+
+    
+    # annotate("text", x = covid_mid, y =4500, label = "COVID\nperiod",size=3.25,hjust=0.5,vjust=0.5)+
+    #  annotate("rect", fill = "grey70", alpha = .3, 
+    #          xmin = as.Date("2020-03-11"), xmax =as.Date("2020-07-01"),
+    #           ymin = -Inf, ymax = Inf)+
+    # annotate("rect", fill = "grey70", alpha = .3, 
+    #         xmin = as.Date("2019-03-11"), xmax =as.Date("2019-07-01"),
+    #        ymin = -Inf, ymax = Inf)+
+    #annotate("text", x = covid_mid_lag, y =4500, label = "COVID\nperiod\nlast year",size=3.25,hjust=0.5,vjust=0.5)  
+    NULL
+  rev_fuel_2
+  ggsave(file="images/rev_fuel_2.png", width = 14, height=8,dpi = 300,bg="white")
   
   
   color_palette<- c("black","grey30",colors_tableau10()[3],colors_tableau10()[2],"grey60","grey60")
@@ -497,7 +562,8 @@ AB_palette<- c("black","black","grey60","grey60","grey30","grey30","grey30","gre
     scale_color_manual("",values= color_palette)
   ggsave(file="images/gen_fuel_color.png", width = 14, height=8,dpi = 300,bg="white")
   
-  gen_trimmed <- df2 %>% mutate(plant_type=factor(plant_type,levels=AB_plant_order))%>%
+  gen_trimmed <- 
+    df2 %>% #mutate(plant_type=factor(plant_type,levels=AB_plant_order))%>%
     filter(date>ymd("2005-01-01"))%>%
     mutate(plant_type=fct_collapse(plant_type,
                                    "OTHER"=c("OTHER","HYDRO"),
@@ -505,7 +571,7 @@ AB_palette<- c("black","black","grey60","grey60","grey30","grey30","grey30","gre
                                    #"COGENERATION"=c("COGEN"),
                                    "NET IMPORTS"="TRADE"
     ),
-    plant_type=fct_relevel(plant_type,"COGENERATION",after = 1))%>% 
+    plant_type=fct_relevel(plant_type,c("COAL","NATURAL GAS","WIND","SOLAR")))%>% 
     group_by(date,month,year,plant_type) %>% summarise(gen=sum(gen,na.rm = T),
     )%>%
     ungroup() %>%
@@ -547,6 +613,8 @@ AB_palette<- c("black","black","grey60","grey60","grey30","grey30","grey30","gre
     #        ymin = -Inf, ymax = Inf)+
     #annotate("text", x = covid_mid_lag, y =4500, label = "COVID\nperiod\nlast year",size=3.25,hjust=0.5,vjust=0.5)  
     NULL
+  
+  
   color_palette<- c("black","grey50",colors_tableau10()[3],colors_tableau10()[2],"grey60","grey60")
     gen_trimmed+
       guides(color=guide_legend(nrow = 1))+
@@ -559,7 +627,8 @@ AB_palette<- c("black","black","grey60","grey60","grey30","grey30","grey30","gre
   ggsave(file="images/gen_trimmed_color.png", width = 14, height=8,dpi = 300,bg="white")
   
   
-  area_fuel <- df2 %>% mutate(plant_type=factor(plant_type,levels=AB_plant_order))%>%
+  area_fuel <- 
+    df2 %>% #mutate(plant_type=factor(plant_type,levels=AB_plant_order))%>%
     filter(date>ymd("2005-01-01"))%>%
     mutate(plant_type=fct_collapse(plant_type,
                                    "RENEWABLES"=c("WIND","HYDRO","SOLAR","OTHER"),
@@ -609,7 +678,9 @@ AB_palette<- c("black","black","grey60","grey60","grey30","grey30","grey30","gre
     #        ymin = -Inf, ymax = Inf)+
     #annotate("text", x = covid_mid_lag, y =4500, label = "COVID\nperiod\nlast year",size=3.25,hjust=0.5,vjust=0.5)  
     NULL
+  
   area_fuel
+  
   area_fuel+
     guides(fill=guide_legend(nrow = 1))+
     theme(legend.key.width = unit(1.5,"line"))+
@@ -623,17 +694,17 @@ AB_palette<- c("black","black","grey60","grey60","grey30","grey30","grey30","gre
   
   
   
-  share_fuel <- df2 %>% mutate(plant_type=factor(plant_type,levels=AB_plant_order))%>%
+  share_fuel <- df2 %>% #mutate(plant_type=factor(plant_type,levels=AB_plant_order))%>%
     filter(date>ymd("2005-01-01"))%>%
     filter(plant_type!="NET IMPORTS")%>%
     mutate(plant_type=fct_collapse(plant_type,
-                                   "WWS"=c("WIND","HYDRO","SOLAR"),
-                                   #"RENEWABLES"=c("WIND","HYDRO","SOLAR","OTHER"),
+                                   #"WS"=c("WIND","HYDRO","SOLAR"),
+                                   "RENEWABLES"=c("WIND","HYDRO","SOLAR"),
                                    "NATURAL GAS"=c("SCGT","NGCC","NGCONV","COGEN"),
                                    #"COGENERATION"=c("COGEN"),
                                    "NET IMPORTS"="TRADE"
     ),
-    plant_type=fct_relevel(plant_type,"COGENERATION",after = 1))%>% 
+    plant_type=fct_relevel(plant_type,c("COAL","NATURAL GAS","RENEWABLES","OTHER")))%>% 
     group_by(date,month,year,plant_type) %>% summarise(gen=sum(gen,na.rm = T),
     )%>%
     ungroup() %>%
@@ -688,7 +759,7 @@ AB_palette<- c("black","black","grey60","grey60","grey30","grey30","grey30","gre
     scale_color_manual("",values= color_palette)
   ggsave(file="images/share_area.png", width = 14, height=8,dpi = 300,bg="white")
   
-  share_ws <- df2 %>% mutate(plant_type=factor(plant_type,levels=AB_plant_order))%>%
+  share_ws <- df2 %>% #mutate(plant_type=factor(plant_type,levels=AB_plant_order))%>%
     filter(date>ymd("2005-01-01"))%>%
     filter(plant_type!="NET IMPORTS")%>%
     mutate(plant_type=fct_collapse(plant_type,
@@ -759,7 +830,7 @@ AB_palette<- c("black","black","grey60","grey60","grey30","grey30","grey30","gre
   
   
   
-    label_level<-5700
+    label_level<-9100
   test<-gen_fuel+
     annotate("text", x = ymd("2007-7-1"), y = label_level, label = "SGER introduced\n OBA=88%\np=$15/t",size=3.5,hjust = 0.5)+  
     annotate("segment",x=ymd("2007-7-1"),xend=ymd("2007-7-1"),y=-Inf,yend=label_level-350, colour="black",size=1,lty="11") +
@@ -777,18 +848,27 @@ AB_palette<- c("black","black","grey60","grey60","grey30","grey30","grey30","gre
     annotate("segment",x=ymd("2021-1-1"),xend=ymd("2021-1-1"),y=-Inf,yend=label_level-350, colour="black",size=1,lty="11") +
     annotate("text", x = ymd("2022-1-1"), y = label_level, label = "TIER\nOBA=0.37t\np=$50/t",size=3.5,hjust = 0.5)+  
     annotate("segment",x=ymd("2022-1-1"),xend=ymd("2022-1-1"),y=-Inf,yend=label_level-350, colour="black",size=1,lty="11") +
+    annotate("text", x = ymd("2023-1-1"), y = label_level, label = "TIER\nOBA=0.362t\np=$65/t",size=3.5,hjust = 0.5)+  
+    annotate("segment",x=ymd("2023-1-1"),xend=ymd("2023-1-1"),y=-Inf,yend=label_level-350, colour="black",size=1,lty="11") +
+    annotate("text", x = ymd("2024-1-1"), y = label_level, label = "TIER\nOBA=0.355t\np=$80/t",size=3.5,hjust = 0.5)+  
+    annotate("segment",x=ymd("2024-1-1"),xend=ymd("2024-1-1"),y=-Inf,yend=label_level-350, colour="black",size=1,lty="11") +
+    annotate("text", x = ymd("2025-1-1"), y = label_level, label = "TIER\nOBA=0.348t\np=$95/t",size=3.5,hjust = 0.5)+  
+    annotate("segment",x=ymd("2025-1-1"),xend=ymd("2025-1-1"),y=-Inf,yend=label_level-350, colour="black",size=1,lty="11") +
     #annotate("text", x = ymd("2010-1-1"), y = 6600, label = policy_exp("SGER",15,"88%"),size=3.5,hjust = 0.5)+  
-    annotate("rect",xmin=ymd("2009-09-01"),xmax=ymd("2019-12-31"),ymin=-Inf,ymax=label_level+380, alpha=0.1, fill="black")+
-    annotate("text",x=ymd("2009-09-01")+((ymd("2019-12-31")-ymd("2009-09-01"))/2),y=label_level+500,label = "Sample period")+
+    #annotate("rect",xmin=ymd("2009-09-01"),xmax=ymd("2019-12-31"),ymin=-Inf,ymax=label_level+380, alpha=0.1, fill="black")+
+    #annotate("text",x=ymd("2009-09-01")+((ymd("2019-12-31")-ymd("2009-09-01"))/2),y=label_level+500,label = "Sample period")+
     expand_limits(y =label_level+300)+
     expand_limits(x =ymd("2022-09-01"))+
     coord_cartesian(clip = 'off')+    # This keeps the labels from disappearing
     NULL
-  
+#   0.3626  0.3552  0.3478  
     test
-    ggsave(file="images/gen_fuel_policies.png", width = 16, height=8,dpi = 300)
-  
-  
+    ggsave(file="images/gen_fuel_policies.png", width = 18, height=10,dpi = 300)
+    ggsave(file=paste(econ_course,"images/gen_fuel_policies.png",sep=""),width = 17,height=9,dpi=300,bg="white")
+    
+#NAMES DON'T WORK FROM HERE
+    
+    
   #carve out REP projects
   
   REP_projects<-c("RIV1","CRR2","WHT1","WRW1")
@@ -932,7 +1012,7 @@ rep_cap
     trade_excl<-c("AB - WECC Imp Hr Avg MW", "AB - WECC Exp Hr Avg MW","AB - WECC Imp/Exp Hr Avg MW")
     
     ep_capture<- nrgstream_gen %>%
-      select(time,ID,gen,plant_type)%>%
+      select(time,id,gen,plant_type)%>%
       
       
       filter(year(time) >= 2004,plant_type %in% c("WIND","SOLAR"))%>% 
@@ -957,7 +1037,7 @@ rep_cap
     my_palette<-c("black",colors_tableau10()[3],"yellow")
 
     ep_capture_data <- ep_capture %>% 
-      mutate(year=fct_recode(year,"2023\n(YTD)"="2023"),
+      mutate(year=fct_recode(year,"2025\n(YTD)"="2025"),
              plant_type=fct_recode(plant_type,"Solar"="SOLAR"),
              plant_type=fct_recode(plant_type,"Wind"="WIND"),
              plant_type=fct_relevel(plant_type,"Solar",after=Inf),
@@ -983,7 +1063,7 @@ rep_cap
            #caption="Source: AESO Data, accessed via NRGStream\nGraph by @andrew_leach"
       )
       ep_capture_plot+
-      geom_col(data=ep_capture_data %>% filter (year!="2023\n(YTD)"),
+      geom_col(data=ep_capture_data %>% filter (year!="2025\n(YTD)"),
                aes(year,avg_rev,fill=plant_type),position = position_dodge(width = .9),width = .6,color="black",size=.5,alpha=1)
       
     ggsave("images/price_capture_renew.png",width=14,height=7,dpi=300,bg="white")
@@ -2215,10 +2295,13 @@ price_ail<-assign_peaks(price_ail)
 
 
 gen_mix <- 
-  read.csv(paste(nrg_folder,"AESO_Gen_Mix.csv",sep="/"),skip = 2,header = TRUE, stringsAsFactors=FALSE)
-names(gen_mix)<-c("date","Coal","Hydro","Trade","Natural Gas","Other (incl. biomass)","Solar","Wind")
+  read_csv("nrgstream/AESO_Gen_Mix.csv")
+names(gen_mix)<-c("date","Hydro","Trade","Natural Gas","Other (incl. biomass)","Solar","Wind")
 
-gen_mix<-gen_mix%>%mutate(Trade=-1*Trade,date=dmy_hms(date,tz="America/Denver"))
+gen_mix<-gen_mix%>%mutate(Trade=-1*Trade,
+                date=parse_date_time(date,"d-b-Y H:M:S",tz = "America/Denver"))%>%
+  filter(!is.na(date))
+
 gen_mix<-gen_mix%>%pivot_longer(-date,names_to="Source",values_to="gen")%>%
   mutate(Source=factor(Source, levels=c("Wind","Solar","Hydro","Other (incl. biomass)","Natural Gas","Coal","Trade")))
 
@@ -2232,7 +2315,7 @@ gen_mix_plot<-
   scale_fill_manual("",values=c(colors_ua10()[1],colors_ua10()[2],colors_ua10()[4],colors_ua10()[3],colors_ua10()[8],colors_ua10()[5],colors_ua10()[6]))+
   guides(fill = guide_legend(nrow = 1, keywidth = 1.25))+
   #theme(legend.position = "none")+
-  labs(x="Year",y="Supply (MW)",
+  labs(x="",y="Supply (MW)",
        title="Supply Mix, Past 30 Days",
        caption="Source: AESO Data, accessed via NRGStream")
 gen_mix_plot
@@ -2241,7 +2324,7 @@ ggsave(file=paste(econ_course,"images/gen_mix.png",sep=""),width = 14,height=7,d
 
 
 gen_mix_plot_short<-
-  ggplot(gen_mix%>%filter(date(date)>=today()-days(10),!is.na(gen)),aes(date,gen, group=Source, fill = Source)) +
+  ggplot(gen_mix%>%filter(date>=max(date)-days(10),!is.na(gen)),aes(date,gen, group=Source, fill = Source)) +
   geom_area(position="stack")+
   weekly_small()+
   scale_x_datetime(expand = c(0,0),date_breaks="1 days",date_labels = "%b %d")+
@@ -2282,13 +2365,30 @@ solar_plot<-
   #scale_y_continuous(limits=c(0,5990),expand = c(0,0))+
   scale_fill_manual("",values=c(colors_ua10()[2]))+
   guides(fill = guide_legend(nrow = 1, keywidth = 1.25))+
-  #theme(legend.position = "none")+
-  labs(x="",y="Renewable Supply (MW)",
+  theme(legend.position = "none")+
+  labs(x="",y="Solar Supply (MW)",
        title="Alberta Solar Supply",
        caption="Source: AESO Data, accessed via NRGStream")
 solar_plot
 ggsave(file=paste("images/solar_gen.png",sep=""),width = 14,height=7,dpi=300,bg="white")
 ggsave(file=paste(econ_course,"images/solar_gen.png",sep=""),width = 14,height=7,dpi=300,bg="white")
+
+
+wind_plot<-
+  ggplot(gen_mix%>%filter(Source %in% c("Wind")),aes(date,gen, group=Source, fill = Source)) +
+  geom_area(position="stack")+
+  weekly_small()+
+  scale_x_datetime(expand = c(0,0),date_breaks="3 days",date_labels = "%b\n%d")+
+  #scale_y_continuous(limits=c(0,5990),expand = c(0,0))+
+  scale_fill_manual("",values=c(colors_ua10()[1]))+
+  guides(fill = guide_legend(nrow = 1, keywidth = 1.25))+
+  theme(legend.position = "none")+
+  labs(x="",y="Wind Supply (MW)",
+       title="Alberta Solar Supply",
+       caption="Source: AESO Data, accessed via NRGStream")
+wind_plot
+ggsave(file=paste("images/wind_gen.png",sep=""),width = 14,height=7,dpi=300,bg="white")
+ggsave(file=paste(econ_course,"images/wind_gen.png",sep=""),width = 14,height=7,dpi=300,bg="white")
 
 
 wind_fcast_plot<-
@@ -2645,3 +2745,280 @@ ncol=1,heights=c(3,4.5))
 
 ggsave(file=paste("images/renew_prices.png",sep=""),width = 14,height=7,dpi=300,bg="white")
 ggsave(file=paste(econ_course,"images/renew_prices.png",sep=""),width = 14,height=7,dpi=300,bg="white")
+
+
+#this should do the basics deck, now for the other decks
+
+
+
+
+
+
+
+
+#video start
+
+
+
+
+
+
+trade_set<-c("AB - BC Hydro Imp Hr Avg MW", 
+             "AB - Montana Imp Hr Avg MW",   
+             "AB - Saskpower Imp AB Hr Avg MW",
+             "AB - BC Hydro Exp Hr Avg MW", 
+             "AB - Montana Exp Hr Avg MW",   
+             "AB - Saskpower Exp AB Hr Avg MW")
+
+#exclude WECCs so that you don't double-count
+trade_excl<-c("AB - WECC Imp Hr Avg MW", 
+              "AB - WECC Exp Hr Avg MW",
+              "AB - WECC Imp/Exp Hr Avg MW")
+
+hourly_by_type<-
+  nrgstream_gen%>%
+  filter(time >= as.Date("2010-01-1"))%>%
+  filter(!nrg_stream %in% trade_excl,plant_type!="WIND_FCAST")%>% 
+  group_by(plant_type,time,price,ail) %>% 
+  summarise(cap=sum(capacity,na.rm=T),
+            total_gen=sum(gen,na.rm = T),
+            total_rev=sum(revenue,na.rm = T)) %>% ungroup()%>%
+  mutate(day= as_date(time),year =as_factor(year(time)))
+
+gen_set<-c("COAL","COGEN","HYDRO","NGCC", "OTHER", "SCGT","SOLAR","IMPORT","EXPORT","WIND")
+
+yearly_by_type<- 
+  hourly_by_type %>% 
+  filter(plant_type %in% gen_set) %>%
+  group_by(year) %>% 
+  mutate(
+    market_price=sum(price*ail,na.rm=T)/sum(ail,na.rm=T)) %>% 
+  ungroup()%>% #load-weighted price
+  group_by(plant_type,year,market_price) %>% 
+  summarise(capture = sum(total_rev,na.rm=T)/sum(total_gen,na.rm=T),
+            avg_rev = sum(total_rev,na.rm=T)/sum(total_gen,na.rm=T))%>%
+  ungroup() %>% 
+  mutate(plant_type=fct_relevel(plant_type, "OTHER",after=Inf),
+         plant_type=fct_relevel(plant_type, "HYDRO",after=Inf),
+         plant_type=fct_relevel(plant_type, "WIND",after=Inf),
+         plant_type=fct_relevel(plant_type, "SOLAR",after=Inf),
+         plant_type=fct_relevel(plant_type, "TRADE",after=Inf),
+         plant_type=fct_relevel(plant_type, "IMPORT",after=Inf),
+         plant_type=fct_relevel(plant_type, "EXPORT",after=Inf))%>%
+  mutate(ei=deemed_ei(plant_type,as.character(year)), 
+         oba=oba_type(plant_type,as.character(year)), 
+         ctax=ctax_year(as.character(year)),
+         ctax_net=(deemed_ei(plant_type,as.character(year))-oba_type(plant_type,as.character(year)))*ctax_year(as.character(year)),
+         ctax_net_rev=avg_rev-ctax_net)
+
+my_palette<-c(colors_tableau10()[8],colors_tableau10_medium()[4],colors_tableau10()[4],colors_tableau10_light()[4],colors_tableau10()[7],colors_tableau10()[1],colors_tableau10()[3],colors_tableau10()[2],colors_tableau10()[9],colors_tableau10_light()[9])
+
+ggplot(yearly_by_type)+
+  geom_col(aes(year,capture-market_price,fill=plant_type),size=0.5,position = position_dodge(width = .9),width = .6,colour="black")+
+  #scale_color_viridis("Plant Type",discrete=TRUE)+
+  #scale_fill_viridis("Plant Type",discrete=TRUE)+
+  scale_fill_manual("",values=my_palette)+
+  slide_theme()+
+  labs(x="",y="Revenue Relative to Mean Price ($/MWh)",
+       title="Energy Price Capture Differential ($/MWh, 2007-2018)",
+       caption="Source: AESO Data, accessed via NRGStream\nGraph by @andrew_leach")
+#dev.off()
+
+ggplot(yearly_by_type%>%filter(!plant_type %in% c("IMPORT","EXPORT")))+
+  geom_col(aes(year,capture,fill=plant_type),size=0.5,position = position_dodge(width = .9),width = .6,colour="black")+
+  scale_fill_manual("",values=my_palette)+
+  scale_y_continuous(expand=c(0,0))+
+  scale_x_discrete(expand=c(0,0))+
+  expand_limits(y=225)+
+  
+  slide_theme()+
+  labs(x="",y="Average Revenue ($/MWh)",
+       title="Average Revenue by Generation($/MWh)",
+       caption="Source: AESO Data, accessed via NRGStream\nGraph by @andrew_leach")
+ggsave("images/capture.png",dpi=300,bg="white",width = 14,height=9)
+
+
+my_palette<-c(colors_tableau10()[8],colors_tableau10_medium()[4],colors_tableau10()[4],colors_tableau10_light()[4],colors_tableau10()[7],colors_tableau10()[1],colors_tableau10()[3],colors_tableau10()[2],colors_tableau10()[9],colors_tableau10_light()[9])
+ggplot(yearly_by_type)+
+  geom_col(aes(year,capture/market_price*100-100,fill=plant_type),size=0.5,position = position_dodge(width = .9),width = .6,colour="black")+
+  scale_fill_manual("",values=my_palette)+
+  
+  slide_theme()+
+  labs(x="",y="Revenue Relative to Average Price (%)",
+       title="Energy Price Capture Differential (%, 2010-present)",
+       caption="Source: AESO Data, accessed via NRGStream\nGraph by @andrew_leach")
+ggsave("images/capture_pct.png",dpi=300,bg="white",width = 14,height=9)
+
+
+
+
+
+
+#create a MARKET TYPE
+
+market_price <- hourly_by_type %>% filter(plant_type %in% gen_set) %>%
+  group_by(year) %>% 
+  summarise(#load_weight
+            market_price=sum(price*ail,na.rm=T)/sum(ail,na.rm=T),
+            #gen weight
+            capture = sum(total_gen*price,na.rm=T)/sum(total_gen,na.rm = T),
+            #avg price
+            avg_rev=mean(price,na.rm=T)) %>% ungroup()%>% #load-weighted price
+  mutate(plant_type="MARKET",plant_type=as_factor(plant_type))
+
+
+yearly_by_type<-yearly_by_type %>% bind_rows(market_price)%>%
+  mutate(plant_type=fct_relevel(plant_type, "MARKET",after=0))
+
+
+solar_correct<-tibble(year=seq(2010,2016),plant_type="SOLAR",capture=0)%>%
+  mutate(year=as_factor(year),
+  plant_type=as_factor(plant_type),
+  market_price=0,
+  avg_rev=0
+  )
+yearly_by_type<-yearly_by_type %>% bind_rows(solar_correct)
+
+
+my_palette<-c("black",colors_tableau10()[8],colors_tableau10_medium()[4],colors_tableau10()[4],colors_tableau10_light()[4],colors_tableau10()[7],colors_tableau10()[1],colors_tableau10()[3],colors_tableau10()[2],colors_tableau10()[9],colors_tableau10_light()[9])
+#my_palette<-c("black",grey.colors(10,start=0.2,end = .95))
+
+plot_a<-
+  ggplot(yearly_by_type)+
+  geom_col(aes(year,capture,fill=plant_type),position = position_dodge(width = .9),width = .6,color="black",size=.1)+
+  scale_fill_manual("",values=my_palette)+
+  blake_theme()+
+  theme(plot.margin =unit(c(1,1,1,1),"cm"),
+       legend.position = "bottom")+
+  guides(fill=guide_legend(nrow = 1,label.position = "bottom",keywidth = 3.5))+
+  labs(x="",y="Average Revenue ($/MWh)",
+       #title="Energy Price Capture ($/MWh, 2010-2021)",
+       caption="Source: AESO data accessed via NRGStream, graph by @andrew_leach"
+  )
+plot_a
+ggsave(file="images/price_capture.png", width = 15, height = 8,bg="white",dpi=200)
+
+
+plot_a_short<-
+  ggplot(yearly_by_type%>%filter(as.numeric(as.character(year))>=2018))+
+  geom_col(aes(year,capture,fill=plant_type),position = position_dodge(width = 0.9),width = 0.7,color="black",size=.1)+
+  scale_fill_manual("",values=my_palette)+
+  blake_theme()+theme(plot.margin =unit(c(1,1,1,1),"cm"),
+                      legend.position = "bottom")+
+  guides(fill=guide_legend(nrow = 1,label.position = "bottom",keywidth = 3.5))+
+  labs(x="",y="Average Revenue ($/MWh)",
+       #title="Energy Price Capture ($/MWh, 2010-2021)",
+       caption="Source: AESO data accessed via NRGStream, graph by @andrew_leach"
+  )
+plot_a_short
+ggsave(file="images/price_capture_zoom.png", width = 15, height = 8,bg="white",dpi=200)
+
+plot_a_diff<-
+  ggplot(yearly_by_type%>%filter(plant_type!="MARKET"))+
+  geom_col(aes(year,capture-market_price,fill=plant_type),position = position_dodge(width = .9),width = .6,color="black",size=.1)+
+  scale_fill_manual("",values=my_palette[-1])+
+  blake_theme()+theme(plot.margin =unit(c(1,1,1,1),"cm"),
+                      legend.position = "bottom")+
+  guides(fill=guide_legend(nrow = 1,label.position = "bottom",keywidth = 3.5))+
+  labs(x="",y="Average Revenue - Market Average Revenue ($/MWh)",
+       #title="Energy Price Capture ($/MWh, 2010-2021)",
+       #caption="Source: AESO Data, accessed via NRGStream\nGraph by @andrew_leach"
+  )
+plot_a_diff
+ggsave(file="images/price_capture_diff.png", width = 15, height = 8,bg="white",dpi=200)
+
+
+plot_a_short_diff<-
+  ggplot(yearly_by_type%>%filter(plant_type!="MARKET",as.numeric(as.character(year))>=2018),aes(year,capture,fill=plant_type))+
+  geom_col(aes(year,capture-market_price,fill=plant_type),position = position_dodge(width = 0.9),width = 0.7,color="black",size=.1)+
+  scale_fill_manual("",values=my_palette[-1])+
+  blake_theme()+theme(plot.margin =unit(c(1,1,1,1),"cm"),
+                      legend.position = "bottom")+
+  guides(fill=guide_legend(nrow = 1,label.position = "bottom",keywidth = 3.5))+
+  labs(x="",y="Average Revenue - Market Average Revenue ($/MWh)",
+       #title="Energy Price Capture ($/MWh, 2010-2021)",
+       #caption="Source: AESO Data, accessed via NRGStream\nGraph by @andrew_leach"
+  )
+plot_a_short_diff
+ggsave(file="images/price_capture_zoom_diff.png", width = 15, height = 8,bg="white",dpi=200)
+
+yearly_by_type <-yearly_by_type %>% filter(!plant_type %in% c("OTHER", "TRADE","IMPORT","EXPORT","MARKET"))
+#set_png(file="images/price_capture_tax.png", width = 1400, height = 750)
+
+my_palette<-c(colors_tableau10()[8],colors_tableau10_medium()[4],colors_tableau10()[4],colors_tableau10_light()[4],colors_tableau10()[1],colors_tableau10()[3],colors_tableau10()[2],colors_tableau10()[9])
+plot_a<-ggplot(filter(yearly_by_type,as.character(year)>=2014))+
+  geom_col(aes(year,ctax_net_rev-avg_rev,fill=plant_type),alpha=0.75,size=1.5,position = position_dodge(width = .9),width = .6)+#  scale_color_viridis("Plant Type",discrete=TRUE)+
+  scale_fill_manual("",values=my_palette[-1])+
+  guides(fill=guide_legend(nrow=1,byrow=TRUE))+
+  slide_theme()+
+  labs(x="year",y="Average Revenue ($/MWh)",
+       title="Net Revenue from GHG Policies ($/MWh, 2014-2019)",
+       caption="Source: AESO and SGER Data, with assumption that renewables capture full offset value pre-2018.\n AESO data accessed via NRGStream, graph by @andrew_leach")
+plot_a
+#dev.off()
+
+plot_b<-ggplot(filter(yearly_by_type,as.character(year)>=2014))+
+  geom_col(aes(year,ctax_net_rev,fill=plant_type),colour=NA,alpha=0.5,position = position_dodge(width = .9),width = .75)+
+  #geom_point(aes(year,ctax_net_rev,group=plant_type,fill=plant_type),alpha=0.75,size=1.5,position = position_dodge(width = .9),shape=22)+
+  geom_col(aes(year,capture,colour=plant_type),fill=NA,alpha=1,position = position_dodge(width = .9),width = .7)+#  scale_color_viridis("Plant Type",discrete=TRUE)+
+  #geom_col(aes(year,capture-ctax_net_rev,colour=plant_type,group=plant_type),fill=NA,alpha=0.75,width = .75)+#  scale_color_viridis("Plant Type",discrete=TRUE)+
+  #geom_col(aes(year,ctax_net_rev-avg_rev,fill=plant_type),alpha=0.75,size=1.5,position = position_dodge(width = .9),width = .6)+#  scale_color_viridis("Plant Type",discrete=TRUE)+
+  #  scale_fill_viridis("Plant Type",discrete=TRUE)+
+  #scale_color_manual("",values=colors_tableau10())+
+  #scale_fill_manual("",values=colors_tableau10())+
+  scale_color_manual("",values=my_palette)+
+  scale_fill_manual("",values=my_palette)+
+  guides(fill=guide_legend(nrow=1,byrow=TRUE),colour=guide_legend(nrow=1,byrow=TRUE))+
+  small_theme()+
+  labs(x="year",y="Average Revenue ($/MWh)",
+       title="Change in Energy Price Capture Due to GHG Policies (2014-present)",
+       subtitle="Outline shows market revenues, fill shows market revenue plus OBA values less carbon pricing costs",
+       caption="Source: AESO and SGER Data, with assumption that renewables capture full offset value pre-2018.\n AESO data accessed via NRGStream.")
+plot_b
+ggsave(file="images/price_capture_ctax.png", width = 15, height = 8,bg="white",dpi=200)
+
+
+
+plot_c<-ggplot(filter(yearly_by_type,as.character(year)>=2014))+
+  geom_col(aes(year,oba*ctax,colour=plant_type,fill=plant_type),alpha=1,position = position_dodge(width = .9),width = .7)+#  scale_color_viridis("Plant Type",discrete=TRUE)+
+  #geom_col(aes(year,capture-ctax_net_rev,colour=plant_type,group=plant_type),fill=NA,alpha=0.75,width = .75)+#  scale_color_viridis("Plant Type",discrete=TRUE)+
+  #geom_col(aes(year,ctax_net_rev-avg_rev,fill=plant_type),alpha=0.75,size=1.5,position = position_dodge(width = .9),width = .6)+#  scale_color_viridis("Plant Type",discrete=TRUE)+
+  #  scale_fill_viridis("Plant Type",discrete=TRUE)+
+  #scale_color_manual("",values=colors_tableau10())+
+  #scale_fill_manual("",values=colors_tableau10())+
+  scale_color_manual("",values=my_palette)+
+  scale_fill_manual("",values=my_palette)+
+  guides(fill=guide_legend(nrow=1,byrow=TRUE),colour=guide_legend(nrow=1,byrow=TRUE))+
+  small_theme()+
+  labs(x="year",y="Average Credit Value ($/MWh)",
+       title="Value of Credit Allocations Under GHG Policies (2014-present)",
+       caption="Source: AESO and SGER Data, with assumption that renewables capture full offset value pre-2018.\n AESO data accessed via NRGStream, graph by @andrew_leach")
+plot_c
+ggsave(file="images/oba_value.png", width = 15, height = 8,bg="white",dpi=200)
+
+
+
+
+plot_d<-ggplot(filter(yearly_by_type,as.character(year)>=2014))+
+  geom_col(aes(year,ei*ctax,colour=plant_type,fill=plant_type),alpha=1,position = position_dodge(width = .9),width = .7)+#  scale_color_viridis("Plant Type",discrete=TRUE)+
+  #geom_col(aes(year,capture-ctax_net_rev,colour=plant_type,group=plant_type),fill=NA,alpha=0.75,width = .75)+#  scale_color_viridis("Plant Type",discrete=TRUE)+
+  #geom_col(aes(year,ctax_net_rev-avg_rev,fill=plant_type),alpha=0.75,size=1.5,position = position_dodge(width = .9),width = .6)+#  scale_color_viridis("Plant Type",discrete=TRUE)+
+  #  scale_fill_viridis("Plant Type",discrete=TRUE)+
+  #scale_color_manual("",values=colors_tableau10())+
+  #scale_fill_manual("",values=colors_tableau10())+
+  scale_color_manual("",values=my_palette)+
+  scale_fill_manual("",values=my_palette)+
+  guides(fill=guide_legend(nrow=1,byrow=TRUE),colour=guide_legend(nrow=1,byrow=TRUE))+
+  small_theme()+
+  labs(x="year",y="Average Hourly Carbon Cost ($/MWh)",
+       title="Raw Cost of GHG Policies (2014-present)",
+       caption="Source: AESO and SGER Data, with assumption that renewables capture full offset value pre-2018.\n AESO data accessed via NRGStream, graph by @andrew_leach")
+plot_d
+ggsave(file="images/cost_ctax.png", width = 15, height = 8,bg="white",dpi=200)
+
+
+
+#write.xlsx(yearly_by_type, file = "cansia.xlsx", colNames = TRUE, borders = "columns")
+
+
+

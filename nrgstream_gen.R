@@ -252,6 +252,7 @@ ng_conv<-function(data_sent){
 #Repair coal-to-gas-conversions
 data_sent %>% 
   mutate(Plant_Type=case_when( 
+    (ID=="GN3") & (Time>=ymd("2024-06-18")) ~ "NGCONV",  #GN3 change to gas effective
     (ID=="HRM") & (Time>=ymd("2020-05-08")) ~ "SCGT",  #Milner change to gas effective
     (ID=="HRM") & (Time>=ymd("2023-09-21")) ~ "CCGT",  #Milner change to gas effective 
     #SH1 Sheerness #1 and SH2 Sheerness #2 -July 30, 2021.https://www.aeso.ca/market/market-upTimes/2021/sh1-sheerness-1-and-sh2-sheerness-2-change-in-fuel-type-notice/
@@ -287,11 +288,16 @@ load(file="nrgstream/nrgstream_gen.RData")
 get_plant_info()
 #use this to update
 
-nrgstream_gen<-filter(nrgstream_gen,year(Time)<2024)
 ##nrgstream_gen<-data_update(nrgstream_gen,2021)
 #nrgstream_gen<-data_update(nrgstream_gen,2022)
 #nrgstream_gen<-data_update(nrgstream_gen,2023)
-nrgstream_gen<-data_update(nrgstream_gen,2024)
+#nrgstream_gen<-data_update(nrgstream_gen,2024)
+
+
+nrgstream_gen<-filter(nrgstream_gen,year(Time)<2025)
+nrgstream_gen<-data_update(nrgstream_gen,2025)
+
+
 
 nrgstream_gen<-ng_conv(nrgstream_gen)
 

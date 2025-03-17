@@ -45,6 +45,8 @@
    xdf
  }
  
+ 
+ 
 get_all_data<-function() {
   years<-seq(2020,2020)
   for(year_id in years){
@@ -291,8 +293,8 @@ get_forecast_report <- function(start_date,end_date) {
     #end testing - above should be commented if you're not testing
   start_date <- as.Date(start_date)
   end_date <- min(as.Date(start_date+months(1)),as.Date(end_date)) #31 days of data
-  print(start_date)
-  print(end_date)
+  #print(start_date)
+  #print(end_date)
   
   GET(
     url = "http://ets.aeso.ca/ets_web/ip/Market/Reports/ActualForecastWMRQHReportServlet",
@@ -311,7 +313,7 @@ get_forecast_report <- function(start_date,end_date) {
   clean_data<-janitor::clean_names(forecast_data) %>% 
     as_tibble()
   
-  globals<<-clean_data
+  #globals<<-clean_data
   #date formats from AESO are date and he as : 03/11/2018 01
   #process dates
   clean_data$time<-as.POSIXct(clean_data$date, format="%m/%d/%Y %H",tz="America/Denver")
@@ -365,9 +367,9 @@ all_forecasts<-function() {
 #forecast_data <-forecast_data %>% rename(forecasted_actual_ail_difference=forecast_ail_actual_ail_difference)
 #save(forecast_data, file= "forecast_data.Rdata") 
 
-update_forecasts<-function() {
+update_forecasts<-function(file_name="data/forecast_data.Rdata") {
   #load the existing file
-  load("data/forecast_data.Rdata")
+  load(file_name)
   #start on the first day of the first month for which you have data
   start_date<-as.Date(paste(year(max(na.omit(forecast_data$start_date))),month(max(na.omit(forecast_data$start_date))),"01",sep ="-"))
   #this is where you get a problem with the hour-ending vs hour-beginning because the last entry on each day is an hour ending the next day
@@ -385,10 +387,8 @@ update_forecasts<-function() {
       list_item<-list_item+1
     }
   }
-  filename<-paste("data/forecast_data",".RData",sep = "")
-  save(forecast_data, file= filename) 
+  save(forecast_data,file=file_name) 
 }
-
 #code to use this scraper
 
 #forecast_data<-forecast_data%>%rename(#forecast_ail=day_ahead_forecasted_ail,
@@ -762,7 +762,10 @@ update_AS_merit <- function(data_sent) {
 
 get_intertie_capacity_report<-function(start_date,end_date){ 
   #testing  
-  #start_date<-"2018-01-01"
+  #start_date<-as_date("2018-01-01")
+  #start_date<-today()-days(1)
+  #end_date<-today()
+  #end_date<-start_date+days(1)
   #end_date<-"2019-12-31"
   #max date is today
 if(ymd(end_date)>today())
@@ -772,6 +775,8 @@ if(as.numeric(ymd(end_date)-ymd(start_date))>=400)
   end_date<-as.character(ymd(start_date)+days(399))
 #build url
 url<-paste("http://itc.aeso.ca/itc/public/queryHistoricalIntertieReport.do?availableEffectiveDate=943279200000+1999-11-22+07%3A00%3A00+MST+%281999-11-22+14%3A00%3A00+GMT%29&availableExpiryDate=1582354800000+2020-02-22+00%3A00%3A00+MST+%282020-02-22+07%3A00%3A00+GMT%29&fileFormat=CSV&startDate=",start_date,"&endDate=",end_date,sep = "")  
+
+
 #download data
 download_indic<-download.file(url,"data/itc_temp.csv",mode="wb")
 stop_for_status(download_indic)
@@ -783,6 +788,56 @@ itc_data<-read.csv("data/itc_temp.csv",skip = 2,stringsAsFactors = F) %>% clean_
 itc_data
 }
 
+get_itc_report <- function(start_date,end_date) {
+  if(as.numeric(as_date(end_date)-as_date(start_date))>=100)
+    end_date<-as_date(start_date)+days(99)
+  
+  res<- 
+    GET(
+    url = "https://itc.aeso.ca/itc/public/api/v2/interchange",
+    query = list(
+      startDate = format(as_date(start_date), "%Y%m%d"),
+      endDate = format(as_date(end_date), "%Y%m%d"),
+      startHE = 1,
+      endHE = 24,
+      Accept = "application/json",
+      version= "false",
+      dataType="ATC"
+    )
+  )
+  stop_for_status(res)
+  #listviewer::jsonedit(raw_json, height = "800px", mode = "view")
+  itc_add <- res%>% httr::content()%>% pluck("return")%>%
+    enframe()%>%
+    unnest_wider(value) %>% 
+    select(-links)%>%
+    unnest(Allocations) %>%
+    unnest_wider(Allocations) %>%
+    unnest_wider(import,names_sep = "_") %>% 
+    unnest_wider(export,names_sep = "_") %>% 
+    as_tibble()%>%
+    select(-import_transferType,-export_transferType)%>%
+    select(date,he,flowgate=name,import_atc,export_atc)%>%
+    mutate(date=ymd(date),
+           flowgate=as_factor(flowgate),
+           flowgate=fct_recode(flowgate,"bc"="BcIntertie",
+                                "sk"="SkIntertie",
+                                "matl"="MatlIntertie",
+                                "system"="SystemlFlowgate", 
+                                "bc_matl"="BcMatlFlowgate"))%>%
+    pivot_wider(names_from = flowgate,values_from = c(import_atc,export_atc),
+                names_glue = "{flowgate}_{.value}")
+  
+  names(itc_add)<-gsub("atc","capability",names(itc_add))
+  
+  itc_add
+}
+
+
+#test<-get_itc_report("2020-07-10","2024-07-10")
+#https://itc.aeso.ca/itc/public/api/v2/interchange?startDate=20240709&endDate=20240709&pageNo=1&pageSize=1
+#GET /itc/public/api/v2/interchange?startDate=20240709&endDate=20240709&
+
 
 get_all_itc_data<-function(){
 itc_store <- list()
@@ -790,7 +845,8 @@ index<-1
 for(year in seq(2000,year(today()))){
   start_date<-paste(year,"01","01",sep="-")
   end_date<-paste(year,"12","31",sep="-")
-  itc_store[[index]]<-get_intertie_capacity_report(start_date,end_date)
+  #itc_store[[index]]<-get_intertie_capacity_report(start_date,end_date)
+  itc_store[[index]]<-get_itc_report(start_date,end_date)
   index<-index+1
 }  
 itc_data<-data.frame(do.call(rbind,itc_store))
@@ -807,10 +863,12 @@ save(itc_data, file= "data/aeso_itc_data.RData")
 
 update_itc_data<-function(){
   load(file= "data/aeso_itc_data.RData") 
+  itc_data<-itc_data %>% filter(date<max(itc_data$date)-days(1))
   #find max date in file
   start_date<-max(itc_data$date)
   end_date<-today()
-  itc_update<-get_intertie_capacity_report(start_date,end_date)
+  #itc_update<-get_intertie_capacity_report(start_date,end_date)
+  itc_update<-get_itc_report(start_date,end_date)
   #fix he characters
   singles<-seq(1,9)
   for(hour in singles){
@@ -823,7 +881,7 @@ update_itc_data<-function(){
 }  
 
 
-
+#update_itc_data()
 
 wind_forecast<-function(){
   wind_fcast<-read.csv("http://ets.aeso.ca/Market/Reports/Manual/Operations/prodweb_reports/wind_power_forecast/WPF_LongTerm.csv",skip=4)

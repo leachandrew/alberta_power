@@ -49,6 +49,11 @@ ctax_year<-function(year_sent){
     year_sent <= 2015 ~ 15,
     year_sent == 2016 ~ 20,
     year_sent == 2017 ~ 30,
+    year_sent == 2021 ~ 40,
+    year_sent == 2022 ~ 50,
+    year_sent == 2023 ~ 65,
+    year_sent == 2024 ~ 80,
+    
     TRUE                      ~  30 
   )
 }
