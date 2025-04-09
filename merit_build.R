@@ -2,18 +2,18 @@ source("power_paper_base.R")
 source("cdn_weather.R")
 source("aeso_scrapes.R")
 source("merit_scripts.R")
-source("cdn_weather.R")
 
+#rm(merit_aug,merit_year)
+gc()
 start_time<-Sys.time()
 #update merit order data
 
 options(scipen=999)
 
-update<-1 #add new data
+update<-0 #add new data
 save<-1 #save files at the end
-synth<-0 #synthetic plants?
-  synth_type<-1  #5 is a target facility, focus_id,4 is facility,3 is offer control by type, 2 is by offer_control,1 is by plant_fuel, 0 is full merit as synthetic plant
-
+synth<-1 #synthetic plants?
+  synth_type<-5  #5 is a target facility, focus_id,4 is facility,3 is by Plant Type, 2 is by offer_control,1 is by plant_fuel, 0 is full merit as synthetic plant
   if(synth_type==5)
     focus_id<-c("EGC1")
 
@@ -21,6 +21,12 @@ synth<-0 #synthetic plants?
 load("data/all_merit.RData")  
 if(update==1){
   merit_data<-rbind(merit_data,update_merit(merit_data))
+  #merit_data <-merit_data %>% mutate(asset_id=gsub("SLD1","SDL1",asset_id)) #fix saddlebrook error
+  #all_vols <-all_vols %>% mutate(asset_name=gsub("SLD1 Saddlebrook Solar","SDL1 Saddlebrook Solar",asset_name)) #fix saddlebrook error
+  #fix Heartland and Suncor Offer Control
+  #  merit_data <- merit_data %>%
+  #    mutate(offer_sum<-as.character(offer_sum),
+  #           )
   #remove the 02* hours
   #  merit_data<-merit_data%>%filter(he!="02*")
   save(merit_data, file="data/all_merit.RData")  
@@ -49,7 +55,8 @@ load("data/forecast_data.RData")
 
   #clean up the trade date in the merit order
     
-  merit_aug<-merit_data%>% 
+  merit_aug<-merit_data%>%
+    filter(date<ymd("2025-01-01"))%>%
     mutate(import_export=case_when(
     is.na(import_export) ~ "",
     TRUE                      ~  import_export
@@ -78,11 +85,18 @@ load("data/forecast_data.RData")
   #2 Fix renewable generation so that blocks reflect actual generation, not capacity
   
   #load volumes
+  #test<-all_vols%>% filter(date==ymd("2025-03-01"))
+  #test<-all_vols%>% filter(is.na(Plant_Type))
   
   if(update==1)
    {
    load(file="data/metered_vols_data.Rdata" ) 
-    #all_vols<-all_vols %>% filter(year<2024)
+    #all_vols<-all_vols %>% filter(date<=ymd("2025-01-20"))
+    #test<-all_vols %>% filter(asset_id=="SLD1")
+    #anci<-all_vols %>% filter(is.na(Plant_Type))%>% 
+    #  I()
+    #all_vols <-all_vols %>% mutate(asset_id=gsub("SLD1","SDL1",asset_id)) #fix saddlebrook error
+    #all_vols <-all_vols %>% mutate(asset_name=gsub("SLD1 Saddlebrook Solar","SDL1 Saddlebrook Solar",asset_name)) #fix saddlebrook error
     all_vols<-update_vols(all_vols)
     save(all_vols,file="data/metered_vols_data.Rdata" ) 
     #isolate renewable (non-hydro and biomass) volumes from metered volumes - the ones that default bid to zero
@@ -101,6 +115,7 @@ load("data/forecast_data.RData")
           key_firm=FALSE,
           renew_gen=dispatched_mw
           )
+    #anci<-renew_vols %>% filter(is.na(Plant_Type)) 
     save(renew_vols, file="data/renew_vols.RData")  
     
     hourly_renew<-renew_vols%>%
@@ -112,8 +127,8 @@ load("data/forecast_data.RData")
   load("data/hourly_renew.RData")
   
   
-  hourly_renew<-renew_vols%>%
-    group_by(date,he) %>% summarize(renew_gen=sum(dispatched_mw,na.rm = T)) %>%ungroup()
+  #hourly_renew<-renew_vols%>%
+  #  group_by(date,he) %>% summarize(renew_gen=sum(dispatched_mw,na.rm = T)) %>%ungroup()
   
   
   
@@ -135,6 +150,7 @@ load("data/forecast_data.RData")
    grepl("TransCanada",offer_control)~"TransCanada",
    grepl("Heartland",offer_control)~"Heartland",
    grepl("ENMAX",offer_control)~"ENMAX",
+   grepl("Suncor",offer_control)~"Suncor",
    grepl("Capital Power",offer_control)~'Capital Power',
    grepl("ATCO",offer_control)~"ATCO",
    grepl("Balancing Pool",offer_control)~"Balancing Pool",
@@ -199,7 +215,7 @@ merit_aug<-merit_aug %>% left_join(plant_data(),by=c("asset_id"="ID"))%>%
 #merit_aug<-merit_store  
 #merit_aug<-merit_aug %>% select(-c(co2_est,oba_rate,ctax,sger_first_year,compliance_cost))
 
-
+#test<-plant_data()
 
 
 #Repair coal-to-gas-conversions with script in power_paper_base
@@ -224,7 +240,6 @@ merit_aug<-merit_aug %>%
       (asset_id =="SD4") & (effective_date_time>=ymd("2022-01-4")) ~ "NGCONV",
       
       # GN1 and GN2 are fine since they were new IDs
-      
       TRUE ~ Plant_Type),
       Capacity=case_when(
         (asset_id=="HRM") & (effective_date_time>=ymd("2020-04-23"))&(effective_date_time<ymd("2020-05-08")) ~ 185,  #Milner change to gas effective 
@@ -248,7 +263,7 @@ anci<-merit_aug %>% filter(is.na(Plant_Type))%>%
   
 
   
-  fossils<-c("SCGT","NGCC","COAL")
+  fossils<-c("SCGT","NGCC","COAL","NGCONV")
   
   merit_aug <-merit_aug %>% mutate(
     co2_est=case_when(import_export!="" ~ 0, #no deemed emissions for imports and exports
@@ -355,6 +370,7 @@ anci<-merit_aug %>% filter(is.na(Plant_Type))%>%
   save(mkt_data,file="data/market_data.RData")
   
   
+  #load(file="data/hourly_summary.RData")
   
   #clean up data in memory
   rm(forecast_data,itc_data,hourly_summary)
@@ -365,7 +381,7 @@ anci<-merit_aug %>% filter(is.na(Plant_Type))%>%
   
   #Repair offer control
   
-  key_firms<-c("ATCO","TransAlta","TransCanada","ENMAX","Capital Power","Heartland","Balancing Pool")
+  key_firms<-c("ATCO","TransAlta","TransCanada","ENMAX","Capital Power","Heartland","Balancing Pool","Suncor")
   # 
   merit_aug<-
   #   test<-
@@ -408,14 +424,7 @@ anci<-merit_aug %>% filter(is.na(Plant_Type))%>%
     #  ggplot()+
     #  geom_line(aes(date,value,group=measure,colour=measure))+
     #  scale_color_manual("",values=colors_ua10())
-  
-    
-    
-    
-    
-    
-    
-    group_by(asset_id)%>%
+  group_by(asset_id)%>%
       fill(offer_sum,.direction="up")%>%  #carry offer control info backwards
       mutate(key_firm=offer_sum %in% key_firms,
            key_firm_no_bp=offer_sum %in%key_firms[(key_firms != "Balancing Pool")])%>%
@@ -439,11 +448,12 @@ anci<-merit_aug %>% filter(is.na(Plant_Type))%>%
     filter(Plant_Type %in% fossils,asset_id!="CMH1") %>%
     group_by(asset_id,Plant_Type,Capacity)%>% 
     summarise(min_date=min(date),max_date=max(date))%>% 
-    filter(max_date>ymd("2019-01-01"),min_date<ymd("2015-01-01")) %>% 
+    filter(max_date>ymd("2022-01-01"),min_date<ymd("2015-01-01")) %>% 
     group_by(Plant_Type) %>% arrange(Plant_Type,-Capacity)%>% 
       mutate(rank=row_number())%>%
     ungroup() %>% 
-      filter(rank<=3)%>%
+    #  filter(rank<=6)%>%
+    filter(Capacity>=20.5)%>%
     select(asset_id)
 
 
@@ -464,30 +474,38 @@ anci<-merit_aug %>% filter(is.na(Plant_Type))%>%
 
   #merit_aug<-merit_small
   
-  save(merit_aug,file="data/merit_aug.RData")
+  #test<-merit_aug %>% filter(year(date)==2023)
+  #test<-merit_aug %>% filter(Plant_Type=="NGCONV")
+  
   #load("data/merit_data_proc_bak.RData")  
   
+  save.image("merit_workspace.RData")
+  save(merit_aug,file="data/merit_aug.RData")
+  #load("data/merit_aug.RData") 
+  #load("merit_workspace.RData")
+  
   #load(file="data/merit_aug.RData")
-  
-  
-  
-  
-  
+  #synth<-1
+  #trying to configure merit data for lazy loading
   if(synth==1){
       #here, we are going to use Plant_Type and offer_gen to be our core pieces of information that gets passed on
       #determined by synth_type, we will send different information through these two variables for the final analysis.
       #synth_type 4 is facility,3 is offer control by type, 2 is by offer_control, 1 is by plant_type, 0 is full merit as synthetic plant
-      
+      #synth_type<-0
     #merit_aug <- merit_aug%>% filter(date<=ymd("2020-03-01")) #for the pass-through paper, let's use this.
-    merit_aug <- merit_aug%>% filter(date>=max(merit_aug$date)-years(5)) 
+    #merit_aug <- merit_aug%>% filter(date>=max(merit_aug$date)-years(5)) 
       
-    
-     #feb 16, 2022 - adding carry-through of plant offer control measure
+    #mar 2025 adding year_by_year synth
+      #save(merit_aug,file="data/merit_aug.RData") 
+      #load("data/merit_aug.RData")
+      #rm(merit_aug)
+      #attach("data/merit_aug.RData")
+      #gc()
+     
       merit_aug <- merit_aug%>% 
-        mutate(offer_store=factor(offer_sum),
-               plant_store=factor(Plant_Type))
-        
-      
+      mutate(offer_store=factor(offer_sum),
+             plant_store=factor(Plant_Type))
+    
       offer_levels<-levels(merit_aug$offer_store)
       plant_levels<-levels(merit_aug$plant_store)
                #use offer-store as the carry-through for offer control at a given point
@@ -503,26 +521,45 @@ anci<-merit_aug %>% filter(is.na(Plant_Type))%>%
                  )
       }
       
-      if(synth_type==3){ #if we're doing by unit, we need the largest fossil units
-        merit_aug <- merit_aug%>% filter(offer_sum!="Other", offer_sum!="TRADE")
+      if(synth_type==3){ #by plant type, but focus on fossils
+        merit_aug <- merit_aug%>% filter(offer_sum!="Other", offer_sum!="TRADE",Plant_Type %in% fossils)%>%
+          mutate(Plant_Type=fct_recode(Plant_Type,"LEGACY COAL"="COAL","LEGACY COAL"="NGCONV"))%>%
+          I()
       }
       
-      merit_aug<-merit_aug %>% 
+      if(synth_type==2){ #offer control w dispatchable plants
+        merit_aug <- merit_aug%>% filter(!is.na(offer_control),offer_sum!="Other", offer_sum!="TRADE",Plant_Type %in% fossils)
+      }
+      
+            
+      merit_aug<-merit_aug%>%
+        mutate(year=year(date))%>%
+        filter(year<=2023)
+      years_data<-unique(year(merit_aug$date))
+      
+      #LOOK HERE
+      #      years_data<-c(2023)
+      #LOOK HERE
+      for(y_index in years_data)
+      {
+      #y_index<-2023
+      merit_year<-merit_aug %>%
+        filter(year==y_index)%>%
         mutate(Plant_Type=case_when( 
           synth_type == 0 ~ "All",
           synth_type == 2 ~ "All",
+          synth_type == 3 ~ Plant_Type,
           TRUE ~ Plant_Fuel),
           offer_gen=as.character(offer_sum),
           offer_gen=case_when( 
             synth_type == 0 ~ "All",
             synth_type == 1 ~ "All",
+            synth_type == 3 ~ "All",
             TRUE ~ offer_gen),
           offer_gen=factor(offer_gen)
           )%>%
-        #filter(date<ymd("2020-01-01"))%>% #sample for the Shaffer paper is pre-2020
         filter(size>0)%>%  #don't include zero-sized blocks - this helps section out issues with zero wind and solar hours too.
-        #select(date,he,price,available_mw,dispatched_mw,co2_est,ctax_cost,oba_val,Plant_Type,renew_gen,offer_sum)%>%
-        arrange(date,he,Plant_Type,price) %>%
+        arrange(date,he,price) %>%
         group_by(date,he,Plant_Type,offer_gen)%>% 
         mutate(merit_type=cumsum(size)/sum(size),
                merit_co2=cumsum(co2_est*size/1000), #cumulative tonnes of emissions across the merit order
@@ -532,27 +569,43 @@ anci<-merit_aug %>% filter(is.na(Plant_Type))%>%
                )%>%
         summarize(
           #place offer percentiles and prices in lists of vectors
-          offers=list(offer_store),plants=list(plant_store),
+          offers=list(as.character(offer_store)),plants=list(as.character(plant_store)),
           total_offers=sum(size),available_mw=sum(available_mw),dispatched_mw=sum(dispatched_mw),renew_gen=sum(renew_gen,na.rm = T),
           merit=list(merit_type*100),price=list(price),co2_est=list(merit_co2),ctax_cost=list(merit_ctax),oba_val=list(merit_oba)
         )%>%
+        #test_tibble<-tibble(merit_year$offers[1][[1]],merit_year$plants[1][[1]],merit_year$merit[1][[1]],merit_year$price[1][[1]])%>%
+        #rename(offers=1,plants=2,merit=3,price=4)
+        #test_func<-generate_offer_func(test_tibble$merit,test_tibble$offers)
+        #test_tibble<-test_tibble%>%mutate(test=test_func(merit))
+        #test_tibble<-test_tibble%>%mutate(check=(test==offers))
+        
         group_by(date,he,Plant_Type,offer_gen) %>% #re-group the summarized data
         #get and store the bid function
         mutate(merit_func=list(bid_func(merit[[1]],price[[1]])), #bids
                ghg_func=list(bid_func(merit[[1]],co2_est[[1]])), #cumulative emissions in tonnes
                ctax_func=list(bid_func(merit[[1]],ctax_cost[[1]])),#marginal ctax
                oba_func=list(bid_func(merit[[1]],oba_val[[1]])), #marginal oba
-               offer_func=list(bid_func(merit[[1]],offers[[1]])), #marginal oba
-               plant_func=list(bid_func(merit[[1]],plants[[1]])), #marginal oba
+               #offer_func=list(generate_offer_func(merit[[1]],offers[[1]])), #marginal oba
+               offer_func = list({
+                 x <- merit[[1]]
+                 y <- offers[[1]]
+                 generate_offer_func(x, y)
+               }),
+               plant_func = list({
+                 x <- merit[[1]]
+                 y <- plants[[1]]
+                 generate_offer_func(x, y)
+               }),
+               #plant_func=list(generate_offer_func(merit[[1]],plants[[1]])), #marginal oba
                #net_comp_func=list(bid_func(merit[[1]],net_comp[[1]])),
                import_export=case_when(
                  Plant_Type=="IMPORT" ~ "I",
                  TRUE                      ~  "")
         )%>%
-        ungroup()
-  
+        ungroup()%>%
+        select(-merit,-ctax_cost,-oba_val,-co2_est,-price,-offers,-plants)
 
-      merit_aug<-merit_aug%>% group_by(date,he,Plant_Type,offer_gen) %>%
+      merit_year<-merit_year%>% group_by(date,he,Plant_Type,offer_gen) %>%
         mutate(bid_15=merit_func[[1]](15),
                bid_30=merit_func[[1]](30),
                bid_40=merit_func[[1]](40),
@@ -609,84 +662,85 @@ anci<-merit_aug %>% filter(is.na(Plant_Type))%>%
                oba_90=oba_func[[1]](90),
                oba_95=oba_func[[1]](95),
                oba_100=oba_func[[1]](100)) %>%
-        # mutate(offer_15=offer_func[[1]](15),
-        #        offer_30=offer_func[[1]](30),
-        #        offer_40=offer_func[[1]](40),
-        #        offer_50=offer_func[[1]](50),
-        #        offer_55=offer_func[[1]](55),
-        #        offer_60=offer_func[[1]](60),
-        #        offer_65=offer_func[[1]](65),
-        #        offer_70=offer_func[[1]](70),
-        #        offer_75=offer_func[[1]](75),
-        #        offer_80=offer_func[[1]](80),
-        #        offer_85=offer_func[[1]](85),
-        #        offer_90=offer_func[[1]](90),
-        #        offer_95=offer_func[[1]](95),
-        #        offer_100=offer_func[[1]](100)) %>%
-        # mutate(plant_15=plant_func[[1]](15),
-        #        plant_30=plant_func[[1]](30),
-        #        plant_40=plant_func[[1]](40),
-        #        plant_50=plant_func[[1]](50),
-        #        plant_55=plant_func[[1]](55),
-        #        plant_60=plant_func[[1]](60),
-        #        plant_65=plant_func[[1]](65),
-        #        plant_70=plant_func[[1]](70),
-        #        plant_75=plant_func[[1]](75),
-        #        plant_80=plant_func[[1]](80),
-        #        plant_85=plant_func[[1]](85),
-        #        plant_90=plant_func[[1]](90),
-        #        plant_95=plant_func[[1]](95),
-        #        plant_100=plant_func[[1]](100)) %>%
         ungroup() 
     print(paste("Built bids, elapsed time is",time_length(interval(start_time, Sys.time()), "seconds"),"seconds"))
       
         
-      merit_aug<-merit_aug%>%
-        select(-merit,-price,-co2_est,-merit_func,-ghg_func,
-               -ctax_func,-oba_func,-offer_func,-offers,
-               -plant_func,-plants,-oba_val,-ctax_cost)
+      merit_year<-merit_year%>%
+        select(-merit_func,-ghg_func,
+               -ctax_func,-oba_func)
       
       print(paste("Cleaned data frame, elapsed time is",time_length(interval(start_time, Sys.time()), "seconds"),"seconds"))
       
       #turn these into the appropriate format for later analysis
-      
-      
-      merit_aug<-merit_aug %>% pivot_longer(cols = -c(date,he,Plant_Type,offer_gen,available_mw,dispatched_mw,total_offers,renew_gen,import_export))%>%
+      #merit_year_bk<-merit_year
+      #merit_year<-merit_year_bk
+      merit_year<-merit_year %>% 
+        pivot_longer(cols = -c(date,he,Plant_Type,offer_gen,available_mw,dispatched_mw,total_offers,renew_gen,import_export,
+                               offer_func,plant_func
+                               ))%>%
         #split name at underscore
         separate(name,"_",into = c("data_point","percentile"))%>%
         mutate(percentile=as.numeric(percentile))%>%
+        
+        mutate(plants = map2(plant_func, percentile, ~ .x(.y)),
+               offer = map2(offer_func, percentile, ~ .x(.y)))%>%
+        select(-plant_func,-offer_func)%>%
         #make it wider again
         pivot_wider(names_from = data_point,values_from=value)%>%
         #mutate(offer=as_factor(offer_levels[offer]),
         #       plant=as_factor(plant_levels[plant]))%>%
         I()
-        
-      print(paste("Pivoted data frame, elapsed time is",time_length(interval(start_time, Sys.time()), "seconds"),"seconds"))
       
-  
+      print(paste("Pivoted data frame for year ",y_index,", elapsed time is",time_length(interval(start_time, Sys.time()), "seconds"),"seconds"))
+      file_name<-paste("data/synth_",synth_type,"_",y_index,".RData",sep = "")
+      save(merit_year,file=file_name)
+      }
+      
+      
+      #now we need to read each file in and then stack them
+      
+      library(purrr)
+      
+      file_names <- paste0("data/synth_",synth_type,"_",years_data, ".RData")
+      
+      # Function to load a data frame from an RData file
+      load_rdata <- function(file) {
+        e <- new.env()  # Load into a temporary environment
+        load(file, envir = e)
+        df_name <- ls(e)  # Get the name of the loaded object
+        e[[df_name]]  # Extract the data frame as return
+        }
+      
+      # Load and combine all data frames - this will be the revised merit_aug
+      merit_aug <- file_names %>%
+        map(load_rdata) %>%  # Load each RData file
+        bind_rows()  # Combine all data frames
       
       #now replicate the merit_aug format, but for these compressed data
       #testing: merit_bids<-merit_bids %>% left_join(mkt_data,by=c("date","he")) 
       
       #merit_aug<-merit_bids    
+      #stack them all
+      
+      #detach("file:data/merit_aug.RData")
       
       
     } 
     # end of synth plants
     
-  
-  
   load(file="data/hourly_summary.RData")
   load(file="data/market_data.RData")
   
-    
+  mkt_data<-mkt_data%>%left_join(ngx_data_read(),by=c("date"))%>%filter(year>=2009,year<2025)
+     
       
       # merge in companion market data and NIT gas prices
       
-      merit_aug<-merit_aug %>% left_join(mkt_data,by=c("date","he")) %>%
-      left_join(ngx_data_read(),by=c("date")) %>%
-      mutate(nit_settle_cad_gj=na.locf(nit_settle_cad_gj))
+  merit_aug<-merit_aug %>% left_join(mkt_data,by=c("date","he"))
       
+      
+      #test<-merit_aug%>%filter(is.na(nit_settle_cad_gj)
       #clean up memory
       #rm(mkt_data)
       gc()
@@ -694,6 +748,8 @@ anci<-merit_aug %>% filter(is.na(Plant_Type))%>%
       
       print(paste("Market Data Merged. Elapsed time is",time_length(interval(start_time, Sys.time()), "seconds"),"seconds"))
 
+
+      
 #test<-tail(merit_aug,1000)
       
       if(save==1)
@@ -741,28 +797,25 @@ anci<-merit_aug %>% filter(is.na(Plant_Type))%>%
       
       paste("Built and saved merit data set, elapsed time is",time_length(interval(start_time, Sys.time()), "seconds"),"seconds")  
     
-assignment_data<-merit_aug %>% filter(date>=ymd("2024-01-10"),date<=ymd("2024-01-17"))%>%
-  select(date,he,alberta_internal_load=actual_ail,pool_price=actual_posted_pool_price,import_export,AESO_Name,Capacity,asset_id,block_number,price,from,to,size,available_mw,dispatched,dispatched_mw,flexible,Plant_Type,Plant_Fuel)
-assignment_data%>%write_csv("merit_data.csv")
+#assignment_data<-merit_aug %>% filter(date>=ymd("2024-01-10"),date<=ymd("2024-01-17"))%>%
+#  select(date,he,alberta_internal_load=actual_ail,pool_price=actual_posted_pool_price,import_export,AESO_Name,Capacity,asset_id,block_number,price,from,to,size,available_mw,dispatched,dispatched_mw,flexible,Plant_Type,Plant_Fuel)
+#assignment_data%>%write_csv("merit_data.csv")
 
-
-
-
-marco_data<-merit_aug %>% filter(date==ymd("2024-04-10"),size>0)%>%select(date,he,asset_id,size,price,dispatched,flexible)%>%
-  group_by(date,he)%>%
-  arrange(date,he,price,size,asset_id)%>%
-  mutate(block=row_number(),
-         merit=cumsum(size),
-         mkt_price=max(price*(dispatched=="Y")         ))%>%
-  #fix the estimated ail using the last block in each hour. Assume half the last flexible block is dispatched
-  mutate(
-    dispatched_mw=case_when(
-        block==which(block==max(block*(dispatched=="Y")*(flexible=="Y"))) ~ size*.5,
-        dispatched=="Y" ~ size,
-        dispatched =="N" ~ 0))%>%
-  mutate(ail=sum(dispatched_mw),
-  dispatched_merit=cumsum(dispatched_mw))
-
-marco_data%>%write_csv("marco_data.csv")
+# marco_data<-merit_aug %>% filter(date==ymd("2024-04-10"),size>0)%>%select(date,he,asset_id,size,price,dispatched,flexible)%>%
+#   group_by(date,he)%>%
+#   arrange(date,he,price,size,asset_id)%>%
+#   mutate(block=row_number(),
+#          merit=cumsum(size),
+#          mkt_price=max(price*(dispatched=="Y")         ))%>%
+#   #fix the estimated ail using the last block in each hour. Assume half the last flexible block is dispatched
+#   mutate(
+#     dispatched_mw=case_when(
+#         block==which(block==max(block*(dispatched=="Y")*(flexible=="Y"))) ~ size*.5,
+#         dispatched=="Y" ~ size,
+#         dispatched =="N" ~ 0))%>%
+#   mutate(ail=sum(dispatched_mw),
+#   dispatched_merit=cumsum(dispatched_mw))
+# 
+# marco_data%>%write_csv("marco_data.csv")
 
 

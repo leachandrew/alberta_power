@@ -47,6 +47,12 @@
  
  
  
+#test<-get_metered_volumes_report("2024-08-01")%>%filter(asset_id %in% c("HAL2","CLD1","BPW1","ACD1","WIN1","WIR1"))
+#test<-all_vols%>%filter(asset_id %in% c("HAL2","CLD1","BPW1","ACD1","WIN1","WIR1"))
+ 
+
+ 
+ 
 get_all_data<-function() {
   years<-seq(2020,2020)
   for(year_id in years){
@@ -95,7 +101,7 @@ save(all_vols, file="data/metered_vols_data.Rdata" )
 #if you want to add the latest metered volumes data to the existing data set
 update_vols <- function(data_sent) {
   #testing
-  #  data_sent<-tail(all_vols,10000)
+  #data_sent<-all_vols %>% filter(year(date)2025)
   #update forecast data and load into memory
   update_forecasts()  
   load("data/forecast_data.Rdata")
@@ -117,8 +123,8 @@ update_vols <- function(data_sent) {
       data_store<-rbind(data_store,clean_volume_data(xdf))
       #list_item<-list_item+1
   }
-  
-  test<<-data_store
+  #test<-process_data(data_store)
+  #test<<-data_store
   #test2<-data_sent %>% bind_rows(test)
   #return the data
   rbind(data_sent,process_data(data_store))
@@ -228,6 +234,9 @@ process_data <- function(data_sent) {
   combined$co2_est<-combined$co2_est/1000 #adjust from kg to tonnes
   #problem is here
   combined_new<-clean2%>%left_join(combined,by=c("asset_id"="ID"))
+  # testing<-clean2 %>% filter(asset_id=="BPW1")
+  #testing2<-combined %>% filter(grepl("BPW1",ID))
+  
   
   #set those without co2_estimates to zero for now
   combined_new<-combined_new %>% mutate(co2_est = ifelse(is.na(co2_est),0,co2_est)) 
@@ -445,6 +454,8 @@ firms<-function(){
            "TransAlta",
            "ATCO",
            "ENMAX",
+           "Heartland",
+           "Suncor",
            "TransCanada",
            "Capital Power"))
 }
@@ -890,6 +901,57 @@ wind_forecast<-function(){
   wind_fcast[,1]<-as.POSIXct(as.character(wind_fcast[,1]))
   names(wind_fcast)[1]<-"Date"
   wind_fcast
+}
+
+connection_stuff<-function(){
+library(rvest)
+library(xml2)
+#get project queue archive
+url <- "https://www.aeso.ca/grid/transmission-projects/connection-project-reporting"
+
+# Read the web page content
+webpage <- read_html(url)
+
+# Extract all links
+links <- webpage %>%
+  html_nodes("a") %>%
+  html_attr("href")
+
+# Filter links to include only archives or Excel files
+archive_links <- links[grepl("\\.xlsx$", links)]
+
+# Ensure links are absolute URLs
+base_url <- "https://www.aeso.ca"
+archive_links <- ifelse(grepl("^http", archive_links), archive_links, paste0(base_url, archive_links))
+
+# Print the extracted links
+print(archive_links)
+
+for(link in archive_links)
+  download.file(link,destfile=gsub("https://www.aeso.ca/assets/Uploads/project-reporting/","aeso_projects/",link),mode="wb")
+
+url<-"https://web.archive.org/web/20230201191804/https://www.aeso.ca/grid/transmission-projects/connection-project-reporting/"
+# Read the web page content
+webpage <- read_html(url)
+
+# Extract all links
+links <- webpage %>%
+  html_nodes("a") %>%
+  html_attr("href")
+
+# Filter links to include only archives or Excel files
+archive_links <- links[grepl("\\.xlsx$", links)]
+#https://web.archive.org/web/20230201191804/https://www.aeso.ca/assets/Uploads/project-reporting/December-2021-Project-List.xlsx
+# Ensure links are absolute URLs
+base_url <- "https://web.archive.org"
+archive_links <- ifelse(grepl("^http", archive_links), archive_links, paste0(base_url, archive_links))
+
+# Print the extracted links
+print(archive_links)
+
+for(link in archive_links)
+  download.file(link,destfile=gsub("https://web.archive.org/web/20230201191804/https://www.aeso.ca/assets/Uploads/","aeso_projects/",link),mode="wb")
+
 }
 
 

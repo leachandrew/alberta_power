@@ -22,6 +22,7 @@ library(ggthemes)
 library(stringi)
 library(tidyverse)
 library(broom)
+library(cowplot)
 
 blakes_blue<-"#4477AA"
 graph_grey<-"grey20"

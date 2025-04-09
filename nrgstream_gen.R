@@ -294,7 +294,9 @@ get_plant_info()
 #nrgstream_gen<-data_update(nrgstream_gen,2024)
 
 
-nrgstream_gen<-filter(nrgstream_gen,year(Time)<2025)
+nrgstream_gen<-filter(nrgstream_gen,year(Time)<2023)
+nrgstream_gen<-data_update(nrgstream_gen,2023)
+nrgstream_gen<-data_update(nrgstream_gen,2024)
 nrgstream_gen<-data_update(nrgstream_gen,2025)
 
 

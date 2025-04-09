@@ -43,8 +43,8 @@ temp_data$stn<-stn_string
 temp_data
 }
 
-blatch<-hourly_data_pull(27214,min_yr = 2019,max_yr = 2023)
-save(blatch,file="blatch.Rdata")
+#blatch<-hourly_data_pull(27214,min_yr = 2019,max_yr = 2023)
+#save(blatch,file="blatch.Rdata")
 #blatch<-hourly_data_pull(27214,min_yr = 2024,max_yr = 2024)
 
 

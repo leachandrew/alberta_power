@@ -44,19 +44,22 @@ oba_type<-function(plant_sent,year_sent,ei_sent){
 }
 
 
+
 ctax_year<-function(year_sent){
   case_when(
     year_sent <= 2015 ~ 15,
     year_sent == 2016 ~ 20,
     year_sent == 2017 ~ 30,
+    year_sent == 2018 ~ 30,
+    year_sent == 2019 ~ 30,
+    year_sent == 2020 ~ 30,
     year_sent == 2021 ~ 40,
     year_sent == 2022 ~ 50,
     year_sent == 2023 ~ 65,
-    year_sent == 2024 ~ 80,
-    
-    TRUE                      ~  30 
+    TRUE                      ~  min(65+(year_sent-2023)*15,170)
   )
 }
+
 
 #get gas spots
 ngx_data_read<-function(){
@@ -65,9 +68,11 @@ ngx_data_read<-function(){
   ngx_data_old <- read.csv(file_name,blank.lines.skip=T,stringsAsFactors=F,header=T)
   file_name<-"data/nit_gas_15_19.csv"
   ngx_data_15_19 <- read.csv(file_name,blank.lines.skip=T,stringsAsFactors=F,header=T)
+  file_name<-"data/nit_gas_20_24.csv"
+  ngx_data_20_24 <- read.csv(file_name,blank.lines.skip=T,stringsAsFactors=F,header=T)
   file_name<-"data/nit_gas_spot.csv"
   ngx_data <- read.csv(file_name,blank.lines.skip=T,stringsAsFactors=F,header=T)
-  ngx_data<-rbind(ngx_data_old,ngx_data_15_19,ngx_data)
+  ngx_data<-rbind(ngx_data_old,ngx_data_15_19,ngx_data_20_24,ngx_data)
   
   
   names(ngx_data)<-c("date_time","low","WAvg", "High","Open","Settle", "Volume","Inst_Date","Drop") 
@@ -75,13 +80,13 @@ ngx_data_read<-function(){
   ngx_data$date<-as.Date(parse_date_time(ngx_data$date_time,c("ymd HM","dmy HMS")))
   ngx_data<-ngx_data %>% select(date,Settle)
   names(ngx_data)<-c("date","nit_settle_cad_gj")
-  ngx_data
+  ngx_data %>% fill(nit_settle_cad_gj,.direction="downup")
 }
 
 
 ghg_data<-function(){
   load(file = "data/plant_data_merge.RData")
-  paper_data %>% select(ID,year,ei,oba_rate,ctax,sger_first_year,compliance_cost)
+  paper_data %>% select(ID,year,ei,oba_rate,ctax,compliance_cost)
 }
 
 
@@ -264,6 +269,26 @@ bid_func<-function(x,y){
   else
     single_value_function(y)
 }
+
+
+
+generate_offer_func <- function(x, y) {
+  if (length(y) > 1) {
+    # x: numeric thresholds (merit), y: labels (offers)
+    function(z) {
+      sapply(z, function(val) {
+        if (val <= min(x)) return(first(y))
+        if (val >= max(x)) return(last(y))
+        idx <- min(which(x > val))-1 #so, find the step up, step back one
+          return(y[idx])
+      })
+    }
+  } else {
+    # single value case
+    function(z) rep(y, length(z))
+  }
+}
+
 
 
 merit_bid_pctl<-function(merit_sent){

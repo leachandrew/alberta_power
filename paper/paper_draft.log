@@ -1,24 +1,24 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (MiKTeX 24.1) (preloaded format=pdflatex 2025.2.24)  24 FEB 2025 12:14
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (MiKTeX 23.4) (preloaded format=pdflatex 2023.9.1)  6 APR 2025 10:32
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
 **./paper_draft.tex
 (paper_draft.tex
-LaTeX2e <2023-11-01> patch level 1
-L3 programming layer <2024-01-04>
+LaTeX2e <2022-11-01> patch level 1
+L3 programming layer <2023-03-30>
 (C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/latex/base\article.cls
-Document Class: article 2023/05/17 v1.4n Standard LaTeX document class
+Document Class: article 2022/07/02 v1.4n Standard LaTeX document class
 (C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/latex/base\size12.clo
-File: size12.clo 2023/05/17 v1.4n Standard LaTeX file (size option)
+File: size12.clo 2022/07/02 v1.4n Standard LaTeX file (size option)
 )
-\c@part=\count187
-\c@section=\count188
-\c@subsection=\count189
-\c@subsubsection=\count190
-\c@paragraph=\count191
-\c@subparagraph=\count192
-\c@figure=\count193
-\c@table=\count194
+\c@part=\count185
+\c@section=\count186
+\c@subsection=\count187
+\c@subsubsection=\count188
+\c@paragraph=\count189
+\c@subparagraph=\count190
+\c@figure=\count191
+\c@table=\count192
 \abovecaptionskip=\skip48
 \belowcaptionskip=\skip49
 \bibindent=\dimen140
@@ -28,9 +28,9 @@ Package: fullpage 1999/02/23 1.1 (PWD)
 \FP@margin=\skip50
 ) (C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/latex/multirow\multirow.st
 y
-Package: multirow 2024/11/12 v2.9 Span multiple rows of a table
+Package: multirow 2021/03/15 v2.8 Span multiple rows of a table
 \multirow@colwidth=\skip51
-\multirow@cntb=\count195
+\multirow@cntb=\count193
 \multirow@dima=\skip52
 \bigstrutjot=\dimen141
 )
@@ -39,7 +39,7 @@ Package: graphicx 2021/09/16 v1.2d Enhanced LaTeX Graphics (DPC,SPQR)
 
 (C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/latex/graphics\keyval.sty
 Package: keyval 2022/05/29 v1.15 key=value parser (DPC)
-\KV@toks@=\toks17
+\KV@toks@=\toks16
 )
 (C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/latex/graphics\graphics.sty
 Package: graphics 2022/03/10 v1.4e Standard LaTeX Graphics (DPC,SPQR)
@@ -64,19 +64,19 @@ Package: natbib 2010/09/13 8.31b (PWD, AO)
 \bibhang=\skip53
 \bibsep=\skip54
 LaTeX Info: Redefining \cite on input line 694.
-\c@NAT@ctr=\count196
+\c@NAT@ctr=\count194
 ) (C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/latex/amsfonts\amssymb.sty
 Package: amssymb 2013/01/14 v3.01 AMS font symbols
 (C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/latex/amsfonts\amsfonts.sty
 Package: amsfonts 2013/01/14 v3.01 Basic AMSFonts support
-\@emptytoks=\toks18
+\@emptytoks=\toks17
 \symAMSa=\mathgroup4
 \symAMSb=\mathgroup5
 LaTeX Font Info:    Redeclaring math symbol \hbar on input line 98.
 LaTeX Font Info:    Overwriting math alphabet `\mathfrak' in version `bold'
 (Font)                  U/euf/m/n --> U/euf/b/n on input line 106.
 )) (C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/latex/amsmath\amsmath.sty
-Package: amsmath 2023/05/13 v2.17o AMS math features
+Package: amsmath 2022/04/08 v2.17n AMS math features
 \@mathmargin=\skip55
 
 For additional information on amsmath, use the `?' option.
@@ -85,7 +85,7 @@ Package: amstext 2021/08/26 v2.01 AMS text
 
 (C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/latex/amsmath\amsgen.sty
 File: amsgen.sty 1999/11/30 v2.0 generic functions
-\@emptytoks=\toks19
+\@emptytoks=\toks18
 \ex@=\dimen144
 ))
 (C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/latex/amsmath\amsbsy.sty
@@ -95,14 +95,14 @@ Package: amsbsy 1999/11/29 v1.2d Bold Symbols
 (C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/latex/amsmath\amsopn.sty
 Package: amsopn 2022/04/08 v2.04 operator names
 )
-\inf@bad=\count197
+\inf@bad=\count195
 LaTeX Info: Redefining \frac on input line 234.
-\uproot@=\count198
-\leftroot@=\count199
+\uproot@=\count196
+\leftroot@=\count197
 LaTeX Info: Redefining \overline on input line 399.
 LaTeX Info: Redefining \colon on input line 410.
-\classnum@=\count266
-\DOTSCASE@=\count267
+\classnum@=\count198
+\DOTSCASE@=\count199
 LaTeX Info: Redefining \ldots on input line 496.
 LaTeX Info: Redefining \dots on input line 499.
 LaTeX Info: Redefining \cdots on input line 620.
@@ -115,55 +115,66 @@ LaTeX Info: Redefining \Bigg on input line 725.
 \big@size=\dimen146
 LaTeX Font Info:    Redeclaring font encoding OML on input line 743.
 LaTeX Font Info:    Redeclaring font encoding OMS on input line 744.
-\macc@depth=\count268
+\macc@depth=\count266
 LaTeX Info: Redefining \bmod on input line 905.
 LaTeX Info: Redefining \pmod on input line 910.
 LaTeX Info: Redefining \smash on input line 940.
 LaTeX Info: Redefining \relbar on input line 970.
 LaTeX Info: Redefining \Relbar on input line 971.
-\c@MaxMatrixCols=\count269
+\c@MaxMatrixCols=\count267
 \dotsspace@=\muskip16
-\c@parentequation=\count270
-\dspbrk@lvl=\count271
-\tag@help=\toks20
-\row@=\count272
-\column@=\count273
-\maxfields@=\count274
-\andhelp@=\toks21
+\c@parentequation=\count268
+\dspbrk@lvl=\count269
+\tag@help=\toks19
+\row@=\count270
+\column@=\count271
+\maxfields@=\count272
+\andhelp@=\toks20
 \eqnshift@=\dimen147
 \alignsep@=\dimen148
 \tagshift@=\dimen149
 \tagwidth@=\dimen150
 \totwidth@=\dimen151
 \lineht@=\dimen152
-\@envbody=\toks22
+\@envbody=\toks21
 \multlinegap=\skip56
 \multlinetaggap=\skip57
-\mathdisplay@stack=\toks23
+\mathdisplay@stack=\toks22
 LaTeX Info: Redefining \[ on input line 2953.
 LaTeX Info: Redefining \] on input line 2954.
 )
 (C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/latex/amscls\amsthm.sty
 Package: amsthm 2020/05/29 v2.20.6
-\thm@style=\toks24
-\thm@bodyfont=\toks25
-\thm@headfont=\toks26
-\thm@notefont=\toks27
-\thm@headpunct=\toks28
+\thm@style=\toks23
+\thm@bodyfont=\toks24
+\thm@headfont=\toks25
+\thm@notefont=\toks26
+\thm@headpunct=\toks27
 \thm@preskip=\skip58
 \thm@postskip=\skip59
 \thm@headsep=\skip60
-\dth@everypar=\toks29
+\dth@everypar=\toks28
 )
 (C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/latex/hyperref\hyperref.sty
-Package: hyperref 2023-11-26 v7.01g Hypertext links for LaTeX
+Package: hyperref 2023-02-07 v7.00v Hypertext links for LaTeX
 
-(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/generic/iftex\iftex.sty
+(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/generic/ltxcmds\ltxcmds.sty
+Package: ltxcmds 2020-05-10 v1.25 LaTeX kernel commands for general use (HO)
+) (C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/generic/iftex\iftex.sty
 Package: iftex 2022/02/03 v1.0f TeX engine tests
 )
+(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/generic/pdftexcmds\pdftexcmd
+s.sty
+Package: pdftexcmds 2020-06-27 v0.33 Utility functions of pdfTeX for LuaTeX (HO
+)
+
 (C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/generic/infwarerr\infwarerr.
 sty
 Package: infwarerr 2019/12/03 v1.5 Providing info/warning/error messages (HO)
+)
+Package pdftexcmds Info: \pdf@primitive is available.
+Package pdftexcmds Info: \pdf@ifprimitive is available.
+Package pdftexcmds Info: \pdfdraftmode found.
 )
 (C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/latex/kvsetkeys\kvsetkeys.st
 y
@@ -176,18 +187,7 @@ Package: kvdefinekeys 2019-12-19 v1.6 Define keys (HO)
 (C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/generic/pdfescape\pdfescape.
 sty
 Package: pdfescape 2019/12/09 v1.15 Implements pdfTeX's escape features (HO)
-
-(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/generic/ltxcmds\ltxcmds.sty
-Package: ltxcmds 2023-12-04 v1.26 LaTeX kernel commands for general use (HO)
 )
-(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/generic/pdftexcmds\pdftexcmd
-s.sty
-Package: pdftexcmds 2020-06-27 v0.33 Utility functions of pdfTeX for LuaTeX (HO
-)
-Package pdftexcmds Info: \pdf@primitive is available.
-Package pdftexcmds Info: \pdf@ifprimitive is available.
-Package pdftexcmds Info: \pdfdraftmode found.
-))
 (C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/latex/hycolor\hycolor.sty
 Package: hycolor 2020-01-27 v1.10 Color options for hyperref/bookmark (HO)
 )
@@ -199,7 +199,7 @@ Package: letltxmacro 2019/12/03 v1.6 Let assignment for LaTeX macros (HO)
 Package: auxhook 2019-12-17 v1.6 Hooks for auxiliary files (HO)
 )
 (C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/latex/hyperref\nameref.sty
-Package: nameref 2023-11-26 v2.56 Cross-referencing by name of section
+Package: nameref 2022-05-17 v2.50 Cross-referencing by name of section
 
 (C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/latex/refcount\refcount.sty
 Package: refcount 2019/12/15 v3.6 Data extraction from label references (HO)
@@ -212,44 +212,44 @@ Package: gettitlestring 2019/12/15 v1.6 Cleanup title references (HO)
 y
 Package: kvoptions 2022-06-15 v3.15 Key value format for package options (HO)
 ))
-\c@section@level=\count275
-)
-(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/latex/etoolbox\etoolbox.sty
-Package: etoolbox 2020/10/05 v2.5k e-TeX tools for LaTeX (JAW)
-\etb@tempcnta=\count276
+\c@section@level=\count273
 )
 \@linkdim=\dimen153
-\Hy@linkcounter=\count277
-\Hy@pagecounter=\count278
+\Hy@linkcounter=\count274
+\Hy@pagecounter=\count275
+
 (C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/latex/hyperref\pd1enc.def
-File: pd1enc.def 2023-11-26 v7.01g Hyperref: PDFDocEncoding definition (HO)
+File: pd1enc.def 2023-02-07 v7.00v Hyperref: PDFDocEncoding definition (HO)
 Now handling font encoding PD1 ...
 ... no UTF-8 mapping file for font encoding PD1
 )
 (C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/generic/intcalc\intcalc.sty
 Package: intcalc 2019/12/15 v1.3 Expandable calculations with integers (HO)
 )
-\Hy@SavedSpaceFactor=\count279
-(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/latex/hyperref\puenc.def
-File: puenc.def 2023-11-26 v7.01g Hyperref: PDF Unicode definition (HO)
+(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/generic/etexcmds\etexcmds.st
+y
+Package: etexcmds 2019/12/15 v1.7 Avoid name clashes with e-TeX commands (HO)
+)
+\Hy@SavedSpaceFactor=\count276
+ (C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/latex/hyperref\puenc.def
+File: puenc.def 2023-02-07 v7.00v Hyperref: PDF Unicode definition (HO)
 Now handling font encoding PU ...
 ... no UTF-8 mapping file for font encoding PU
 )
-Package hyperref Info: Option `breaklinks' set `true' on input line 4064.
-Package hyperref Info: Hyper figures OFF on input line 4181.
-Package hyperref Info: Link nesting OFF on input line 4186.
-Package hyperref Info: Hyper index ON on input line 4189.
-Package hyperref Info: Plain pages OFF on input line 4196.
-Package hyperref Info: Backreferencing OFF on input line 4201.
+Package hyperref Info: Option `breaklinks' set `true' on input line 4060.
+Package hyperref Info: Hyper figures OFF on input line 4177.
+Package hyperref Info: Link nesting OFF on input line 4182.
+Package hyperref Info: Hyper index ON on input line 4185.
+Package hyperref Info: Plain pages OFF on input line 4192.
+Package hyperref Info: Backreferencing OFF on input line 4197.
 Package hyperref Info: Implicit mode ON; LaTeX internals redefined.
-Package hyperref Info: Bookmarks ON on input line 4448.
-\c@Hy@tempcnt=\count280
-
+Package hyperref Info: Bookmarks ON on input line 4425.
+\c@Hy@tempcnt=\count277
 (C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/latex/url\url.sty
 \Urlmuskip=\muskip17
 Package: url 2013/09/16  ver 3.4  Verb mode for urls, etc.
 )
-LaTeX Info: Redefining \url on input line 4786.
+LaTeX Info: Redefining \url on input line 4763.
 \XeTeXLinkMargin=\dimen154
 
 (C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/generic/bitset\bitset.sty
@@ -260,36 +260,36 @@ c.sty
 Package: bigintcalc 2019/12/15 v1.5 Expandable calculations on big integers (HO
 )
 ))
-\Fld@menulength=\count281
+\Fld@menulength=\count278
 \Field@Width=\dimen155
 \Fld@charsize=\dimen156
-Package hyperref Info: Hyper figures OFF on input line 6065.
-Package hyperref Info: Link nesting OFF on input line 6070.
-Package hyperref Info: Hyper index ON on input line 6073.
-Package hyperref Info: backreferencing OFF on input line 6080.
-Package hyperref Info: Link coloring OFF on input line 6085.
-Package hyperref Info: Link coloring with OCG OFF on input line 6090.
-Package hyperref Info: PDF/A mode OFF on input line 6095.
+Package hyperref Info: Hyper figures OFF on input line 6042.
+Package hyperref Info: Link nesting OFF on input line 6047.
+Package hyperref Info: Hyper index ON on input line 6050.
+Package hyperref Info: backreferencing OFF on input line 6057.
+Package hyperref Info: Link coloring OFF on input line 6062.
+Package hyperref Info: Link coloring with OCG OFF on input line 6067.
+Package hyperref Info: PDF/A mode OFF on input line 6072.
 
 (C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/latex/base\atbegshi-ltx.sty
 Package: atbegshi-ltx 2021/01/10 v1.0c Emulation of the original atbegshi
 package with kernel methods
 )
-\Hy@abspage=\count282
-\c@Item=\count283
-\c@Hfootnote=\count284
+\Hy@abspage=\count279
+\c@Item=\count280
+\c@Hfootnote=\count281
 )
 Package hyperref Info: Driver (autodetected): hpdftex.
  (C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/latex/hyperref\hpdftex.def
-File: hpdftex.def 2023-11-26 v7.01g Hyperref driver for pdfTeX
+File: hpdftex.def 2023-02-07 v7.00v Hyperref driver for pdfTeX
 
 (C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/latex/base\atveryend-ltx.sty
 Package: atveryend-ltx 2020/08/19 v1.0a Emulation of the original atveryend pac
 kage
 with kernel methods
 )
-\Fld@listcount=\count285
-\c@bookmark@seq@number=\count286
+\Fld@listcount=\count282
+\c@bookmark@seq@number=\count283
 
 (C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/latex/rerunfilecheck\rerunfi
 lecheck.sty
@@ -317,7 +317,7 @@ Package: setspace 2022/12/04 v6.7b set line spacing
 ty
 (C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/generic/pgf/utilities\pgfuti
 l-common.tex
-\pgfutil@everybye=\toks30
+\pgfutil@everybye=\toks29
 \pgfutil@tempdima=\dimen157
 \pgfutil@tempdimb=\dimen158
 )
@@ -343,12 +343,12 @@ Package: pgfsys 2023-01-15 v3.1.10 (3.1.10)
 
 (C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/generic/pgf/utilities\pgfkey
 s.code.tex
-\pgfkeys@pathtoks=\toks31
-\pgfkeys@temptoks=\toks32
+\pgfkeys@pathtoks=\toks30
+\pgfkeys@temptoks=\toks31
 
 (C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/generic/pgf/utilities\pgfkey
 slibraryfiltered.code.tex
-\pgfkeys@tmptoks=\toks33
+\pgfkeys@tmptoks=\toks32
 ))
 \pgf@x=\dimen159
 \pgf@y=\dimen160
@@ -362,14 +362,14 @@ slibraryfiltered.code.tex
 \pgf@yd=\dimen168
 \w@pgf@writea=\write3
 \r@pgf@reada=\read2
-\c@pgf@counta=\count287
-\c@pgf@countb=\count288
-\c@pgf@countc=\count289
-\c@pgf@countd=\count290
-\t@pgf@toka=\toks34
-\t@pgf@tokb=\toks35
-\t@pgf@tokc=\toks36
-\pgf@sys@id@count=\count291
+\c@pgf@counta=\count284
+\c@pgf@countb=\count285
+\c@pgf@countc=\count286
+\c@pgf@countd=\count287
+\t@pgf@toka=\toks33
+\t@pgf@tokb=\toks34
+\t@pgf@tokc=\toks35
+\pgf@sys@id@count=\count288
 
 (C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/generic/pgf/systemlayer\pgf.
 cfg
@@ -388,32 +388,32 @@ File: pgfsys-common-pdf.def 2023-01-15 v3.1.10 (3.1.10)
 (C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/generic/pgf/systemlayer\pgfs
 yssoftpath.code.tex
 File: pgfsyssoftpath.code.tex 2023-01-15 v3.1.10 (3.1.10)
-\pgfsyssoftpath@smallbuffer@items=\count292
-\pgfsyssoftpath@bigbuffer@items=\count293
+\pgfsyssoftpath@smallbuffer@items=\count289
+\pgfsyssoftpath@bigbuffer@items=\count290
 )
 (C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/generic/pgf/systemlayer\pgfs
 ysprotocol.code.tex
 File: pgfsysprotocol.code.tex 2023-01-15 v3.1.10 (3.1.10)
 ))
 (C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/latex/xcolor\xcolor.sty
-Package: xcolor 2023/11/15 v3.01 LaTeX color extensions (UK)
+Package: xcolor 2022/06/12 v2.14 LaTeX color extensions (UK)
 
 (C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/latex/graphics-cfg\color.cfg
 File: color.cfg 2016/01/02 v1.6 sample color configuration
 )
-Package xcolor Info: Driver file: pdftex.def on input line 274.
+Package xcolor Info: Driver file: pdftex.def on input line 227.
 
 (C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/latex/graphics\mathcolor.ltx
 )
-Package xcolor Info: Model `cmy' substituted by `cmy0' on input line 1350.
-Package xcolor Info: Model `hsb' substituted by `rgb' on input line 1354.
-Package xcolor Info: Model `RGB' extended on input line 1366.
-Package xcolor Info: Model `HTML' substituted by `rgb' on input line 1368.
-Package xcolor Info: Model `Hsb' substituted by `hsb' on input line 1369.
-Package xcolor Info: Model `tHsb' substituted by `hsb' on input line 1370.
-Package xcolor Info: Model `HSB' substituted by `hsb' on input line 1371.
-Package xcolor Info: Model `Gray' substituted by `gray' on input line 1372.
-Package xcolor Info: Model `wave' substituted by `hsb' on input line 1373.
+Package xcolor Info: Model `cmy' substituted by `cmy0' on input line 1353.
+Package xcolor Info: Model `hsb' substituted by `rgb' on input line 1357.
+Package xcolor Info: Model `RGB' extended on input line 1369.
+Package xcolor Info: Model `HTML' substituted by `rgb' on input line 1371.
+Package xcolor Info: Model `Hsb' substituted by `hsb' on input line 1372.
+Package xcolor Info: Model `tHsb' substituted by `hsb' on input line 1373.
+Package xcolor Info: Model `HSB' substituted by `hsb' on input line 1374.
+Package xcolor Info: Model `Gray' substituted by `gray' on input line 1375.
+Package xcolor Info: Model `wave' substituted by `hsb' on input line 1376.
 )
 (C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/generic/pgf/basiclayer\pgfco
 re.code.tex
@@ -426,11 +426,11 @@ e.tex
 (C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/generic/pgf/math\pgfmathpars
 er.code.tex
 \pgfmath@dimen=\dimen169
-\pgfmath@count=\count294
+\pgfmath@count=\count291
 \pgfmath@box=\box54
-\pgfmath@toks=\toks37
-\pgfmath@stack@operand=\toks38
-\pgfmath@stack@operation=\toks39
+\pgfmath@toks=\toks36
+\pgfmath@stack@operand=\toks37
+\pgfmath@stack@operation=\toks38
 )
 (C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/generic/pgf/math\pgfmathfunc
 tions.code.tex)
@@ -454,7 +454,7 @@ tions.integerarithmetics.code.tex)
 .code.tex)
 (C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/generic/pgf/math\pgfmathfloa
 t.code.tex
-\c@pgfmathroundto@lastzeros=\count295
+\c@pgfmathroundto@lastzeros=\count292
 ))
 (C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/generic/pgf/math\pgfint.code
 .tex)
@@ -494,7 +494,7 @@ File: pgfcorescopes.code.tex 2023-01-15 v3.1.10 (3.1.10)
 \pgfpic=\box55
 \pgf@hbox=\box56
 \pgf@layerbox@main=\box57
-\pgf@picture@serial@count=\count296
+\pgf@picture@serial@count=\count293
 )
 (C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/generic/pgf/basiclayer\pgfco
 regraphicstate.code.tex
@@ -529,8 +529,8 @@ File: pgfcorearrows.code.tex 2023-01-15 v3.1.10 (3.1.10)
 reshade.code.tex
 File: pgfcoreshade.code.tex 2023-01-15 v3.1.10 (3.1.10)
 \pgf@max=\dimen193
-\pgf@sys@shading@range@num=\count297
-\pgf@shadingcount=\count298
+\pgf@sys@shading@range@num=\count294
+\pgf@shadingcount=\count295
 )
 (C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/generic/pgf/basiclayer\pgfco
 reimage.code.tex
@@ -590,8 +590,8 @@ e.tex))
 Package: pgffor 2023-01-15 v3.1.10 (3.1.10)
 \pgffor@iter=\dimen196
 \pgffor@skip=\dimen197
-\pgffor@stack=\toks40
-\pgffor@toks=\toks41
+\pgffor@stack=\toks39
+\pgffor@toks=\toks40
 ))
 (C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/generic/pgf/frontendlayer/ti
 kz\tikz.code.tex
@@ -600,7 +600,7 @@ Package: tikz 2023-01-15 v3.1.10 (3.1.10)
 (C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/generic/pgf/libraries\pgflib
 raryplothandlers.code.tex
 File: pgflibraryplothandlers.code.tex 2023-01-15 v3.1.10 (3.1.10)
-\pgf@plot@mark@count=\count299
+\pgf@plot@mark@count=\count296
 \pgfplotmarksize=\dimen198
 )
 \tikz@lastx=\dimen199
@@ -615,19 +615,19 @@ File: pgflibraryplothandlers.code.tex 2023-01-15 v3.1.10 (3.1.10)
 \tikz@figbox@bg=\box61
 \tikz@tempbox=\box62
 \tikz@tempbox@bg=\box63
-\tikztreelevel=\count300
-\tikznumberofchildren=\count301
-\tikznumberofcurrentchild=\count302
-\tikz@fig@count=\count303
+\tikztreelevel=\count297
+\tikznumberofchildren=\count298
+\tikznumberofcurrentchild=\count299
+\tikz@fig@count=\count300
 
 (C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/generic/pgf/modules\pgfmodul
 ematrix.code.tex
 File: pgfmodulematrix.code.tex 2023-01-15 v3.1.10 (3.1.10)
-\pgfmatrixcurrentrow=\count304
-\pgfmatrixcurrentcolumn=\count305
-\pgf@matrix@numberofcolumns=\count306
+\pgfmatrixcurrentrow=\count301
+\pgfmatrixcurrentcolumn=\count302
+\pgf@matrix@numberofcolumns=\count303
 )
-\tikz@expandcount=\count307
+\tikz@expandcount=\count304
 
 (C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/generic/pgf/frontendlayer/ti
 kz/libraries\tikzlibrarytopaths.code.tex
@@ -661,7 +661,7 @@ edecorations.code.tex
 \pgfdecoratedinputsegmentcompleteddistance=\dimen266
 \pgfdecoratedinputsegmentremainingdistance=\dimen267
 \pgf@decorate@distancetomove=\dimen268
-\pgf@decorate@repeatstate=\count308
+\pgf@decorate@repeatstate=\count305
 \pgfdecorationsegmentamplitude=\dimen269
 \pgfdecorationsegmentlength=\dimen270
 )
@@ -686,14 +686,14 @@ Package: caption3 2023/07/31 v2.4d caption3 kernel (AR)
 \caption@hangindent=\dimen278
 Package caption Info: Standard document class detected.
 )
-\c@caption@flags=\count309
-\c@continuedfloat=\count310
+\c@caption@flags=\count306
+\c@continuedfloat=\count307
 Package caption Info: hyperref package is loaded.
 )
 Package caption Info: New subtype `subfigure' on input line 238.
-\c@subfigure=\count311
+\c@subfigure=\count308
 Package caption Info: New subtype `subtable' on input line 238.
-\c@subtable=\count312
+\c@subtable=\count309
 )
 (C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/latex/booktabs\booktabs.sty
 Package: booktabs 2020/01/12 v1.61803398 Publication quality tables
@@ -707,23 +707,23 @@ Package: booktabs 2020/01/12 v1.61803398 Publication quality tables
 \cmidrulesep=\dimen286
 \cmidrulekern=\dimen287
 \defaultaddspace=\dimen288
-\@cmidla=\count313
-\@cmidlb=\count314
+\@cmidla=\count310
+\@cmidlb=\count311
 \@aboverulesep=\dimen289
 \@belowrulesep=\dimen290
-\@thisruleclass=\count315
-\@lastruleclass=\count316
+\@thisruleclass=\count312
+\@lastruleclass=\count313
 \@thisrulewidth=\dimen291
 ) (C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/latex/tools\multicol.sty
-Package: multicol 2023/03/30 v1.9f multicolumn formatting (FMi)
-\c@tracingmulticols=\count317
+Package: multicol 2021/11/30 v1.9d multicolumn formatting (FMi)
+\c@tracingmulticols=\count314
 \mult@box=\box65
 \multicol@leftmargin=\dimen292
-\c@unbalance=\count318
-\c@collectmore=\count319
-\doublecol@number=\count320
-\multicoltolerance=\count321
-\multicolpretolerance=\count322
+\c@unbalance=\count315
+\c@collectmore=\count316
+\doublecol@number=\count317
+\multicoltolerance=\count318
+\multicolpretolerance=\count319
 \full@width=\dimen293
 \page@free=\dimen294
 \premulticols=\dimen295
@@ -732,12 +732,12 @@ Package: multicol 2023/03/30 v1.9f multicolumn formatting (FMi)
 \multicolbaselineskip=\skip63
 \partial@page=\box66
 \last@line=\box67
-\mc@boxedresult=\box68
 \maxbalancingoverflow=\dimen297
-\mult@rightbox=\box69
-\mult@grightbox=\box70
-\mult@firstbox=\box71
-\mult@gfirstbox=\box72
+\mult@rightbox=\box68
+\mult@grightbox=\box69
+\mult@firstbox=\box70
+\mult@gfirstbox=\box71
+\@tempa=\box72
 \@tempa=\box73
 \@tempa=\box74
 \@tempa=\box75
@@ -773,16 +773,15 @@ Package: multicol 2023/03/30 v1.9f multicolumn formatting (FMi)
 \@tempa=\box105
 \@tempa=\box106
 \@tempa=\box107
-\@tempa=\box108
-\c@minrows=\count323
-\c@columnbadness=\count324
-\c@finalcolumnbadness=\count325
+\c@minrows=\count320
+\c@columnbadness=\count321
+\c@finalcolumnbadness=\count322
 \last@try=\dimen298
 \multicolovershoot=\dimen299
 \multicolundershoot=\dimen300
-\mult@nat@firstbox=\box109
-\colbreak@box=\box110
-\mc@col@check@num=\count326
+\mult@nat@firstbox=\box108
+\colbreak@box=\box109
+\mc@col@check@num=\count323
 )
 (C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/latex/graphics\rotating.sty
 Package: rotating 2016/08/11 v2.16d rotated objects in LaTeX
@@ -790,93 +789,97 @@ Package: rotating 2016/08/11 v2.16d rotated objects in LaTeX
 (C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/latex/base\ifthen.sty
 Package: ifthen 2022/04/13 v1.1d Standard LaTeX ifthen package (DPC)
 )
-\c@r@tfl@t=\count327
+\c@r@tfl@t=\count324
 \rotFPtop=\skip64
 \rotFPbot=\skip65
-\rot@float@box=\box111
-\rot@mess@toks=\toks42
+\rot@float@box=\box110
+\rot@mess@toks=\toks41
 )
 (C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/latex/tools\tabularx.sty
-Package: tabularx 2023/07/08 v2.11c `tabularx' package (DPC)
+Package: tabularx 2020/01/15 v2.11c `tabularx' package (DPC)
 
 (C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/latex/tools\array.sty
-Package: array 2023/10/16 v2.5g Tabular extension package (FMi)
+Package: array 2022/09/04 v2.5g Tabular extension package (FMi)
 \col@sep=\dimen301
-\ar@mcellbox=\box112
+\ar@mcellbox=\box111
 \extrarowheight=\dimen302
-\NC@list=\toks43
+\NC@list=\toks42
 \extratabsurround=\skip66
 \backup@length=\skip67
-\ar@cellbox=\box113
+\ar@cellbox=\box112
 )
 \TX@col@width=\dimen303
 \TX@old@table=\dimen304
 \TX@old@col=\dimen305
 \TX@target=\dimen306
 \TX@delta=\dimen307
-\TX@cols=\count328
-\TX@ftn=\toks44
+\TX@cols=\count325
+\TX@ftn=\toks43
 )
 (C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/latex/ulem\ulem.sty
-\UL@box=\box114
-\UL@hyphenbox=\box115
+\UL@box=\box113
+\UL@hyphenbox=\box114
 \UL@skip=\skip68
-\UL@hook=\toks45
+\UL@hook=\toks44
 \UL@height=\dimen308
-\UL@pe=\count329
+\UL@pe=\count326
 \UL@pixel=\dimen309
-\ULC@box=\box116
+\ULC@box=\box115
 Package: ulem 2019/11/18
 \ULdepth=\dimen310
 )
 (C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/latex/siunitx\siunitx.sty
-Package: siunitx 2025-02-19 v3.4.5 A comprehensive (SI) units package
-\l__siunitx_number_uncert_offset_int=\count330
-\l__siunitx_number_exponent_fixed_int=\count331
-\l__siunitx_number_min_decimal_int=\count332
-\l__siunitx_number_min_integer_int=\count333
-\l__siunitx_number_round_precision_int=\count334
-\l__siunitx_number_lower_threshold_int=\count335
-\l__siunitx_number_upper_threshold_int=\count336
-\l__siunitx_number_group_first_int=\count337
-\l__siunitx_number_group_size_int=\count338
-\l__siunitx_number_group_minimum_int=\count339
+Package: siunitx 2024-02-15 v3.3.12 A comprehensive (SI) units package
+\l__siunitx_number_uncert_offset_int=\count327
+\l__siunitx_number_exponent_fixed_int=\count328
+\l__siunitx_number_min_decimal_int=\count329
+\l__siunitx_number_min_integer_int=\count330
+\l__siunitx_number_round_precision_int=\count331
+\l__siunitx_number_lower_threshold_int=\count332
+\l__siunitx_number_upper_threshold_int=\count333
+\l__siunitx_number_group_first_int=\count334
+\l__siunitx_number_group_size_int=\count335
+\l__siunitx_number_group_minimum_int=\count336
 \l__siunitx_angle_tmp_dim=\dimen311
-\l__siunitx_angle_marker_box=\box117
-\l__siunitx_angle_unit_box=\box118
-\l__siunitx_compound_count_int=\count340
+\l__siunitx_angle_marker_box=\box116
+\l__siunitx_angle_unit_box=\box117
+\l__siunitx_compound_count_int=\count337
 
 (C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/latex/translations\translati
 ons.sty
 Package: translations 2022/02/05 v1.12 internationalization of LaTeX2e packages
  (CN)
-)
-\l__siunitx_table_tmp_box=\box119
+
+(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/latex/etoolbox\etoolbox.sty
+Package: etoolbox 2020/10/05 v2.5k e-TeX tools for LaTeX (JAW)
+\etb@tempcnta=\count338
+))
+\l__siunitx_table_tmp_box=\box118
 \l__siunitx_table_tmp_dim=\dimen312
 \l__siunitx_table_column_width_dim=\dimen313
-\l__siunitx_table_integer_box=\box120
-\l__siunitx_table_decimal_box=\box121
-\l__siunitx_table_uncert_box=\box122
-\l__siunitx_table_before_box=\box123
-\l__siunitx_table_after_box=\box124
+\l__siunitx_table_integer_box=\box119
+\l__siunitx_table_decimal_box=\box120
+\l__siunitx_table_uncert_box=\box121
+\l__siunitx_table_before_box=\box122
+\l__siunitx_table_after_box=\box123
 \l__siunitx_table_before_dim=\dimen314
 \l__siunitx_table_carry_dim=\dimen315
-\l__siunitx_unit_tmp_int=\count341
-\l__siunitx_unit_position_int=\count342
-\l__siunitx_unit_total_int=\count343
+\l__siunitx_unit_tmp_int=\count339
+\l__siunitx_unit_position_int=\count340
+\l__siunitx_unit_total_int=\count341
 )
 (C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/latex/footmisc\footmisc.sty
-Package: footmisc 2024/12/24 v6.0g a miscellany of footnote facilities
-\FN@temptoken=\toks46
+Package: footmisc 2023/07/05 v6.0f a miscellany of footnote facilities
+\FN@temptoken=\toks45
 \footnotemargin=\dimen316
 \@outputbox@depth=\dimen317
-Package footmisc Info: Declaring symbol style bringhurst on input line 699.
-Package footmisc Info: Declaring symbol style chicago on input line 707.
-Package footmisc Info: Declaring symbol style wiley on input line 716.
-Package footmisc Info: Declaring symbol style lamport-robust on input line 727.
+Package footmisc Info: Declaring symbol style bringhurst on input line 696.
+Package footmisc Info: Declaring symbol style chicago on input line 704.
+Package footmisc Info: Declaring symbol style wiley on input line 713.
+Package footmisc Info: Declaring symbol style lamport-robust on input line 724.
 
-Package footmisc Info: Declaring symbol style lamport* on input line 747.
-Package footmisc Info: Declaring symbol style lamport*-robust on input line 768
+Package footmisc Info: Declaring symbol style lamport* on input line 744.
+Package footmisc Info: Declaring symbol style lamport*-robust on input line 765
 .
 ) (C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/latex/comment\comment.sty
 \CommentStream=\write4
@@ -887,9 +890,9 @@ h' as default language. on input line 70.
 
 (C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/latex/l3backend\l3backend-pd
 ftex.def
-File: l3backend-pdftex.def 2024-01-04 L3 backend support: PDF output (pdfTeX)
-\l__color_backend_stack_int=\count344
-\l__pdf_internal_box=\box125
+File: l3backend-pdftex.def 2023-03-30 L3 backend support: PDF output (pdfTeX)
+\l__color_backend_stack_int=\count342
+\l__pdf_internal_box=\box124
 ) (paper_draft.aux
 
 LaTeX Warning: Label `fig:decomp_peaks' multiply defined.
@@ -919,17 +922,17 @@ LaTeX Font Info:    ... okay on input line 70.
 (C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/context/base/mkii\supp-pdf.m
 kii
 [Loading MPS to PDF converter (version 2006.09.02).]
-\scratchcounter=\count345
+\scratchcounter=\count343
 \scratchdimen=\dimen318
-\scratchbox=\box126
-\nofMPsegments=\count346
-\nofMParguments=\count347
-\everyMPshowfont=\toks47
-\MPscratchCnt=\count348
+\scratchbox=\box125
+\nofMPsegments=\count344
+\nofMParguments=\count345
+\everyMPshowfont=\toks46
+\MPscratchCnt=\count346
 \MPscratchDim=\dimen319
-\MPnumerator=\count349
-\makeMPintoPDFobject=\count350
-\everyMPtoPDFconversion=\toks48
+\MPnumerator=\count347
+\makeMPintoPDFobject=\count348
+\everyMPtoPDFconversion=\toks47
 )
 (C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/latex/epstopdf-pkg\epstopdf-
 base.sty
@@ -980,274 +983,160 @@ Underfull \hbox (badness 10000) in paragraph at lines 78--81
 
 [1
 
-{C:/Users/aleach/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map}]
+{C:/Users/aleach/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map}] [2]
+[3] [4] [5] [6] [7]
+Underfull \hbox (badness 1648) in paragraph at lines 146--146
+[][][]\OT1/cmr/m/n/10 Cite. Sub-se-quently re-duced to 0.59t/MWh (2015), 0.53t/
+MWh (2019), 0.52t/MWh(2020), and
+ []
 
-Package natbib Warning: Citation `fabra_reguant' on page 2 undefined on input l
-ine 94.
-
-
-Package natbib Warning: Citation `hintermann16_germany' on page 2 undefined on 
-input line 94.
-
-
-Package natbib Warning: Citation `fabra_reguant' on page 2 undefined on input l
-ine 94.
-
-
-Package natbib Warning: Citation `hintermann16_germany' on page 2 undefined on 
-input line 94.
-
-
-Package natbib Warning: Citation `fabra_reguant' on page 2 undefined on input l
-ine 94.
-
-
-Package natbib Warning: Citation `hintermann16_germany' on page 2 undefined on 
-input line 94.
-
-[2]
-
-Package natbib Warning: Citation `cullen_mansur' on page 3 undefined on input l
-ine 96.
-
-
-Package natbib Warning: Citation `buchanan1969external' on page 3 undefined on 
-input line 98.
-
-
-Package natbib Warning: Citation `borenstein_bushnell_wolak_2002' on page 3 und
-efined on input line 98.
-
-
-Package natbib Warning: Citation `fowlie_reguant_ryan_2016' on page 3 undefined
- on input line 98.
-
-
-Package natbib Warning: Citation `miller_cement' on page 3 undefined on input l
-ine 98.
-
-
-Package natbib Warning: Citation `holland_emissions_2012' on page 3 undefined o
-n input line 98.
-
-
-Package natbib Warning: Citation `fischerfox07' on page 3 undefined on input li
-ne 100.
-
-
-Package natbib Warning: Citation `fischerfox12' on page 3 undefined on input li
-ne 100.
-
-
-Package natbib Warning: Citation `burtraw_palmer_2008' on page 3 undefined on i
-nput line 100.
-
-[3] [4] [5] [6] [7] [8] [9] [10]
-<../images/loads_clean.png, id=143, 1011.78pt x 505.89pt>
+[8] [9]
+<../../SGER/sector_compliance_cost.png, id=200, 867.24pt x 361.35pt>
+File: ../../SGER/sector_compliance_cost.png Graphic file (type png)
+<use ../../SGER/sector_compliance_cost.png>
+Package pdftex.def Info: ../../SGER/sector_compliance_cost.png  used on input l
+ine 155.
+(pdftex.def)             Requested size: 469.75499pt x 195.7326pt.
+ [10 <../../SGER/sector_compliance_cost.png>]
+<../images/loads_clean.png, id=212, 1011.78pt x 505.89pt>
 File: ../images/loads_clean.png Graphic file (type png)
 <use ../images/loads_clean.png>
-Package pdftex.def Info: ../images/loads_clean.png  used on input line 144.
+Package pdftex.def Info: ../images/loads_clean.png  used on input line 167.
 (pdftex.def)             Requested size: 469.75499pt x 234.88132pt.
-<../images/peak_prices.png, id=144, 1011.78pt x 505.89pt>
+<../images/peak_prices.png, id=213, 1011.78pt x 505.89pt>
 File: ../images/peak_prices.png Graphic file (type png)
 <use ../images/peak_prices.png>
-Package pdftex.def Info: ../images/peak_prices.png  used on input line 145.
+Package pdftex.def Info: ../images/peak_prices.png  used on input line 168.
 (pdftex.def)             Requested size: 469.75499pt x 234.88132pt.
 
 
-LaTeX Warning: `h' float specifier changed to `ht'.
+LaTeX Warning: `!h' float specifier changed to `!ht'.
 
-<../images/gen_fuel_policies.png, id=147, 1156.32pt x 578.16pt>
+[11] [12 <../images/loads_clean.png> <../images/peak_prices.png>]
+<../images/gen_fuel_policies.png, id=229, 1300.86pt x 722.7pt>
 File: ../images/gen_fuel_policies.png Graphic file (type png)
 <use ../images/gen_fuel_policies.png>
-Package pdftex.def Info: ../images/gen_fuel_policies.png  used on input line 15
-5.
-(pdftex.def)             Requested size: 469.75499pt x 234.87692pt.
-
-Package natbib Warning: Citation `alberta_electricity_system_operator_capacity-
-market-brochurepdf_2017' on page 11 undefined on input line 160.
-
-
-Package natbib Warning: Citation `alberta_electricity_system_operator_overview_
-2017' on page 11 undefined on input line 160.
-
-[11]
-<../images/load_compare.png, id=159, 1011.78pt x 275.3487pt>
+Package pdftex.def Info: ../images/gen_fuel_policies.png  used on input line 17
+8.
+(pdftex.def)             Requested size: 469.75499pt x 260.9768pt.
+<../images/load_compare.png, id=231, 1011.78pt x 275.3487pt>
 File: ../images/load_compare.png Graphic file (type png)
 <use ../images/load_compare.png>
-Package pdftex.def Info: ../images/load_compare.png  used on input line 167.
+Package pdftex.def Info: ../images/load_compare.png  used on input line 186.
 (pdftex.def)             Requested size: 469.75499pt x 127.84254pt.
- [12]
+ [13 <../images/gen_fuel_policies.png>]
+<../images/price_capture.png, id=243, 1084.05pt x 578.16pt>
+File: ../images/price_capture.png Graphic file (type png)
+<use ../images/price_capture.png>
+Package pdftex.def Info: ../images/price_capture.png  used on input line 194.
+(pdftex.def)             Requested size: 469.75499pt x 250.53596pt.
+
 
 LaTeX Warning: `!h' float specifier changed to `!ht'.
 
-
-Package natbib Warning: Citation `rivers_stretching_2020' on page 13 undefined 
-on input line 172.
-
-<../images/price_capture_all.png, id=169, 778.29231pt x 416.9423pt>
-File: ../images/price_capture_all.png Graphic file (type png)
-<use ../images/price_capture_all.png>
-Package pdftex.def Info: ../images/price_capture_all.png  used on input line 17
-5.
-(pdftex.def)             Requested size: 469.75499pt x 251.65602pt.
-
-LaTeX Warning: `!h' float specifier changed to `!ht'.
-
-<../images/mkt_power.png, id=170, 1011.78pt x 505.89pt>
+[14 <../images/load_compare.png> <../images/price_capture.png>] [15]
+<../images/mkt_power.png, id=270, 1156.32pt x 650.43pt>
 File: ../images/mkt_power.png Graphic file (type png)
 <use ../images/mkt_power.png>
-Package pdftex.def Info: ../images/mkt_power.png  used on input line 215.
-(pdftex.def)             Requested size: 422.77664pt x 211.39165pt.
-
-LaTeX Warning: `!h' float specifier changed to `!ht'.
-
-
-Package natbib Warning: Citation `kleit_electricity_2007' on page 13 undefined 
-on input line 224.
-
-
-Package natbib Warning: Citation `bankes_termination_2016' on page 13 undefined
- on input line 224.
-
-
-Package natbib Warning: Citation `leach_tombe_ppa' on page 13 undefined on inpu
-t line 224.
-
-
-Package natbib Warning: Citation `leach_tombe_ppa' on page 13 undefined on inpu
-t line 224.
-
-[13]
-<../../SGER/compliance_cost_policies.png, id=182, 1011.78pt x 433.62pt>
-File: ../../SGER/compliance_cost_policies.png Graphic file (type png)
-<use ../../SGER/compliance_cost_policies.png>
-Package pdftex.def Info: ../../SGER/compliance_cost_policies.png  used on input
- line 232.
-(pdftex.def)             Requested size: 469.75499pt x 201.32686pt.
- [14] [15]
-<../images/sampling.png, id=195, 1011.78pt x 505.89pt>
+Package pdftex.def Info: ../images/mkt_power.png  used on input line 236.
+(pdftex.def)             Requested size: 446.26582pt x 251.01677pt.
+ [16 <../images/mkt_power.png>] [17] [18] [19] [20]
+<../images/sampling.png, id=307, 1011.78pt x 505.89pt>
 File: ../images/sampling.png Graphic file (type png)
 <use ../images/sampling.png>
-Package pdftex.def Info: ../images/sampling.png  used on input line 250.
+Package pdftex.def Info: ../images/sampling.png  used on input line 279.
 (pdftex.def)             Requested size: 422.77664pt x 211.39165pt.
- [16]
-<../images/coal_merit.png, id=207, 1011.78pt x 722.7pt>
+ [21]
+<../images/coal_merit.png, id=317, 1011.78pt x 722.7pt>
 File: ../images/coal_merit.png Graphic file (type png)
 <use ../images/coal_merit.png>
-Package pdftex.def Info: ../images/coal_merit.png  used on input line 266.
+Package pdftex.def Info: ../images/coal_merit.png  used on input line 295.
 (pdftex.def)             Requested size: 211.3883pt x 150.98853pt.
-<../images/coal_synth_merit.png, id=208, 1011.78pt x 722.7pt>
+<../images/coal_synth_merit.png, id=318, 1011.78pt x 722.7pt>
 File: ../images/coal_synth_merit.png Graphic file (type png)
 <use ../images/coal_synth_merit.png>
-Package pdftex.def Info: ../images/coal_synth_merit.png  used on input line 272
+Package pdftex.def Info: ../images/coal_synth_merit.png  used on input line 301
 .
 (pdftex.def)             Requested size: 211.3883pt x 150.98853pt.
-<../images/all_coal_merit.png, id=212, 1011.78pt x 722.7pt>
+ [22 <../images/sampling.png>]
+<../images/all_coal_merit.png, id=329, 1011.78pt x 722.7pt>
 File: ../images/all_coal_merit.png Graphic file (type png)
 <use ../images/all_coal_merit.png>
-Package pdftex.def Info: ../images/all_coal_merit.png  used on input line 286.
+Package pdftex.def Info: ../images/all_coal_merit.png  used on input line 315.
 (pdftex.def)             Requested size: 211.3883pt x 150.98853pt.
-<../images/coal_synth_2019.png, id=213, 1011.78pt x 722.7pt>
+<../images/coal_synth_2019.png, id=330, 1011.78pt x 722.7pt>
 File: ../images/coal_synth_2019.png Graphic file (type png)
 <use ../images/coal_synth_2019.png>
-Package pdftex.def Info: ../images/coal_synth_2019.png  used on input line 292.
+Package pdftex.def Info: ../images/coal_synth_2019.png  used on input line 321.
 
 (pdftex.def)             Requested size: 211.3883pt x 150.98853pt.
-<../images/expectation.png, id=214, 844.87071pt x 507.61072pt>
+<../images/expectation.png, id=331, 844.87071pt x 507.61072pt>
 File: ../images/expectation.png Graphic file (type png)
 <use ../images/expectation.png>
-Package pdftex.def Info: ../images/expectation.png  used on input line 303.
+Package pdftex.def Info: ../images/expectation.png  used on input line 332.
 (pdftex.def)             Requested size: 469.75499pt x 282.23848pt.
 
 
 LaTeX Warning: `h' float specifier changed to `ht'.
 
-[17]
+[23 <../images/coal_merit.png> <../images/coal_synth_merit.png>]
 
-Package natbib Warning: Citation `fabra_reguant' on page 18 undefined on input 
-line 320.
+LaTeX Warning: Reference `fig:price_sense' on page 24 undefined on input line 3
+49.
 
-
-Package natbib Warning: Citation `hintermann16_germany' on page 18 undefined on
- input line 320.
-
-
-LaTeX Warning: Reference `fig:price_sense' on page 18 undefined on input line 3
-20.
-
-[18]
-<../images/all_plants_net.png, id=235, 1011.78pt x 578.16pt>
+[24 <../images/all_coal_merit.png> <../images/coal_synth_2019.png>] [25 <../ima
+ges/expectation.png>]
+<../images/all_plants_net.png, id=364, 1011.78pt x 578.16pt>
 File: ../images/all_plants_net.png Graphic file (type png)
 <use ../images/all_plants_net.png>
-Package pdftex.def Info: ../images/all_plants_net.png  used on input line 336.
+Package pdftex.def Info: ../images/all_plants_net.png  used on input line 360.
 (pdftex.def)             Requested size: 422.77664pt x 241.59045pt.
- [19]
-<../images/all_plants_net_peak.png, id=244, 1011.78pt x 578.16pt>
+ [26]
+<../images/all_plants_net_peak.png, id=372, 1011.78pt x 578.16pt>
 File: ../images/all_plants_net_peak.png Graphic file (type png)
 <use ../images/all_plants_net_peak.png>
 Package pdftex.def Info: ../images/all_plants_net_peak.png  used on input line 
-346.
+370.
 (pdftex.def)             Requested size: 422.77664pt x 241.59045pt.
-<../images/all_plants_no_peaks.png, id=246, 1011.78pt x 578.16pt>
+ [27 <../images/all_plants_net.png>]
+<../images/all_plants_no_peaks.png, id=380, 1011.78pt x 578.16pt>
 File: ../images/all_plants_no_peaks.png Graphic file (type png)
 <use ../images/all_plants_no_peaks.png>
 Package pdftex.def Info: ../images/all_plants_no_peaks.png  used on input line 
-359.
+383.
 (pdftex.def)             Requested size: 422.77664pt x 241.59045pt.
-<../images/all_plants.png, id=247, 1011.78pt x 650.43pt>
+<../images/all_plants.png, id=381, 1011.78pt x 650.43pt>
 File: ../images/all_plants.png Graphic file (type png)
 <use ../images/all_plants.png>
-Package pdftex.def Info: ../images/all_plants.png  used on input line 366.
+Package pdftex.def Info: ../images/all_plants.png  used on input line 390.
 (pdftex.def)             Requested size: 422.77664pt x 271.78926pt.
+ [28 <../images/all_plants_net_peak.png>]
 
+LaTeX Warning: Text page 29 contains only floats.
 
-Package natbib Warning: Citation `cullen_mansur' on page 20 undefined on input 
-line 371.
-
-[20] [21]
-<../images/by_type_net.png, id=260, 1011.78pt x 1011.78pt>
+[29 <../images/all_plants_no_peaks.png> <../images/all_plants.png>]
+<../images/by_type_net.png, id=399, 1011.78pt x 1011.78pt>
 File: ../images/by_type_net.png Graphic file (type png)
 <use ../images/by_type_net.png>
-Package pdftex.def Info: ../images/by_type_net.png  used on input line 378.
+Package pdftex.def Info: ../images/by_type_net.png  used on input line 402.
 (pdftex.def)             Requested size: 422.77664pt x 422.78331pt.
 
 
 LaTeX Warning: `!h' float specifier changed to `!ht'.
 
-<../images/offer.png, id=261, 1011.78pt x 1084.05pt>
+[30] [31 <../images/by_type_net.png>]
+<../images/offer.png, id=410, 1011.78pt x 1084.05pt>
 File: ../images/offer.png Graphic file (type png)
 <use ../images/offer.png>
-Package pdftex.def Info: ../images/offer.png  used on input line 391.
+Package pdftex.def Info: ../images/offer.png  used on input line 415.
 (pdftex.def)             Requested size: 422.77664pt x 452.98213pt.
-[22]
-Overfull \hbox (3.9735pt too wide) in paragraph at lines 408--409
+ [32] [33 <../images/offer.png>]
+Overfull \hbox (3.9735pt too wide) in paragraph at lines 432--433
 []\OT1/cmr/m/n/12 ENMAX - pro-to-typ-i-cal re-sults partly be-cause its fleet i
 s largely highly-flexible combined-
  []
 
-[23] (paper_draft.bbl
-
-Package natbib Warning: Empty `thebibliography' environment on input line 3.
-
-)
-
-Package natbib Warning: There were undefined citations.
-
-[24] [25 <../images/loads_clean.png> <../images/peak_prices.png>] [26 <../image
-s/gen_fuel_policies.png> <../images/load_compare.png>] [27 <../images/price_cap
-ture_all.png (PNG copy)> <../images/mkt_power.png>] [28 <../../SGER/compliance_
-cost_policies.png> <../images/sampling.png>] [29 <../images/coal_merit.png> <..
-/images/coal_synth_merit.png> <../images/all_coal_merit.png> <../images/coal_sy
-nth_2019.png>] [30 <../images/expectation.png> <../images/all_plants_net.png>]
-[31 <../images/all_plants_net_peak.png> <../images/all_plants_no_peaks.png>]
-[32 <../images/all_plants.png>] [33 <../images/by_type_net.png>] [34 <../images
-/offer.png>] (paper_draft.aux)
- ***********
-LaTeX2e <2023-11-01> patch level 1
-L3 programming layer <2024-01-04>
- ***********
-
+(paper_draft.bbl [34] [35]) [36] (paper_draft.aux)
 
 LaTeX Warning: There were undefined references.
 
@@ -1255,16 +1144,16 @@ LaTeX Warning: There were undefined references.
 LaTeX Warning: There were multiply-defined labels.
 
 Package rerunfilecheck Info: File `paper_draft.out' has not changed.
-(rerunfilecheck)             Checksum: CC89DF21922DD23C26E1C85D67E54763;1720.
+(rerunfilecheck)             Checksum: 9248E8F3A04D9EA9C352DC77C15FADFC;1656.
  ) 
 Here is how much of TeX's memory you used:
- 27935 strings out of 474486
- 584062 string characters out of 5743283
- 1947542 words of memory out of 5000000
- 49710 multiletter control sequences out of 15000+600000
- 571483 words of font info for 87 fonts, out of 8000000 for 9000
+ 28067 strings out of 476331
+ 588475 string characters out of 5787294
+ 1867660 words of memory out of 5000000
+ 47939 multiletter control sequences out of 15000+600000
+ 525701 words of font info for 83 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 84i,16n,93p,2574b,1091s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 84i,16n,89p,2732b,1026s stack positions out of 10000i,1000n,20000p,200000b,200000s
 
 pdfTeX warning (dest): name{Hfootnote.19} has been referenced but does not exis
 t, replaced by a fixed one
@@ -1356,15 +1245,16 @@ mi8.pfb><C:/Users/aleach/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfo
 nts/cm/cmr10.pfb><C:/Users/aleach/AppData/Local/Programs/MiKTeX/fonts/type1/pub
 lic/amsfonts/cm/cmr12.pfb><C:/Users/aleach/AppData/Local/Programs/MiKTeX/fonts/
 type1/public/amsfonts/cm/cmr17.pfb><C:/Users/aleach/AppData/Local/Programs/MiKT
-eX/fonts/type1/public/amsfonts/cm/cmr7.pfb><C:/Users/aleach/AppData/Local/Progr
-ams/MiKTeX/fonts/type1/public/amsfonts/cm/cmr8.pfb><C:/Users/aleach/AppData/Loc
-al/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy10.pfb><C:/Users/aleach/A
-ppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmti10.pfb><C:/User
-s/aleach/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmti12.pf
-b>
-Output written on paper_draft.pdf (34 pages, 3689752 bytes).
+eX/fonts/type1/public/amsfonts/cm/cmr6.pfb><C:/Users/aleach/AppData/Local/Progr
+ams/MiKTeX/fonts/type1/public/amsfonts/cm/cmr7.pfb><C:/Users/aleach/AppData/Loc
+al/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr8.pfb><C:/Users/aleach/App
+Data/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy10.pfb><C:/Users/
+aleach/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmti10.pfb>
+<C:/Users/aleach/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/c
+mti12.pfb>
+Output written on paper_draft.pdf (36 pages, 4224787 bytes).
 PDF statistics:
- 431 PDF objects out of 1000 (max. 8388607)
- 84 named destinations out of 1000 (max. 500000)
+ 539 PDF objects out of 1000 (max. 8388607)
+ 113 named destinations out of 1000 (max. 500000)
  196 words of extra memory for PDF output out of 10000 (max. 10000000)
 
