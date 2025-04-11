@@ -1,4 +1,5 @@
 \documentclass[12pt]{article}
+
 \usepackage{fullpage}
 \usepackage{multirow}
 \usepackage{graphicx}
@@ -13,21 +14,16 @@
     urlcolor= blue
 }
 
-\usepackage{setspace}
-\usepackage{tikz}
-\usetikzlibrary{patterns,arrows,decorations.pathreplacing}
-\usepackage{subcaption}
 \usepackage{booktabs}
+\usepackage{setspace}
 \usepackage{multicol}
-\usepackage{rotating}
-\usepackage{tabularx}
-\usepackage[normalem]{ulem}
 
 \usepackage{siunitx}
+
 \sisetup{group-separator={,},group-minimum-digits=3}
 
 \usepackage[hang,flushmargin]{footmisc}
-
+\usepackage{lscape}
 \newcommand{\insitu}{\textit{in situ} }
 \newcommand{\SGER}{\textit{SGER} }
 \newcommand{\CCIR}{\textit{CCIR} }
@@ -329,7 +325,7 @@ There is a lot of day-to-day and hour-to-hour variability in how coal units are 
 For our analysis sample, we create four types of synthetic merit orders. First, for very general results, we characterize the entire merit order using the methodology outlined above. Next, we decompose the results for dispatchable generation types (coal and natural gas plants). We also use the fact that, from 2013 through 2019, the AESO provides offer control by unit as part of their merit order releases. We use this information to construct synthetic supply curves for each of the major participants in the Alberta power market. We also look at the behaviour of some of the largest facilities in the province. This means that we have facility-level, firm- or portfolio-level and market-level synthetic merit orders to analyze.
 
 \begin{figure}[h]%%
-	\centering \vspace{-.25cm} \includegraphics[width=6.5in]{../images/expectation.png}
+	\centering \vspace{-.25cm} \includegraphics[width=6in]{../images/expectation.png}
 \vspace{-0.75cm}	\caption{\textit{Ex ante} expected outcome for estimates of $\zeta$ or (-) $\kappa$ for offer percentiles $j\in (0,100)$ in (\ref{eq:regression}).}
 \label{fig:expectation}
 \end{figure}
@@ -357,7 +353,7 @@ The most general results derive from the analysis of the market as a whole. Here
 
 \begin{figure}[t]
     \centering
-     \includegraphics[width=.9\textwidth]{../images/all_plants_net.png}
+     \includegraphics[width=.8\textwidth]{../images/all_plants_net.png}
     \caption{Estimated marginal effect of net carbon charges on power offers, all plant types and all hours. Error bars denote 95\% confidence intervals}
     \label{fig:net_all}
 \end{figure}
@@ -367,11 +363,10 @@ Since the marginal cost of offered power becomes less elastic (the slope of the 
 
 \begin{figure}[t]
     \centering
-     \includegraphics[width=.9\textwidth]{../images/all_plants_net_peak.png}
-    \caption{Estimated marginal effect of net carbon charges on power offers, all plant types and all hours. Error bars denote 95\% confidence intervals}
+     \includegraphics[width=.8\textwidth]{../images/all_plants_net_peak_flex.png}
+    \caption{Estimated marginal effect of net carbon charges on power offers, all plant types for peak and off-peak hours. Error bars denote 95\% confidence intervals}
     \label{fig:net_peak}
 \end{figure}
-
 
 Our data allows a decomposition of the net effect of carbon pricing into a carbon tax and an OBA effect, although with some important caveats. Recall that what we are calling a carbon tax effect in any given hour is the average annual carbon tax per MWh of generation, and so we will miss impacts that occur as a result of hourly ramping or other intensive margin conditions. Also, for some facilities, we have emissions-intensity data at the aggregate level, and in some cases a facility may include as many as six generating units. Where the average emissions intensity varies across units within the facility, we will measure the individual unit intensities with error as well. As such, we knot that our marginal effective costs of carbon pricing are measured imprecisely. The output-based allocations are consistent through the year on a per-MWh basis, and are determined at the facility level, so we have more accurate measures of these values in our data. Again, our estimation strategy is such that a coefficient with an absolute value of 1 where perfect pass-through has occurred, with a value of negative 1 for the full pass through of an output-based allocation to lower offers and a value of 1 for the full pass-through of carbon taxes to higher power offers.
 
@@ -380,14 +375,14 @@ Our results, shown in Figure \ref{fig:decomp_all_hours}, mostly reflect an intui
 
 \begin{figure}[!ht]
     \centering
-     \includegraphics[width=.9\textwidth]{../images/all_plants_no_peaks.png}
+     \includegraphics[width=.8\textwidth]{../images/all_plants_no_peaks.png}
     \caption{Estimated marginal effect of net carbon charges on power offers, all plant types and all hours. Error bars denote 95\% confidence intervals}
     \label{fig:decomp_all_hours}
 \end{figure}
 
 \begin{figure}[!ht]
     \centering
-     \includegraphics[width=.9\textwidth]{../images/all_plants.png}
+     \includegraphics[width=.8\textwidth]{../images/all_plants_ctax_peak_flex.png}
     \caption{Estimated marginal effect of net carbon charges on power offers, all plant types. Error bars denote 95\% confidence intervals}
     \label{fig:decomp_peaks}
 \end{figure}
@@ -399,7 +394,7 @@ We know that different generator types tend to offer their power into the market
 
 \begin{figure}[h!]
     \centering
-     \includegraphics[width=.9\textwidth]{../images/by_type_net.png}
+     \includegraphics[width=.8\textwidth]{../images/by_plant_net.png}
     \caption{Estimated marginal effect of net carbon charges on power offers, all plant types. Error bars denote 95\% confidence intervals}
     \label{fig:decomp_peaks}
 \end{figure}
@@ -412,10 +407,21 @@ There are a few factors at play that may explain this counter-intuitive result: 
 
 \begin{figure}[ht!]
     \centering
-     \includegraphics[width=.9\textwidth]{../images/offer.png}
-    \caption{Estimated marginal effect of net carbon charges on power offers, all plant types, by controlling entity. Error bars denote 95\% confidence intervals}
+     \includegraphics[width=.8\textwidth]{../images/offer.png}
+    \caption{Estimated marginal effect of net carbon charges on power offers, fossil fuel plants. Error bars denote 95\% confidence intervals}
     \label{fig:offer}
 \end{figure}
+
+
+
+\begin{figure}[ht!]
+    \centering
+     \includegraphics[width=.8\textwidth]{../images/offers_bp.png}
+    \caption{Estimated marginal effect of net carbon charges on Balancing Pool power offers. Error bars denote 95\% confidence intervals}
+    \label{fig:offer_bp}
+\end{figure}
+
+
 
 
 \subsection{Impacts By Offer Control}
@@ -438,8 +444,41 @@ The results by offer control show that:
 \section{Conclusion}\label{sec:conclusion}
 
 To be written.
+\newpage
+\begin{landscape}
+\input{tables/all_plants_no_peaks.tex}
+\end{landscape}
+
+\begin{landscape}
+\input{tables/all_plants_net.tex}
+\end{landscape}
+
+\begin{landscape}
+\input{tables/all_plants_net_flex_peak.tex}
+\end{landscape}
+
+\begin{landscape}
+\input{tables/all_plants_net_flex_offpeak.tex}
+\end{landscape}
+
+\begin{landscape}
+\input{tables/all_plants_ctax_flex_peak.tex}
+\end{landscape}
+
+\begin{landscape}
+\input{tables/all_plants_ctax_flex_offpeak.tex}
+\end{landscape}
+
+\begin{landscape}
+\input{tables/all_plants_tight.tex}
+\end{landscape}
 
 
+
+
+
+
+\newpage
 \bibliographystyle{chicago}
 \bibliography{../../env}
 

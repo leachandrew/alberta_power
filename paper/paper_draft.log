@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (MiKTeX 23.4) (preloaded format=pdflatex 2023.9.1)  6 APR 2025 10:32
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (MiKTeX 23.4) (preloaded format=pdflatex 2023.9.1)  10 APR 2025 22:15
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -304,439 +304,65 @@ Package uniquecounter Info: New unique counter `rerunfilecheck' on input line 2
 )
 \Hy@SectionHShift=\skip61
 )
-Package hyperref Info: Option `colorlinks' set `true' on input line 14.
+Package hyperref Info: Option `colorlinks' set `true' on input line 15.
 
-(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/latex/setspace\setspace.sty
-Package: setspace 2022/12/04 v6.7b set line spacing
-)
-(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/latex/pgf/frontendlayer\tikz
-.sty
-(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/latex/pgf/basiclayer\pgf.sty
-
-(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/latex/pgf/utilities\pgfrcs.s
-ty
-(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/generic/pgf/utilities\pgfuti
-l-common.tex
-\pgfutil@everybye=\toks29
-\pgfutil@tempdima=\dimen157
-\pgfutil@tempdimb=\dimen158
-)
-(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/generic/pgf/utilities\pgfuti
-l-latex.def
-\pgfutil@abb=\box53
-)
-(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/generic/pgf/utilities\pgfrcs
-.code.tex
-(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/generic/pgf\pgf.revision.tex
-)
-Package: pgfrcs 2023-01-15 v3.1.10 (3.1.10)
-))
-Package: pgf 2023-01-15 v3.1.10 (3.1.10)
-
-(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/latex/pgf/basiclayer\pgfcore
-.sty
-(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/latex/pgf/systemlayer\pgfsys
-.sty
-(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/generic/pgf/systemlayer\pgfs
-ys.code.tex
-Package: pgfsys 2023-01-15 v3.1.10 (3.1.10)
-
-(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/generic/pgf/utilities\pgfkey
-s.code.tex
-\pgfkeys@pathtoks=\toks30
-\pgfkeys@temptoks=\toks31
-
-(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/generic/pgf/utilities\pgfkey
-slibraryfiltered.code.tex
-\pgfkeys@tmptoks=\toks32
-))
-\pgf@x=\dimen159
-\pgf@y=\dimen160
-\pgf@xa=\dimen161
-\pgf@ya=\dimen162
-\pgf@xb=\dimen163
-\pgf@yb=\dimen164
-\pgf@xc=\dimen165
-\pgf@yc=\dimen166
-\pgf@xd=\dimen167
-\pgf@yd=\dimen168
-\w@pgf@writea=\write3
-\r@pgf@reada=\read2
-\c@pgf@counta=\count284
-\c@pgf@countb=\count285
-\c@pgf@countc=\count286
-\c@pgf@countd=\count287
-\t@pgf@toka=\toks33
-\t@pgf@tokb=\toks34
-\t@pgf@tokc=\toks35
-\pgf@sys@id@count=\count288
-
-(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/generic/pgf/systemlayer\pgf.
-cfg
-File: pgf.cfg 2023-01-15 v3.1.10 (3.1.10)
-)
-Driver file for pgf: pgfsys-pdftex.def
-
-(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/generic/pgf/systemlayer\pgfs
-ys-pdftex.def
-File: pgfsys-pdftex.def 2023-01-15 v3.1.10 (3.1.10)
-
-(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/generic/pgf/systemlayer\pgfs
-ys-common-pdf.def
-File: pgfsys-common-pdf.def 2023-01-15 v3.1.10 (3.1.10)
-)))
-(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/generic/pgf/systemlayer\pgfs
-yssoftpath.code.tex
-File: pgfsyssoftpath.code.tex 2023-01-15 v3.1.10 (3.1.10)
-\pgfsyssoftpath@smallbuffer@items=\count289
-\pgfsyssoftpath@bigbuffer@items=\count290
-)
-(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/generic/pgf/systemlayer\pgfs
-ysprotocol.code.tex
-File: pgfsysprotocol.code.tex 2023-01-15 v3.1.10 (3.1.10)
-))
-(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/latex/xcolor\xcolor.sty
-Package: xcolor 2022/06/12 v2.14 LaTeX color extensions (UK)
-
-(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/latex/graphics-cfg\color.cfg
-File: color.cfg 2016/01/02 v1.6 sample color configuration
-)
-Package xcolor Info: Driver file: pdftex.def on input line 227.
-
-(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/latex/graphics\mathcolor.ltx
-)
-Package xcolor Info: Model `cmy' substituted by `cmy0' on input line 1353.
-Package xcolor Info: Model `hsb' substituted by `rgb' on input line 1357.
-Package xcolor Info: Model `RGB' extended on input line 1369.
-Package xcolor Info: Model `HTML' substituted by `rgb' on input line 1371.
-Package xcolor Info: Model `Hsb' substituted by `hsb' on input line 1372.
-Package xcolor Info: Model `tHsb' substituted by `hsb' on input line 1373.
-Package xcolor Info: Model `HSB' substituted by `hsb' on input line 1374.
-Package xcolor Info: Model `Gray' substituted by `gray' on input line 1375.
-Package xcolor Info: Model `wave' substituted by `hsb' on input line 1376.
-)
-(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/generic/pgf/basiclayer\pgfco
-re.code.tex
-Package: pgfcore 2023-01-15 v3.1.10 (3.1.10)
-
-(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/generic/pgf/math\pgfmath.cod
-e.tex
-(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/generic/pgf/math\pgfmathutil
-.code.tex)
-(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/generic/pgf/math\pgfmathpars
-er.code.tex
-\pgfmath@dimen=\dimen169
-\pgfmath@count=\count291
-\pgfmath@box=\box54
-\pgfmath@toks=\toks36
-\pgfmath@stack@operand=\toks37
-\pgfmath@stack@operation=\toks38
-)
-(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/generic/pgf/math\pgfmathfunc
-tions.code.tex)
-(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/generic/pgf/math\pgfmathfunc
-tions.basic.code.tex)
-(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/generic/pgf/math\pgfmathfunc
-tions.trigonometric.code.tex)
-(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/generic/pgf/math\pgfmathfunc
-tions.random.code.tex)
-(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/generic/pgf/math\pgfmathfunc
-tions.comparison.code.tex)
-(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/generic/pgf/math\pgfmathfunc
-tions.base.code.tex)
-(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/generic/pgf/math\pgfmathfunc
-tions.round.code.tex)
-(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/generic/pgf/math\pgfmathfunc
-tions.misc.code.tex)
-(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/generic/pgf/math\pgfmathfunc
-tions.integerarithmetics.code.tex)
-(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/generic/pgf/math\pgfmathcalc
-.code.tex)
-(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/generic/pgf/math\pgfmathfloa
-t.code.tex
-\c@pgfmathroundto@lastzeros=\count292
-))
-(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/generic/pgf/math\pgfint.code
-.tex)
-(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/generic/pgf/basiclayer\pgfco
-repoints.code.tex
-File: pgfcorepoints.code.tex 2023-01-15 v3.1.10 (3.1.10)
-\pgf@picminx=\dimen170
-\pgf@picmaxx=\dimen171
-\pgf@picminy=\dimen172
-\pgf@picmaxy=\dimen173
-\pgf@pathminx=\dimen174
-\pgf@pathmaxx=\dimen175
-\pgf@pathminy=\dimen176
-\pgf@pathmaxy=\dimen177
-\pgf@xx=\dimen178
-\pgf@xy=\dimen179
-\pgf@yx=\dimen180
-\pgf@yy=\dimen181
-\pgf@zx=\dimen182
-\pgf@zy=\dimen183
-)
-(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/generic/pgf/basiclayer\pgfco
-repathconstruct.code.tex
-File: pgfcorepathconstruct.code.tex 2023-01-15 v3.1.10 (3.1.10)
-\pgf@path@lastx=\dimen184
-\pgf@path@lasty=\dimen185
-)
-(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/generic/pgf/basiclayer\pgfco
-repathusage.code.tex
-File: pgfcorepathusage.code.tex 2023-01-15 v3.1.10 (3.1.10)
-\pgf@shorten@end@additional=\dimen186
-\pgf@shorten@start@additional=\dimen187
-)
-(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/generic/pgf/basiclayer\pgfco
-rescopes.code.tex
-File: pgfcorescopes.code.tex 2023-01-15 v3.1.10 (3.1.10)
-\pgfpic=\box55
-\pgf@hbox=\box56
-\pgf@layerbox@main=\box57
-\pgf@picture@serial@count=\count293
-)
-(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/generic/pgf/basiclayer\pgfco
-regraphicstate.code.tex
-File: pgfcoregraphicstate.code.tex 2023-01-15 v3.1.10 (3.1.10)
-\pgflinewidth=\dimen188
-)
-(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/generic/pgf/basiclayer\pgfco
-retransformations.code.tex
-File: pgfcoretransformations.code.tex 2023-01-15 v3.1.10 (3.1.10)
-\pgf@pt@x=\dimen189
-\pgf@pt@y=\dimen190
-\pgf@pt@temp=\dimen191
-)
-(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/generic/pgf/basiclayer\pgfco
-requick.code.tex
-File: pgfcorequick.code.tex 2023-01-15 v3.1.10 (3.1.10)
-)
-(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/generic/pgf/basiclayer\pgfco
-reobjects.code.tex
-File: pgfcoreobjects.code.tex 2023-01-15 v3.1.10 (3.1.10)
-)
-(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/generic/pgf/basiclayer\pgfco
-repathprocessing.code.tex
-File: pgfcorepathprocessing.code.tex 2023-01-15 v3.1.10 (3.1.10)
-)
-(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/generic/pgf/basiclayer\pgfco
-rearrows.code.tex
-File: pgfcorearrows.code.tex 2023-01-15 v3.1.10 (3.1.10)
-\pgfarrowsep=\dimen192
-)
-(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/generic/pgf/basiclayer\pgfco
-reshade.code.tex
-File: pgfcoreshade.code.tex 2023-01-15 v3.1.10 (3.1.10)
-\pgf@max=\dimen193
-\pgf@sys@shading@range@num=\count294
-\pgf@shadingcount=\count295
-)
-(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/generic/pgf/basiclayer\pgfco
-reimage.code.tex
-File: pgfcoreimage.code.tex 2023-01-15 v3.1.10 (3.1.10)
-)
-(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/generic/pgf/basiclayer\pgfco
-reexternal.code.tex
-File: pgfcoreexternal.code.tex 2023-01-15 v3.1.10 (3.1.10)
-\pgfexternal@startupbox=\box58
-)
-(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/generic/pgf/basiclayer\pgfco
-relayers.code.tex
-File: pgfcorelayers.code.tex 2023-01-15 v3.1.10 (3.1.10)
-)
-(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/generic/pgf/basiclayer\pgfco
-retransparency.code.tex
-File: pgfcoretransparency.code.tex 2023-01-15 v3.1.10 (3.1.10)
-)
-(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/generic/pgf/basiclayer\pgfco
-repatterns.code.tex
-File: pgfcorepatterns.code.tex 2023-01-15 v3.1.10 (3.1.10)
-)
-(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/generic/pgf/basiclayer\pgfco
-rerdf.code.tex
-File: pgfcorerdf.code.tex 2023-01-15 v3.1.10 (3.1.10)
-)))
-(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/generic/pgf/modules\pgfmodul
-eshapes.code.tex
-File: pgfmoduleshapes.code.tex 2023-01-15 v3.1.10 (3.1.10)
-\pgfnodeparttextbox=\box59
-)
-(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/generic/pgf/modules\pgfmodul
-eplot.code.tex
-File: pgfmoduleplot.code.tex 2023-01-15 v3.1.10 (3.1.10)
-)
-(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/latex/pgf/compatibility\pgfc
-omp-version-0-65.sty
-Package: pgfcomp-version-0-65 2023-01-15 v3.1.10 (3.1.10)
-\pgf@nodesepstart=\dimen194
-\pgf@nodesepend=\dimen195
-)
-(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/latex/pgf/compatibility\pgfc
-omp-version-1-18.sty
-Package: pgfcomp-version-1-18 2023-01-15 v3.1.10 (3.1.10)
-))
-(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/latex/pgf/utilities\pgffor.s
-ty
-(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/latex/pgf/utilities\pgfkeys.
-sty
-(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/generic/pgf/utilities\pgfkey
-s.code.tex))
-(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/latex/pgf/math\pgfmath.sty
-(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/generic/pgf/math\pgfmath.cod
-e.tex))
-(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/generic/pgf/utilities\pgffor
-.code.tex
-Package: pgffor 2023-01-15 v3.1.10 (3.1.10)
-\pgffor@iter=\dimen196
-\pgffor@skip=\dimen197
-\pgffor@stack=\toks39
-\pgffor@toks=\toks40
-))
-(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/generic/pgf/frontendlayer/ti
-kz\tikz.code.tex
-Package: tikz 2023-01-15 v3.1.10 (3.1.10)
-
-(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/generic/pgf/libraries\pgflib
-raryplothandlers.code.tex
-File: pgflibraryplothandlers.code.tex 2023-01-15 v3.1.10 (3.1.10)
-\pgf@plot@mark@count=\count296
-\pgfplotmarksize=\dimen198
-)
-\tikz@lastx=\dimen199
-\tikz@lasty=\dimen256
-\tikz@lastxsaved=\dimen257
-\tikz@lastysaved=\dimen258
-\tikz@lastmovetox=\dimen259
-\tikz@lastmovetoy=\dimen260
-\tikzleveldistance=\dimen261
-\tikzsiblingdistance=\dimen262
-\tikz@figbox=\box60
-\tikz@figbox@bg=\box61
-\tikz@tempbox=\box62
-\tikz@tempbox@bg=\box63
-\tikztreelevel=\count297
-\tikznumberofchildren=\count298
-\tikznumberofcurrentchild=\count299
-\tikz@fig@count=\count300
-
-(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/generic/pgf/modules\pgfmodul
-ematrix.code.tex
-File: pgfmodulematrix.code.tex 2023-01-15 v3.1.10 (3.1.10)
-\pgfmatrixcurrentrow=\count301
-\pgfmatrixcurrentcolumn=\count302
-\pgf@matrix@numberofcolumns=\count303
-)
-\tikz@expandcount=\count304
-
-(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/generic/pgf/frontendlayer/ti
-kz/libraries\tikzlibrarytopaths.code.tex
-File: tikzlibrarytopaths.code.tex 2023-01-15 v3.1.10 (3.1.10)
-)))
-(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/generic/pgf/frontendlayer/ti
-kz/libraries\tikzlibrarypatterns.code.tex
-File: tikzlibrarypatterns.code.tex 2023-01-15 v3.1.10 (3.1.10)
-
-(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/generic/pgf/libraries\pgflib
-rarypatterns.code.tex
-File: pgflibrarypatterns.code.tex 2023-01-15 v3.1.10 (3.1.10)
-))
-(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/generic/pgf/frontendlayer/ti
-kz/libraries\tikzlibraryarrows.code.tex
-File: tikzlibraryarrows.code.tex 2023-01-15 v3.1.10 (3.1.10)
-
-(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/generic/pgf/libraries\pgflib
-raryarrows.code.tex
-File: pgflibraryarrows.code.tex 2023-01-15 v3.1.10 (3.1.10)
-\arrowsize=\dimen263
-))
-(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/generic/pgf/frontendlayer/ti
-kz/libraries\tikzlibrarydecorations.pathreplacing.code.tex
-(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/generic/pgf/frontendlayer/ti
-kz/libraries\tikzlibrarydecorations.code.tex
-(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/generic/pgf/modules\pgfmodul
-edecorations.code.tex
-\pgfdecoratedcompleteddistance=\dimen264
-\pgfdecoratedremainingdistance=\dimen265
-\pgfdecoratedinputsegmentcompleteddistance=\dimen266
-\pgfdecoratedinputsegmentremainingdistance=\dimen267
-\pgf@decorate@distancetomove=\dimen268
-\pgf@decorate@repeatstate=\count305
-\pgfdecorationsegmentamplitude=\dimen269
-\pgfdecorationsegmentlength=\dimen270
-)
-\tikz@lib@dec@box=\box64
-)
-(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/generic/pgf/libraries/decora
-tions\pgflibrarydecorations.pathreplacing.code.tex))
-(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/latex/caption\subcaption.sty
-Package: subcaption 2023/07/28 v1.6b Sub-captions (AR)
-(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/latex/caption\caption.sty
-Package: caption 2023/08/05 v3.6o Customizing captions (AR)
-
-(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/latex/caption\caption3.sty
-Package: caption3 2023/07/31 v2.4d caption3 kernel (AR)
-\caption@tempdima=\dimen271
-\captionmargin=\dimen272
-\caption@leftmargin=\dimen273
-\caption@rightmargin=\dimen274
-\caption@width=\dimen275
-\caption@indent=\dimen276
-\caption@parindent=\dimen277
-\caption@hangindent=\dimen278
-Package caption Info: Standard document class detected.
-)
-\c@caption@flags=\count306
-\c@continuedfloat=\count307
-Package caption Info: hyperref package is loaded.
-)
-Package caption Info: New subtype `subfigure' on input line 238.
-\c@subfigure=\count308
-Package caption Info: New subtype `subtable' on input line 238.
-\c@subtable=\count309
-)
 (C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/latex/booktabs\booktabs.sty
 Package: booktabs 2020/01/12 v1.61803398 Publication quality tables
-\heavyrulewidth=\dimen279
-\lightrulewidth=\dimen280
-\cmidrulewidth=\dimen281
-\belowrulesep=\dimen282
-\belowbottomsep=\dimen283
-\aboverulesep=\dimen284
-\abovetopsep=\dimen285
-\cmidrulesep=\dimen286
-\cmidrulekern=\dimen287
-\defaultaddspace=\dimen288
-\@cmidla=\count310
-\@cmidlb=\count311
-\@aboverulesep=\dimen289
-\@belowrulesep=\dimen290
-\@thisruleclass=\count312
-\@lastruleclass=\count313
-\@thisrulewidth=\dimen291
+\heavyrulewidth=\dimen157
+\lightrulewidth=\dimen158
+\cmidrulewidth=\dimen159
+\belowrulesep=\dimen160
+\belowbottomsep=\dimen161
+\aboverulesep=\dimen162
+\abovetopsep=\dimen163
+\cmidrulesep=\dimen164
+\cmidrulekern=\dimen165
+\defaultaddspace=\dimen166
+\@cmidla=\count284
+\@cmidlb=\count285
+\@aboverulesep=\dimen167
+\@belowrulesep=\dimen168
+\@thisruleclass=\count286
+\@lastruleclass=\count287
+\@thisrulewidth=\dimen169
+) (C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/latex/setspace\setspace.st
+y
+Package: setspace 2022/12/04 v6.7b set line spacing
 ) (C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/latex/tools\multicol.sty
 Package: multicol 2021/11/30 v1.9d multicolumn formatting (FMi)
-\c@tracingmulticols=\count314
-\mult@box=\box65
-\multicol@leftmargin=\dimen292
-\c@unbalance=\count315
-\c@collectmore=\count316
-\doublecol@number=\count317
-\multicoltolerance=\count318
-\multicolpretolerance=\count319
-\full@width=\dimen293
-\page@free=\dimen294
-\premulticols=\dimen295
-\postmulticols=\dimen296
+\c@tracingmulticols=\count288
+\mult@box=\box53
+\multicol@leftmargin=\dimen170
+\c@unbalance=\count289
+\c@collectmore=\count290
+\doublecol@number=\count291
+\multicoltolerance=\count292
+\multicolpretolerance=\count293
+\full@width=\dimen171
+\page@free=\dimen172
+\premulticols=\dimen173
+\postmulticols=\dimen174
 \multicolsep=\skip62
 \multicolbaselineskip=\skip63
-\partial@page=\box66
-\last@line=\box67
-\maxbalancingoverflow=\dimen297
-\mult@rightbox=\box68
-\mult@grightbox=\box69
-\mult@firstbox=\box70
-\mult@gfirstbox=\box71
+\partial@page=\box54
+\last@line=\box55
+\maxbalancingoverflow=\dimen175
+\mult@rightbox=\box56
+\mult@grightbox=\box57
+\mult@firstbox=\box58
+\mult@gfirstbox=\box59
+\@tempa=\box60
+\@tempa=\box61
+\@tempa=\box62
+\@tempa=\box63
+\@tempa=\box64
+\@tempa=\box65
+\@tempa=\box66
+\@tempa=\box67
+\@tempa=\box68
+\@tempa=\box69
+\@tempa=\box70
+\@tempa=\box71
 \@tempa=\box72
 \@tempa=\box73
 \@tempa=\box74
@@ -761,89 +387,32 @@ Package: multicol 2021/11/30 v1.9d multicolumn formatting (FMi)
 \@tempa=\box93
 \@tempa=\box94
 \@tempa=\box95
-\@tempa=\box96
-\@tempa=\box97
-\@tempa=\box98
-\@tempa=\box99
-\@tempa=\box100
-\@tempa=\box101
-\@tempa=\box102
-\@tempa=\box103
-\@tempa=\box104
-\@tempa=\box105
-\@tempa=\box106
-\@tempa=\box107
-\c@minrows=\count320
-\c@columnbadness=\count321
-\c@finalcolumnbadness=\count322
-\last@try=\dimen298
-\multicolovershoot=\dimen299
-\multicolundershoot=\dimen300
-\mult@nat@firstbox=\box108
-\colbreak@box=\box109
-\mc@col@check@num=\count323
-)
-(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/latex/graphics\rotating.sty
-Package: rotating 2016/08/11 v2.16d rotated objects in LaTeX
-
-(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/latex/base\ifthen.sty
-Package: ifthen 2022/04/13 v1.1d Standard LaTeX ifthen package (DPC)
-)
-\c@r@tfl@t=\count324
-\rotFPtop=\skip64
-\rotFPbot=\skip65
-\rot@float@box=\box110
-\rot@mess@toks=\toks41
-)
-(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/latex/tools\tabularx.sty
-Package: tabularx 2020/01/15 v2.11c `tabularx' package (DPC)
-
-(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/latex/tools\array.sty
-Package: array 2022/09/04 v2.5g Tabular extension package (FMi)
-\col@sep=\dimen301
-\ar@mcellbox=\box111
-\extrarowheight=\dimen302
-\NC@list=\toks42
-\extratabsurround=\skip66
-\backup@length=\skip67
-\ar@cellbox=\box112
-)
-\TX@col@width=\dimen303
-\TX@old@table=\dimen304
-\TX@old@col=\dimen305
-\TX@target=\dimen306
-\TX@delta=\dimen307
-\TX@cols=\count325
-\TX@ftn=\toks43
-)
-(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/latex/ulem\ulem.sty
-\UL@box=\box113
-\UL@hyphenbox=\box114
-\UL@skip=\skip68
-\UL@hook=\toks44
-\UL@height=\dimen308
-\UL@pe=\count326
-\UL@pixel=\dimen309
-\ULC@box=\box115
-Package: ulem 2019/11/18
-\ULdepth=\dimen310
+\c@minrows=\count294
+\c@columnbadness=\count295
+\c@finalcolumnbadness=\count296
+\last@try=\dimen176
+\multicolovershoot=\dimen177
+\multicolundershoot=\dimen178
+\mult@nat@firstbox=\box96
+\colbreak@box=\box97
+\mc@col@check@num=\count297
 )
 (C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/latex/siunitx\siunitx.sty
 Package: siunitx 2024-02-15 v3.3.12 A comprehensive (SI) units package
-\l__siunitx_number_uncert_offset_int=\count327
-\l__siunitx_number_exponent_fixed_int=\count328
-\l__siunitx_number_min_decimal_int=\count329
-\l__siunitx_number_min_integer_int=\count330
-\l__siunitx_number_round_precision_int=\count331
-\l__siunitx_number_lower_threshold_int=\count332
-\l__siunitx_number_upper_threshold_int=\count333
-\l__siunitx_number_group_first_int=\count334
-\l__siunitx_number_group_size_int=\count335
-\l__siunitx_number_group_minimum_int=\count336
-\l__siunitx_angle_tmp_dim=\dimen311
-\l__siunitx_angle_marker_box=\box116
-\l__siunitx_angle_unit_box=\box117
-\l__siunitx_compound_count_int=\count337
+\l__siunitx_number_uncert_offset_int=\count298
+\l__siunitx_number_exponent_fixed_int=\count299
+\l__siunitx_number_min_decimal_int=\count300
+\l__siunitx_number_min_integer_int=\count301
+\l__siunitx_number_round_precision_int=\count302
+\l__siunitx_number_lower_threshold_int=\count303
+\l__siunitx_number_upper_threshold_int=\count304
+\l__siunitx_number_group_first_int=\count305
+\l__siunitx_number_group_size_int=\count306
+\l__siunitx_number_group_minimum_int=\count307
+\l__siunitx_angle_tmp_dim=\dimen179
+\l__siunitx_angle_marker_box=\box98
+\l__siunitx_angle_unit_box=\box99
+\l__siunitx_compound_count_int=\count308
 
 (C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/latex/translations\translati
 ons.sty
@@ -852,27 +421,36 @@ Package: translations 2022/02/05 v1.12 internationalization of LaTeX2e packages
 
 (C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/latex/etoolbox\etoolbox.sty
 Package: etoolbox 2020/10/05 v2.5k e-TeX tools for LaTeX (JAW)
-\etb@tempcnta=\count338
+\etb@tempcnta=\count309
 ))
-\l__siunitx_table_tmp_box=\box118
-\l__siunitx_table_tmp_dim=\dimen312
-\l__siunitx_table_column_width_dim=\dimen313
-\l__siunitx_table_integer_box=\box119
-\l__siunitx_table_decimal_box=\box120
-\l__siunitx_table_uncert_box=\box121
-\l__siunitx_table_before_box=\box122
-\l__siunitx_table_after_box=\box123
-\l__siunitx_table_before_dim=\dimen314
-\l__siunitx_table_carry_dim=\dimen315
-\l__siunitx_unit_tmp_int=\count339
-\l__siunitx_unit_position_int=\count340
-\l__siunitx_unit_total_int=\count341
-)
+\l__siunitx_table_tmp_box=\box100
+\l__siunitx_table_tmp_dim=\dimen180
+\l__siunitx_table_column_width_dim=\dimen181
+\l__siunitx_table_integer_box=\box101
+\l__siunitx_table_decimal_box=\box102
+\l__siunitx_table_uncert_box=\box103
+\l__siunitx_table_before_box=\box104
+\l__siunitx_table_after_box=\box105
+\l__siunitx_table_before_dim=\dimen182
+\l__siunitx_table_carry_dim=\dimen183
+\l__siunitx_unit_tmp_int=\count310
+\l__siunitx_unit_position_int=\count311
+\l__siunitx_unit_total_int=\count312
+ (C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/latex/tools\array.sty
+Package: array 2022/09/04 v2.5g Tabular extension package (FMi)
+\col@sep=\dimen184
+\ar@mcellbox=\box106
+\extrarowheight=\dimen185
+\NC@list=\toks29
+\extratabsurround=\skip64
+\backup@length=\skip65
+\ar@cellbox=\box107
+))
 (C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/latex/footmisc\footmisc.sty
 Package: footmisc 2023/07/05 v6.0f a miscellany of footnote facilities
-\FN@temptoken=\toks45
-\footnotemargin=\dimen316
-\@outputbox@depth=\dimen317
+\FN@temptoken=\toks30
+\footnotemargin=\dimen186
+\@outputbox@depth=\dimen187
 Package footmisc Info: Declaring symbol style bringhurst on input line 696.
 Package footmisc Info: Declaring symbol style chicago on input line 704.
 Package footmisc Info: Declaring symbol style wiley on input line 713.
@@ -881,18 +459,43 @@ Package footmisc Info: Declaring symbol style lamport-robust on input line 724.
 Package footmisc Info: Declaring symbol style lamport* on input line 744.
 Package footmisc Info: Declaring symbol style lamport*-robust on input line 765
 .
-) (C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/latex/comment\comment.sty
-\CommentStream=\write4
+) (C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/latex/graphics\lscape.sty
+Package: lscape 2020/05/28 v3.02 Landscape Pages (DPC)
+)
+(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/latex/comment\comment.sty
+\CommentStream=\write3
 
 Excluding comment 'comment')
+(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/latex/base\ifthen.sty
+Package: ifthen 2022/04/13 v1.1d Standard LaTeX ifthen package (DPC)
+)
+(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/latex/graphics\color.sty
+Package: color 2022/01/06 v1.3d Standard LaTeX Color (DPC)
+
+(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/latex/graphics-cfg\color.cfg
+File: color.cfg 2016/01/02 v1.6 sample color configuration
+)
+Package color Info: Driver file: pdftex.def on input line 149.
+
+(C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/latex/graphics\mathcolor.ltx
+)) (C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/latex/tools\tabularx.sty
+Package: tabularx 2020/01/15 v2.11c `tabularx' package (DPC)
+\TX@col@width=\dimen188
+\TX@old@table=\dimen189
+\TX@old@col=\dimen190
+\TX@target=\dimen191
+\TX@delta=\dimen192
+\TX@cols=\count313
+\TX@ftn=\toks31
+)
 Package translations Info: No language package found. I am going to use `englis
-h' as default language. on input line 70.
+h' as default language. on input line 66.
 
 (C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/latex/l3backend\l3backend-pd
 ftex.def
 File: l3backend-pdftex.def 2023-03-30 L3 backend support: PDF output (pdfTeX)
-\l__color_backend_stack_int=\count342
-\l__pdf_internal_box=\box124
+\l__color_backend_stack_int=\count314
+\l__pdf_internal_box=\box108
 ) (paper_draft.aux
 
 LaTeX Warning: Label `fig:decomp_peaks' multiply defined.
@@ -900,39 +503,39 @@ LaTeX Warning: Label `fig:decomp_peaks' multiply defined.
 )
 \openout1 = `paper_draft.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 70.
-LaTeX Font Info:    ... okay on input line 70.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 70.
-LaTeX Font Info:    ... okay on input line 70.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 70.
-LaTeX Font Info:    ... okay on input line 70.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 70.
-LaTeX Font Info:    ... okay on input line 70.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 70.
-LaTeX Font Info:    ... okay on input line 70.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 70.
-LaTeX Font Info:    ... okay on input line 70.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 70.
-LaTeX Font Info:    ... okay on input line 70.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 70.
-LaTeX Font Info:    ... okay on input line 70.
-LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 70.
-LaTeX Font Info:    ... okay on input line 70.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 66.
+LaTeX Font Info:    ... okay on input line 66.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 66.
+LaTeX Font Info:    ... okay on input line 66.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 66.
+LaTeX Font Info:    ... okay on input line 66.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 66.
+LaTeX Font Info:    ... okay on input line 66.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 66.
+LaTeX Font Info:    ... okay on input line 66.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 66.
+LaTeX Font Info:    ... okay on input line 66.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 66.
+LaTeX Font Info:    ... okay on input line 66.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 66.
+LaTeX Font Info:    ... okay on input line 66.
+LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 66.
+LaTeX Font Info:    ... okay on input line 66.
 
 (C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/context/base/mkii\supp-pdf.m
 kii
 [Loading MPS to PDF converter (version 2006.09.02).]
-\scratchcounter=\count343
-\scratchdimen=\dimen318
-\scratchbox=\box125
-\nofMPsegments=\count344
-\nofMParguments=\count345
-\everyMPshowfont=\toks46
-\MPscratchCnt=\count346
-\MPscratchDim=\dimen319
-\MPnumerator=\count347
-\makeMPintoPDFobject=\count348
-\everyMPtoPDFconversion=\toks47
+\scratchcounter=\count315
+\scratchdimen=\dimen193
+\scratchbox=\box109
+\nofMPsegments=\count316
+\nofMParguments=\count317
+\everyMPshowfont=\toks32
+\MPscratchCnt=\count318
+\MPscratchDim=\dimen194
+\MPnumerator=\count319
+\makeMPintoPDFobject=\count320
+\everyMPtoPDFconversion=\toks33
 )
 (C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/latex/epstopdf-pkg\epstopdf-
 base.sty
@@ -944,14 +547,11 @@ Package epstopdf-base Info: Redefining graphics rule for `.eps' on input line 4
 cfg
 File: epstopdf-sys.cfg 2021/03/18 v2.0 Configuration of epstopdf for MiKTeX
 ))
-Package hyperref Info: Link coloring ON on input line 70.
+Package hyperref Info: Link coloring ON on input line 66.
  (paper_draft.out) (paper_draft.out)
-\@outlinefile=\write5
-\openout5 = `paper_draft.out'.
+\@outlinefile=\write4
+\openout4 = `paper_draft.out'.
 
-Package caption Info: Begin \AtBeginDocument code.
-Package caption Info: rotating package is loaded.
-Package caption Info: End \AtBeginDocument code.
 
 (C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/latex/translations/dicts\tra
 nslations-basic-dictionary-english.trsl
@@ -959,25 +559,25 @@ File: translations-basic-dictionary-english.trsl (english translation file `tra
 nslations-basic-dictionary')
 )
 Package translations Info: loading dictionary `translations-basic-dictionary' f
-or `english'. on input line 70.
-LaTeX Font Info:    Trying to load font information for U+msa on input line 72.
+or `english'. on input line 66.
+LaTeX Font Info:    Trying to load font information for U+msa on input line 68.
 
 
 (C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/latex/amsfonts\umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
-LaTeX Font Info:    Trying to load font information for U+msb on input line 72.
+LaTeX Font Info:    Trying to load font information for U+msb on input line 68.
 
 
 (C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/latex/amsfonts\umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 )
-Underfull \hbox (badness 10000) in paragraph at lines 78--81
+Underfull \hbox (badness 10000) in paragraph at lines 74--77
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 78--81
+Underfull \hbox (badness 10000) in paragraph at lines 74--77
 
  []
 
@@ -985,158 +585,185 @@ Underfull \hbox (badness 10000) in paragraph at lines 78--81
 
 {C:/Users/aleach/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map}] [2]
 [3] [4] [5] [6] [7]
-Underfull \hbox (badness 1648) in paragraph at lines 146--146
+Underfull \hbox (badness 1648) in paragraph at lines 142--142
 [][][]\OT1/cmr/m/n/10 Cite. Sub-se-quently re-duced to 0.59t/MWh (2015), 0.53t/
 MWh (2019), 0.52t/MWh(2020), and
  []
 
 [8] [9]
-<../../SGER/sector_compliance_cost.png, id=200, 867.24pt x 361.35pt>
+<../../SGER/sector_compliance_cost.png, id=197, 867.24pt x 361.35pt>
 File: ../../SGER/sector_compliance_cost.png Graphic file (type png)
 <use ../../SGER/sector_compliance_cost.png>
 Package pdftex.def Info: ../../SGER/sector_compliance_cost.png  used on input l
-ine 155.
+ine 151.
 (pdftex.def)             Requested size: 469.75499pt x 195.7326pt.
  [10 <../../SGER/sector_compliance_cost.png>]
-<../images/loads_clean.png, id=212, 1011.78pt x 505.89pt>
+<../images/loads_clean.png, id=209, 1011.78pt x 505.89pt>
 File: ../images/loads_clean.png Graphic file (type png)
 <use ../images/loads_clean.png>
-Package pdftex.def Info: ../images/loads_clean.png  used on input line 167.
+Package pdftex.def Info: ../images/loads_clean.png  used on input line 163.
 (pdftex.def)             Requested size: 469.75499pt x 234.88132pt.
-<../images/peak_prices.png, id=213, 1011.78pt x 505.89pt>
+<../images/peak_prices.png, id=210, 1011.78pt x 505.89pt>
 File: ../images/peak_prices.png Graphic file (type png)
 <use ../images/peak_prices.png>
-Package pdftex.def Info: ../images/peak_prices.png  used on input line 168.
+Package pdftex.def Info: ../images/peak_prices.png  used on input line 164.
 (pdftex.def)             Requested size: 469.75499pt x 234.88132pt.
 
 
 LaTeX Warning: `!h' float specifier changed to `!ht'.
 
 [11] [12 <../images/loads_clean.png> <../images/peak_prices.png>]
-<../images/gen_fuel_policies.png, id=229, 1300.86pt x 722.7pt>
+<../images/gen_fuel_policies.png, id=226, 1300.86pt x 722.7pt>
 File: ../images/gen_fuel_policies.png Graphic file (type png)
 <use ../images/gen_fuel_policies.png>
 Package pdftex.def Info: ../images/gen_fuel_policies.png  used on input line 17
-8.
+4.
 (pdftex.def)             Requested size: 469.75499pt x 260.9768pt.
-<../images/load_compare.png, id=231, 1011.78pt x 275.3487pt>
+<../images/load_compare.png, id=228, 1011.78pt x 275.3487pt>
 File: ../images/load_compare.png Graphic file (type png)
 <use ../images/load_compare.png>
-Package pdftex.def Info: ../images/load_compare.png  used on input line 186.
+Package pdftex.def Info: ../images/load_compare.png  used on input line 182.
 (pdftex.def)             Requested size: 469.75499pt x 127.84254pt.
  [13 <../images/gen_fuel_policies.png>]
-<../images/price_capture.png, id=243, 1084.05pt x 578.16pt>
+<../images/price_capture.png, id=240, 1084.05pt x 578.16pt>
 File: ../images/price_capture.png Graphic file (type png)
 <use ../images/price_capture.png>
-Package pdftex.def Info: ../images/price_capture.png  used on input line 194.
+Package pdftex.def Info: ../images/price_capture.png  used on input line 190.
 (pdftex.def)             Requested size: 469.75499pt x 250.53596pt.
 
 
 LaTeX Warning: `!h' float specifier changed to `!ht'.
 
 [14 <../images/load_compare.png> <../images/price_capture.png>] [15]
-<../images/mkt_power.png, id=270, 1156.32pt x 650.43pt>
+<../images/mkt_power.png, id=267, 1156.32pt x 650.43pt>
 File: ../images/mkt_power.png Graphic file (type png)
 <use ../images/mkt_power.png>
-Package pdftex.def Info: ../images/mkt_power.png  used on input line 236.
+Package pdftex.def Info: ../images/mkt_power.png  used on input line 232.
 (pdftex.def)             Requested size: 446.26582pt x 251.01677pt.
  [16 <../images/mkt_power.png>] [17] [18] [19] [20]
-<../images/sampling.png, id=307, 1011.78pt x 505.89pt>
+<../images/sampling.png, id=304, 1011.78pt x 505.89pt>
 File: ../images/sampling.png Graphic file (type png)
 <use ../images/sampling.png>
-Package pdftex.def Info: ../images/sampling.png  used on input line 279.
+Package pdftex.def Info: ../images/sampling.png  used on input line 275.
 (pdftex.def)             Requested size: 422.77664pt x 211.39165pt.
- [21]
-<../images/coal_merit.png, id=317, 1011.78pt x 722.7pt>
+ [21] [22 <../images/sampling.png>]
+<../images/coal_merit.png, id=321, 1011.78pt x 722.7pt>
 File: ../images/coal_merit.png Graphic file (type png)
 <use ../images/coal_merit.png>
-Package pdftex.def Info: ../images/coal_merit.png  used on input line 295.
+Package pdftex.def Info: ../images/coal_merit.png  used on input line 291.
 (pdftex.def)             Requested size: 211.3883pt x 150.98853pt.
-<../images/coal_synth_merit.png, id=318, 1011.78pt x 722.7pt>
+<../images/coal_synth_merit.png, id=322, 1011.78pt x 722.7pt>
 File: ../images/coal_synth_merit.png Graphic file (type png)
 <use ../images/coal_synth_merit.png>
-Package pdftex.def Info: ../images/coal_synth_merit.png  used on input line 301
+Package pdftex.def Info: ../images/coal_synth_merit.png  used on input line 297
 .
 (pdftex.def)             Requested size: 211.3883pt x 150.98853pt.
- [22 <../images/sampling.png>]
-<../images/all_coal_merit.png, id=329, 1011.78pt x 722.7pt>
+<../images/all_coal_merit.png, id=326, 1011.78pt x 722.7pt>
 File: ../images/all_coal_merit.png Graphic file (type png)
 <use ../images/all_coal_merit.png>
-Package pdftex.def Info: ../images/all_coal_merit.png  used on input line 315.
+Package pdftex.def Info: ../images/all_coal_merit.png  used on input line 311.
 (pdftex.def)             Requested size: 211.3883pt x 150.98853pt.
-<../images/coal_synth_2019.png, id=330, 1011.78pt x 722.7pt>
+<../images/coal_synth_2019.png, id=327, 1011.78pt x 722.7pt>
 File: ../images/coal_synth_2019.png Graphic file (type png)
 <use ../images/coal_synth_2019.png>
-Package pdftex.def Info: ../images/coal_synth_2019.png  used on input line 321.
+Package pdftex.def Info: ../images/coal_synth_2019.png  used on input line 317.
 
 (pdftex.def)             Requested size: 211.3883pt x 150.98853pt.
-<../images/expectation.png, id=331, 844.87071pt x 507.61072pt>
-File: ../images/expectation.png Graphic file (type png)
-<use ../images/expectation.png>
-Package pdftex.def Info: ../images/expectation.png  used on input line 332.
-(pdftex.def)             Requested size: 469.75499pt x 282.23848pt.
-
-
-LaTeX Warning: `h' float specifier changed to `ht'.
 
 [23 <../images/coal_merit.png> <../images/coal_synth_merit.png>]
+<../images/expectation.png, id=336, 844.87071pt x 507.61072pt>
+File: ../images/expectation.png Graphic file (type png)
+<use ../images/expectation.png>
+Package pdftex.def Info: ../images/expectation.png  used on input line 328.
+(pdftex.def)             Requested size: 433.62pt x 260.52783pt.
+ [24 <../images/all_coal_merit.png> <../images/coal_synth_2019.png> <../images/
+expectation.png>]
 
-LaTeX Warning: Reference `fig:price_sense' on page 24 undefined on input line 3
-49.
+LaTeX Warning: Reference `fig:price_sense' on page 25 undefined on input line 3
+45.
 
-[24 <../images/all_coal_merit.png> <../images/coal_synth_2019.png>] [25 <../ima
-ges/expectation.png>]
-<../images/all_plants_net.png, id=364, 1011.78pt x 578.16pt>
+[25]
+<../images/all_plants_net.png, id=361, 722.7pt x 433.62pt>
 File: ../images/all_plants_net.png Graphic file (type png)
 <use ../images/all_plants_net.png>
-Package pdftex.def Info: ../images/all_plants_net.png  used on input line 360.
-(pdftex.def)             Requested size: 422.77664pt x 241.59045pt.
+Package pdftex.def Info: ../images/all_plants_net.png  used on input line 356.
+(pdftex.def)             Requested size: 375.80544pt x 225.48369pt.
  [26]
-<../images/all_plants_net_peak.png, id=372, 1011.78pt x 578.16pt>
-File: ../images/all_plants_net_peak.png Graphic file (type png)
-<use ../images/all_plants_net_peak.png>
-Package pdftex.def Info: ../images/all_plants_net_peak.png  used on input line 
-370.
-(pdftex.def)             Requested size: 422.77664pt x 241.59045pt.
+<../images/all_plants_net_peak_flex.png, id=369, 722.7pt x 433.62pt>
+File: ../images/all_plants_net_peak_flex.png Graphic file (type png)
+<use ../images/all_plants_net_peak_flex.png>
+Package pdftex.def Info: ../images/all_plants_net_peak_flex.png  used on input 
+line 366.
+(pdftex.def)             Requested size: 375.80544pt x 225.48369pt.
  [27 <../images/all_plants_net.png>]
-<../images/all_plants_no_peaks.png, id=380, 1011.78pt x 578.16pt>
+<../images/all_plants_no_peaks.png, id=377, 722.7pt x 433.62pt>
 File: ../images/all_plants_no_peaks.png Graphic file (type png)
 <use ../images/all_plants_no_peaks.png>
 Package pdftex.def Info: ../images/all_plants_no_peaks.png  used on input line 
-383.
-(pdftex.def)             Requested size: 422.77664pt x 241.59045pt.
-<../images/all_plants.png, id=381, 1011.78pt x 650.43pt>
-File: ../images/all_plants.png Graphic file (type png)
-<use ../images/all_plants.png>
-Package pdftex.def Info: ../images/all_plants.png  used on input line 390.
-(pdftex.def)             Requested size: 422.77664pt x 271.78926pt.
- [28 <../images/all_plants_net_peak.png>]
-
-LaTeX Warning: Text page 29 contains only floats.
-
-[29 <../images/all_plants_no_peaks.png> <../images/all_plants.png>]
-<../images/by_type_net.png, id=399, 1011.78pt x 1011.78pt>
-File: ../images/by_type_net.png Graphic file (type png)
-<use ../images/by_type_net.png>
-Package pdftex.def Info: ../images/by_type_net.png  used on input line 402.
-(pdftex.def)             Requested size: 422.77664pt x 422.78331pt.
+378.
+(pdftex.def)             Requested size: 375.80544pt x 225.48369pt.
+<../images/all_plants_ctax_peak_flex.png, id=378, 722.7pt x 505.89pt>
+File: ../images/all_plants_ctax_peak_flex.png Graphic file (type png)
+<use ../images/all_plants_ctax_peak_flex.png>
+Package pdftex.def Info: ../images/all_plants_ctax_peak_flex.png  used on input
+ line 385.
+(pdftex.def)             Requested size: 375.80544pt x 263.0643pt.
+ [28 <../images/all_plants_net_peak_flex.png>] [29 <../images/all_plants_no_pea
+ks.png> <../images/all_plants_ctax_peak_flex.png>]
+<../images/by_plant_net.png, id=396, 867.24pt x 578.16pt>
+File: ../images/by_plant_net.png Graphic file (type png)
+<use ../images/by_plant_net.png>
+Package pdftex.def Info: ../images/by_plant_net.png  used on input line 397.
+(pdftex.def)             Requested size: 375.80544pt x 250.53596pt.
 
 
 LaTeX Warning: `!h' float specifier changed to `!ht'.
 
-[30] [31 <../images/by_type_net.png>]
-<../images/offer.png, id=410, 1011.78pt x 1084.05pt>
+[30] [31 <../images/by_plant_net.png>]
+<../images/offer.png, id=407, 1011.78pt x 1084.05pt>
 File: ../images/offer.png Graphic file (type png)
 <use ../images/offer.png>
-Package pdftex.def Info: ../images/offer.png  used on input line 415.
-(pdftex.def)             Requested size: 422.77664pt x 452.98213pt.
- [32] [33 <../images/offer.png>]
-Overfull \hbox (3.9735pt too wide) in paragraph at lines 432--433
+Package pdftex.def Info: ../images/offer.png  used on input line 410.
+(pdftex.def)             Requested size: 375.80544pt x 402.6471pt.
+<../images/offers_bp.png, id=408, 1011.78pt x 433.62pt>
+File: ../images/offers_bp.png Graphic file (type png)
+<use ../images/offers_bp.png>
+Package pdftex.def Info: ../images/offers_bp.png  used on input line 419.
+(pdftex.def)             Requested size: 375.80544pt x 161.05884pt.
+ [32 <../images/offer.png>] [33 <../images/offers_bp.png>]
+Overfull \hbox (3.9735pt too wide) in paragraph at lines 438--439
 []\OT1/cmr/m/n/12 ENMAX - pro-to-typ-i-cal re-sults partly be-cause its fleet i
 s largely highly-flexible combined-
  []
 
-(paper_draft.bbl [34] [35]) [36] (paper_draft.aux)
+[34] (tables/all_plants_no_peaks.tex) [35
+
+] (tables/all_plants_net.tex) [36
+
+
+]
+(tables/all_plants_net_flex_peak.tex) [37
+
+
+]
+(tables/all_plants_net_flex_offpeak.tex) [38
+
+
+]
+(tables/all_plants_ctax_flex_peak.tex) [39
+
+
+]
+(tables/all_plants_ctax_flex_offpeak.tex) [40
+
+
+] (tables/all_plants_tight.tex)
+[41
+
+
+] (paper_draft.bbl [42
+
+] [43]) [44] (paper_draft.aux)
 
 LaTeX Warning: There were undefined references.
 
@@ -1147,13 +774,13 @@ Package rerunfilecheck Info: File `paper_draft.out' has not changed.
 (rerunfilecheck)             Checksum: 9248E8F3A04D9EA9C352DC77C15FADFC;1656.
  ) 
 Here is how much of TeX's memory you used:
- 28067 strings out of 476331
- 588475 string characters out of 5787294
- 1867660 words of memory out of 5000000
- 47939 multiletter control sequences out of 15000+600000
- 525701 words of font info for 83 fonts, out of 8000000 for 9000
+ 15117 strings out of 476331
+ 301015 string characters out of 5787294
+ 1949660 words of memory out of 5000000
+ 35195 multiletter control sequences out of 15000+600000
+ 525595 words of font info for 82 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 84i,16n,89p,2732b,1026s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 75i,16n,76p,2732b,1044s stack positions out of 10000i,1000n,20000p,200000b,200000s
 
 pdfTeX warning (dest): name{Hfootnote.19} has been referenced but does not exis
 t, replaced by a fixed one
@@ -1252,9 +879,9 @@ Data/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy10.pfb><C:/Users/
 aleach/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmti10.pfb>
 <C:/Users/aleach/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/c
 mti12.pfb>
-Output written on paper_draft.pdf (36 pages, 4224787 bytes).
+Output written on paper_draft.pdf (44 pages, 4535453 bytes).
 PDF statistics:
- 539 PDF objects out of 1000 (max. 8388607)
- 113 named destinations out of 1000 (max. 500000)
- 196 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 585 PDF objects out of 1000 (max. 8388607)
+ 129 named destinations out of 1000 (max. 500000)
+ 189 words of extra memory for PDF output out of 10000 (max. 10000000)
 

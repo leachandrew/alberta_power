@@ -135,6 +135,142 @@ load(file = paste("data/",offer_files$value,sep=""))
 paste("loaded file=data/",offer_files$value,sep="")
 
 
+
+select_reg_data<-function(data_sent){
+  #data_sent<-merit_aug %>% filter(Plant_Type %in% fossils) test<-
+  data_sent%>%
+    ungroup()%>%
+    filter(percentile<100)%>%
+    mutate(plants=as.character(plants),
+           offer=as.character(offer)
+    )%>%
+    #select(bid,percentile,ctax,oba,supply_cushion,hourly_renewables,hour,on_peak,supply_cushion,day_ahead_forecasted_ail,forecast_pool_price,actual_ail,
+    #     day_ahead_forecasted_ail,total_export_capability,total_import_capability,nit_settle_cad_gj,hdd_YEG,hdd_YMM,hdd_YYC,
+    #     cdd_YEG,cdd_YMM,cdd_YYC,year,month_fac,date,he,offer,plants)%>%
+    select(-time)%>%
+    na.omit()%>%
+    mutate(
+      hdd=sum(hdd_YMM,hdd_YEG,hdd_YYC,na.rm=T),
+      cdd=sum(cdd_YMM,cdd_YEG,cdd_YYC,na.rm=T),
+      net=ctax-oba,
+      year_fac=as.factor(year),
+      tight=(supply_cushion<=500),
+      really_tight=(supply_cushion<200),
+      he_fac=as.factor(he),pctl_fac=factor(percentile),
+      peak_fac=factor(on_peak),
+      out_mkt=(bid>forecast_pool_price)*(bid-forecast_pool_price),
+      policy=case_when(year(date)<2016 ~ "SGER_15",
+                       year(date)==2016 ~ "SGER_20",
+                       year(date)==2017 ~ "SGER_30",
+                       year(date)==2018 ~ "CCIR_30",
+                       year(date)==2019 ~ "CCIR_30",
+                       year(date)==2020 ~ "TIER_30",
+                       year(date)==2021 ~ "TIER_40",
+                       year(date)==2022 ~ "TIER_50",
+                       year(date)==2023 ~ "TIER_65",
+                       year(date)==2024 ~ "TIER_80",
+                       TRUE ~ "TIER_80")
+    )%>%
+    left_join(offer_test %>% select(-total))%>%
+    mutate(plants=as_factor(plants),
+       plants=fct_recode(plants,"LEGACY COAL"="COAL","LEGACY COAL"="NGCONV"),
+       plants=fct_other(plants,keep=c("SCGT","NGCC","LEGACY_COAL","COGEN")),
+       offer=as_factor(offer),
+       #offer=fct_recode(offer,"Heartland"="ATCO"),
+       #offer=fct_other(offer,keep=c("Balancing Pool","Capital Power","ENMAX","Heartland","TransCanada")),
+       )
+  
+  }
+
+latex_table<-function(reg_output,latex_file="paper/tables/reg_output.tex"){
+  #reg_output<-all_plants_reg
+  #reg_output<-all_plants_flex
+  latex_tabling<-
+    reg_output %>%
+    filter(!grepl("month_fac",term))%>%
+    filter(!grepl("plants",term))%>%
+    filter(!grepl("offer",term))%>%
+    mutate(
+      term = gsub("[[:punct:]]|\\s{2,}", " ",term),
+      term=gsub("poly ","",term),
+      term=gsub("  2  raw   TRUE 1","",term),
+      term=gsub("  2  raw   TRUE 2"," squared",term),
+      term=gsub("peak facTRUE ","Peak Hours * ",term),
+      term=gsub("peak facFALSE ","Off-Peak Hours * ",term),
+      term=gsub("peak facTRUE","peak hours",term),
+      term=gsub("ctax","Carbon Tax",term),
+      term=gsub("net","Carbon Pricing Net",term),
+      term=gsub("oba","Output-Based Allocation",term),
+      percentile_label = paste0("P", percentile),
+      estimate =  sprintf("%.3f",estimate),
+      std.error = sprintf("%.3f", std.error),
+      pstars = case_when(
+        p.value < 0.01 ~ "**",  # stars for significance
+        p.value < 0.05 ~ "*",
+        TRUE ~ ""
+      ),
+      coef_display = paste0(estimate, pstars),
+      coef_display = paste0(
+        "\\parbox[t]{2.5cm}{\\centering ", estimate, pstars, " \\\\", "(", std.error, ")}"
+      ),
+      term=str_to_upper(gsub("_"," ",term))
+    )%>%
+    select(term, percentile_label, coef_display)%>%
+    pivot_wider(
+      names_from = percentile_label,
+      values_from = coef_display
+    ) %>%
+    mutate(term=as_factor(term),
+           term=fct_relevel(term,"CARBON PRICING NET"),
+           term=fct_relevel(term,"OUTPUT-BASED ALLOCATION"),
+           term=fct_relevel(term,"CARBON TAX"),
+    )%>%
+    mutate(term=as.character(term))%>%
+    kbl(
+      format = "latex",
+      booktabs = TRUE,
+      linesep = "",
+      align = "l",  # Left-align terms
+      escape = FALSE,  # Allow LaTeX to interpret the stars and parentheses
+      caption = "Regression Coefficients by Percentile. Standard errors in parentheses, {** p$<$0.01, * p$<$0.05}"
+    ) %>%
+    kable_styling(
+      latex_options = c("hold_position", "scale_down")
+    )
+  # Write LaTeX table to a file
+  writeLines(as.character(latex_tabling),latex_file)
+}
+
+base_formula <- bid ~
+  plants+
+  offer+
+  month_fac+
+  cr_key+
+  cr_nbp+
+  poly(hourly_renewables,2,raw=TRUE)+
+  poly(out_mkt,2,raw=TRUE)+
+  #out_mkt+
+  #as.factor(yearmonth)+
+  forecast_pool_price+
+  poly(day_ahead_forecasted_ail,2,raw=TRUE)+
+  nit_settle_cad_gj+
+  total_import_capability+
+  total_export_capability+
+  hdd_YEG+hdd_YYC+hdd_YMM+cdd_YEG+cdd_YMM+cdd_YYC
+  #hdd+cdd
+
+
+peak_adj<-"peak_fac+
+  #peak_fac/as.factor(yearmonth)+
+  peak_fac/poly(supply_cushion,2,raw=TRUE)"
+
+
+no_peak_adj<-"
+  #as.factor(yearmonth)+
+  poly(supply_cushion,2,raw=TRUE)"
+
+
+
 #merit all ie Synth Type 0
 
 
@@ -145,92 +281,20 @@ bids_files<- list.files("data/") %>% as_tibble() %>% filter(grepl("synth_all",va
 
 load(file = paste("data/",bids_files$value,sep=""))
 paste("loaded file=data/",bids_files$value,sep="")
-merit_bids_all<-merit_aug%>%ungroup()%>%
-  mutate(plants=as.character(plants),
-         offer=as.character(offer)
-         )
 
+merit_bids_all<-merit_aug%>%
+  select_reg_data()
+#rm(merit_aug)
 
-#pick 10% of the date/he combos at random
-#sample_share<-.5
-#merit_bids_all<-merit_bids_all%>% sample_n(nrow(.)*sample_share, replace = F) #no replacement - don't duplicate
-
-
-# regression on all the plants
-all_plants <- merit_bids_all %>%
-  select(bid,percentile,ctax,oba,supply_cushion,hourly_renewables,hour,on_peak,supply_cushion,day_ahead_forecasted_ail,forecast_pool_price,actual_ail,
-         day_ahead_forecasted_ail,total_export_capability,total_import_capability,nit_settle_cad_gj,hdd_YEG,hdd_YMM,hdd_YYC,
-         cdd_YEG,cdd_YMM,cdd_YYC,year,month_fac,date,he,
-         offer,
-         plants
-         )%>%
-  na.omit()%>%
-  mutate(
-    net=ctax-oba,
-    gas2=nit_settle_cad_gj^2,gas3=nit_settle_cad_gj^3,
-    year_fac=as.factor(year), yearmonth=interaction(month_fac,year_fac),
-    tight=(supply_cushion<=500),really_tight=(supply_cushion<200),he_fac=as.factor(he),pctl_fac=factor(percentile),
-    peak_fac=factor(on_peak),
-    out_mkt=(bid>forecast_pool_price)*(bid-forecast_pool_price),
-    policy=case_when(year(date)<2016 ~ "SGER_15",
-                     year(date)==2016 ~ "SGER_20",
-                     year(date)==2017 ~ "SGER_30",
-                     year(date)==2018 ~ "CCIR_30",
-                     year(date)==2019 ~ "CCIR_30",
-                     year(date)==2020 ~ "TIER_30",
-                     year(date)==2021 ~ "TIER_40",
-                     year(date)==2022 ~ "TIER_50",
-                     year(date)==2023 ~ "TIER_65",
-                     year(date)==2024 ~ "TIER_80",
-                     TRUE ~ "TIER_80")
-  )
-
-
-all_plants<-all_plants %>% left_join(offer_test %>% select(-total))%>%
-    mutate(net=ctax-oba,
-    #plant=fct_other(plant,keep=c("SCGT","NGCC","COAL")),
-    #plant=fct_relevel(plant,"Other"),
-    ail_error=actual_ail-day_ahead_forecasted_ail,
-    #offer=fct_other(offer,keep=c("Balancing Pool","Other"),other_level = "Other key"),
-    #offer=fct_relevel(offer,"Other")
-    )
-
-
-base_formula <- bid ~
-  plants+
-  offer+
-  cr_key+
-  cr_nbp+
-  #cr_nz+
-  #cr_nz_nbp+
-  poly(hourly_renewables,2,raw=TRUE)+
-  poly(out_mkt,2,raw=TRUE)+
-  #as.factor(yearmonth)+
-  poly(supply_cushion,2,raw=TRUE)+
-  forecast_pool_price+
-  day_ahead_forecasted_ail+
-  nit_settle_cad_gj+
-  total_import_capability+
-  total_export_capability+
-  poly(nit_settle_cad_gj,2,raw = TRUE)+
-  hdd_YEG+hdd_YYC+hdd_YMM+cdd_YEG+cdd_YMM+cdd_YYC
-
-peak_adj<-"peak_fac+
-  #peak_fac/as.factor(yearmonth)+
-  peak_fac/poly(supply_cushion,3,raw=TRUE)"
-  
-
-no_peak_adj<-"
-  #as.factor(yearmonth)+
-  poly(supply_cushion,3,raw=TRUE)+
-  nit_settle_cad_gj"
+merit_bids_all %>%
+  tabyl(offer, percentile)
 
 
 #all effects, peak adjustment, separate ctax and oba
 this_formula <- update(base_formula, paste(". ~ . +", peak_adj,"+ ctax + oba"))
 
-#sample_share<-.15
-all_plants_reg<-all_plants %>% #sample_n(nrow(.)*sample_share, replace = F)%>% #no replacement - don't duplicate
+  all_plants_reg<-merit_bids_all %>% 
+  #sample_n(nrow(.)*sample_share, replace = F)%>% #no replacement - don't duplicate
   #mutate(offer=fct_relevel(offer,"Other"))%>%
   nest(data = -c(percentile)) %>%
   mutate(fit = map(data, ~ lm(this_formula, data = .x)),
@@ -242,18 +306,11 @@ all_plants_reg<-all_plants %>% #sample_n(nrow(.)*sample_share, replace = F)%>% #
   )%>%unnest(tidied)%>%
   select(-data,-fit)
 
-#test<-all_plants %>% group_by(percentile)%>% summarize(min=min(bid),max=max(bid))
 
-ctax_all_no_peaks<-all_plants_reg %>%
+  all_plants_reg %>%
   filter(grepl("ctax",term)|grepl("oba",term)) %>%
   mutate(peak="All Hours",
-         Plant_Type="All Plants")
-
-
-#library(hrbrthemes)
-#hrbrthemes::import_roboto_condensed()
-
-ctax_all_no_peaks%>% #filter(percentile<=90 & percentile>=40)%>%
+         Plant_Type="All Plants")%>%
   filter(grepl("ctax",term)|grepl("oba",term))%>%ggplot(aes(x=percentile, y=estimate, ymin=conf.low, ymax=conf.high,group=term,color=term)) +
   #geom_pointrange() +
   #geom_line(size=1.25)+
@@ -275,74 +332,35 @@ ctax_all_no_peaks%>% #filter(percentile<=90 & percentile>=40)%>%
   scale_color_manual("",values=c("black","grey50"),labels=c("Marginal effect of carbon tax cost","Marginal effect of OBA value"))+
   guides(color= guide_legend(nrow = 1,byrow = F))+
   NULL
-ggsave(filename = "images/all_plants_no_peaks.png",dpi=300,width = 14, height=8)
+ggsave(filename = "images/all_plants_no_peaks.png",dpi=300,width = 10, height=6)
 
 
-#separate pass-through in peak hours
 
-
-#all effects, peak adjustment, separate ctax and oba
-this_formula <- update(base_formula, paste(". ~ . +", peak_adj,"-peak_fac + peak_fac:ctax + peak_fac:oba"))
-
-#sample_share<-.15
-all_plants_peak<-all_plants %>% #sample_n(nrow(.)*sample_share, replace = F)%>% #no replacement - don't duplicate
-  #mutate(offer=fct_relevel(offer,"Other"))%>%
+all_plants_reg <- merit_bids_all %>%
   nest(data = -c(percentile)) %>%
-  mutate(fit = map(data, ~ lm(this_formula, data = .x)),
-         #key_marginals = map2(fit, data, ~margins_summary(.x, data = .y,variables=c("ctax","oba"))),
-         #tidied = map(fit, tidy,conf.int = T),
-         tidied = map(fit, tidy,conf.int = T),
-         glanced = map(fit, glance),
-         #augmented = map(fit, augment)
-  )%>%unnest(tidied)%>%
-  select(-data,-fit)
+  mutate(
+    fit = map(data, ~ lm(this_formula, data = .x)),
+    tidied = map(fit, ~ tidy(.x, conf.int = FALSE)),
+    glanced = map(fit, glance)
+  ) %>%
+  select(percentile, tidied) %>%
+  unnest(tidied)
 
+# Ensure estimates are numeric and create a label for each model
+all_plants_reg <- all_plants_reg %>%
+  mutate(
+    percentile_label = paste0("P", percentile),
+    estimate = as.numeric(estimate)  # ensure no list columns
+  )
 
-ctax_peak<-all_plants_peak %>%
-  filter(grepl("ctax",term)|grepl("oba",term)) %>%
-  mutate(peak=ifelse(grepl("peak_facTRUE",term),"Peak Hours","Off-Peak Hours"),
-         Plant_Type="All Plants")
-
-#library(hrbrthemes)
-#hrbrthemes::import_roboto_condensed()
-ctax_peak%>% filter(percentile<=100 & percentile>=0)%>%
-  filter(grepl("ctax",term)|grepl("oba",term))%>%
-  mutate(term=gsub("peak_facFALSE:","",term))%>%
-  mutate(term=gsub("peak_facTRUE:","",term))%>%
-  mutate(peak2=fct_relevel(peak,"Peak Hours"))%>%
-  ggplot(aes(x=percentile, y=estimate, ymin=conf.low, ymax=conf.high,group=term,color=term)) +
-  #geom_pointrange() +
-  #geom_line(size=1.25)+
-  geom_point(size=1.25)+
-  #geom_errorbar(width=2.85)+
-  geom_errorbar(width=rel(.75),size=.85)+
-  scale_y_continuous(expand=c(0,0),breaks=pretty_breaks())+
-  expand_limits(y=c(-.5,.5))+
-  scale_x_continuous(expand=c(0,0),breaks=pretty_breaks())+
-  expand_limits(x=c(0,100))+
-  facet_grid(rows = vars(peak2))+
-  #facet_grid(rows=fct_relevel(peak,"Peak Hours"))+
-  geom_hline(yintercept = 0, col = "black") +
-  labs(
-    x = "Percentile of total offered power (%)", y = "Marginal effect (Δ in offer : Δ in $/MWh in cost or value)",
-    #title = "Marginal effect of carbon tax cost and output-based allocation values on power offers by plant type"
-    #subtitle = "Conditional on plant type"
-  ) +
-  theme_ps()+
-  scale_color_manual("",values=c("black","grey50"),labels=c("Marginal effect of carbon tax cost","Marginal effect of OBA value"))+
-  #scale_shape_manual("",values=c(6,7),labels=c("Marginal effect of carbon tax cost","Marginal effect of OBA value"))+
-  guides(color= guide_legend(nrow = 1,byrow = F))+
-  NULL
-ggsave(filename = "images/all_plants_peaks.png",dpi=150,width = 14, height=9)
-
+latex_table(all_plants_reg,"paper/tables/all_plants_no_peaks.tex")
 
 
 #net effect only
 
-#all effects, peak adjustment, net compliance cost
-this_formula <- update(base_formula, paste(". ~ . +", peak_adj,"-peak_fac + peak_fac:net"))
+this_formula <- update(base_formula, paste(". ~ . +", peak_adj,"+net"))
 
-all_plants_net<-all_plants %>%
+all_plants_net<-merit_bids_all %>%
   nest(data = -c(percentile)) %>%
   mutate(fit = map(data, ~ lm(this_formula
                               , data = .x)),
@@ -355,7 +373,7 @@ all_plants_net<-all_plants %>%
 
 net_all<-all_plants_net %>%
   filter(grepl("net",term)) %>%
-  mutate(peak=ifelse(grepl("peak_facTRUE",term),"Peak Hours","Off-Peak Hours"),
+  mutate(peak="All Hours",
          Plant_Type="All Plants")
 
 net_all%>% #filter(percentile<=95 & percentile>=40)%>%
@@ -368,10 +386,10 @@ net_all%>% #filter(percentile<=95 & percentile>=40)%>%
   #geom_errorbar(width=2.85)+
   geom_errorbar(width=rel(.75),linewidth=.85)+
   scale_x_continuous(expand=c(0,0),breaks=pretty_breaks())+
-  #expand_limits(x=0)+
+  expand_limits(x=c(0,100))+
   expand_limits(y=c(-.55,.55))+
   scale_y_continuous(expand=c(0,0),breaks=pretty_breaks())+
-  facet_grid(rows = vars(peak))+
+  #facet_grid(rows = vars(peak))+
   geom_hline(yintercept = 0, col = "black") +
   labs(
     x = "Percentile of total offered power (%)", y = "Marginal effect (Δ in offer : Δ in $/MWh in cost or value)",
@@ -379,13 +397,13 @@ net_all%>% #filter(percentile<=95 & percentile>=40)%>%
     #subtitle = "Conditional on plant type"
   ) +
   theme_ps()+
-  scale_color_manual("",values=c("black"),labels=c("Marginal effect of net carbon pricing cost, off-peak hours","Marginal effect of net carbon pricing cost, peak hours"))+
+  scale_color_manual("",values=c("black"),labels=c("Marginal effect of net carbon pricing cost"))+
   #guides(color= guide_legend(nrow = 2,byrow = F))+
-  guides(color= "none")+
+  #guides(color= "none")+
   NULL
-ggsave(filename = "images/all_plants_net_peak.png",dpi=150,width = 14, height=8)
+ggsave(filename = "images/all_plants_net.png",dpi=300,width = 10, height=6)
 
-
+latex_table(all_plants_net,"paper/tables/all_plants_net.tex")
 
 # FLEX
 
@@ -413,28 +431,9 @@ ggsave(filename = "images/all_plants_net_peak.png",dpi=150,width = 14, height=8)
 #   poly(nit_settle_cad_gj,2,raw = TRUE)+
 #   hdd_YEG+hdd_YYC+hdd_YMM+cdd_YEG+cdd_YMM+cdd_YYC
 
-
-this_formula <- update(base_formula, paste(". ~ . +", peak_adj,"-peak_fac + peak_fac:ctax + peak_fac:oba"))
-
-#sample_share<-.15
-all_plants_peak<-all_plants %>% #sample_n(nrow(.)*sample_share, replace = F)%>% #no replacement - don't duplicate
-  #mutate(offer=fct_relevel(offer,"Other"))%>%
-  nest(data = -c(percentile)) %>%
-  mutate(fit = map(data, ~ lm(this_formula, data = .x)),
-         #key_marginals = map2(fit, data, ~margins_summary(.x, data = .y,variables=c("ctax","oba"))),
-         #tidied = map(fit, tidy,conf.int = T),
-         tidied = map(fit, tidy,conf.int = T),
-         glanced = map(fit, glance),
-         #augmented = map(fit, augment)
-  )%>%unnest(tidied)%>%
-  select(-data,-fit)
-
-
-
-
 this_formula <- update(base_formula, paste(". ~ . +", no_peak_adj,"+ net"))
 
-all_plants_flex<-all_plants %>% 
+all_plants_flex<-merit_bids_all %>% 
 nest(data = -c(percentile,peak_fac)) %>%
   mutate(fit = map(data, ~ lm(this_formula, data = .x)),
          #key_marginals = map2(fit, data, ~margins_summary(.x, data = .y,variables=c("ctax","oba"))),
@@ -466,11 +465,130 @@ flex_all%>% #filter(percentile<=95 & percentile>=40)%>%
   #geom_errorbar(width=2.85)+
   geom_errorbar(width=rel(.75),linewidth=.85)+
   scale_x_continuous(expand=c(0,0),breaks=pretty_breaks())+
+  expand_limits(x=c(0,100))+
+  expand_limits(y=c(-.7,.7))+
+  scale_y_continuous(expand=c(0,0),breaks=pretty_breaks())+
+  facet_grid(rows = vars(peak))+
+  geom_hline(yintercept = 0, col = "black") +
+  labs(
+    x = "Percentile of total offered power (%)", y = "Marginal effect (Δ in offer : Δ in $/MWh in net carbon policy costs)",
+    #title = "Marginal effect of carbon tax cost and output-based allocation values on power offers by plant type"
+    #subtitle = "Conditional on plant type"
+  ) +
+  #paper_theme()+
+  theme_ps()+
+  #theme_ipsum() + theme(legend.position = "bottom")+
+  scale_color_manual("",values=c("black"),labels=c("Marginal effect of net carbon pricing cost"))+
+  #scale_color_manual("",values=colors_tableau10())+
+  
+  #guides(color= guide_legend(nrow = 2,byrow = F))+
+  #guides(color= "none")+
+  NULL
+ggsave(filename = "images/all_plants_net_peak_flex.png",dpi=300,width = 10, height=6)
+
+latex_table(all_plants_flex%>%filter(peak_fac=="TRUE"),"paper/tables/all_plants_net_flex_peak.tex")
+latex_table(all_plants_flex%>%filter(peak_fac=="FALSE"),"paper/tables/all_plants_net_flex_offpeak.tex")
+
+#ctax flex
+this_formula <- update(base_formula, paste(". ~ . +", no_peak_adj,"+ ctax + oba"))
+
+all_plants_flex<-merit_bids_all %>% 
+  nest(data = -c(percentile,peak_fac)) %>%
+  mutate(fit = map(data, ~ lm(this_formula, data = .x)),
+         #key_marginals = map2(fit, data, ~margins_summary(.x, data = .y,variables=c("ctax","oba"))),
+         #tidied = map(fit, tidy,conf.int = T),
+         tidied = map(fit, tidy,conf.int = T),
+         glanced = map(fit, glance),
+         #augmented = map(fit, augment)
+  )%>%unnest(tidied)%>%
+  select(-data,-fit)
+
+
+
+flex_all<-all_plants_flex %>%
+  filter(grepl("ctax",term)|grepl("oba",term)) %>%
+  mutate(peak=ifelse(peak_fac==TRUE,"Peak Hours","Off-Peak Hours"),
+         peak=as_factor(peak),peak=fct_relevel(peak,"Peak Hours"),
+         Plant_Type="All Plants")
+
+
+flex_all%>% #filter(percentile<=95 & percentile>=40)%>%
+  mutate(term=gsub("offer","",term))%>%
+  mutate(term=gsub(":net","",term))%>%
+  #mutate(term=gsub("peak_facTRUE:","",term))%>%
+  #filter(grepl("net",term))%>%
+  ggplot(aes(x=percentile, y=estimate, ymin=conf.low, ymax=conf.high,group=term,color=term)) +
+  #geom_pointrange() +
+  #geom_line(size=1.25)+
+  geom_point()+
+  #geom_errorbar(width=2.85)+
+  geom_errorbar(width=rel(.75),linewidth=.85)+
+  scale_x_continuous(expand=c(0,0),breaks=pretty_breaks())+
   #expand_limits(x=0)+
   expand_limits(y=c(-.7,.7))+
   expand_limits(x=c(0,100))+
   scale_y_continuous(expand=c(0,0),breaks=pretty_breaks())+
   facet_grid(rows = vars(peak))+
+  geom_hline(yintercept = 0, col = "black") +
+  labs(
+    x = "Percentile of total offered power (%)", y = "Marginal effect (Δ in offer : Δ in $/MWh in net carbon policy costs)",
+    #title = "Marginal effect of carbon tax cost and output-based allocation values on power offers by plant type"
+    #subtitle = "Conditional on plant type"
+  ) +
+  #paper_theme()+
+  theme_ps()+
+  #theme_ipsum() + theme(legend.position = "bottom")+
+  scale_color_manual("",values=c("black","grey50"),labels=c("Marginal effect of carbon tax cost","Marginal effect of OBA value"))+
+  #guides(color= "none")+
+  NULL
+ggsave(filename = "images/all_plants_ctax_peak_flex.png",dpi=300,width = 10, height=7)
+
+latex_table(all_plants_flex%>%filter(peak_fac=="TRUE"),"paper/tables/all_plants_ctax_flex_peak.tex")
+latex_table(all_plants_flex%>%filter(peak_fac=="TRUE"),"paper/tables/all_plants_ctax_flex_offpeak.tex")
+
+#latex_table(flex_all,"paper/tables/all_plants_ctax_flex.tex")
+
+
+# tight market
+
+this_formula <- update(base_formula, paste(". ~ . +", peak_adj,"+ net"))
+
+all_plants_flex<-merit_bids_all %>% 
+  nest(data = -c(percentile,tight)) %>%
+  mutate(fit = map(data, ~ lm(this_formula, data = .x)),
+         #key_marginals = map2(fit, data, ~margins_summary(.x, data = .y,variables=c("ctax","oba"))),
+         #tidied = map(fit, tidy,conf.int = T),
+         tidied = map(fit, tidy,conf.int = T),
+         glanced = map(fit, glance),
+         #augmented = map(fit, augment)
+  )%>%unnest(tidied)%>%
+  select(-data,-fit)
+
+
+
+all_plants_flex %>%
+  filter(grepl("net",term)) %>%
+  mutate(tight=ifelse(tight==TRUE,"Tight Hours","Slack Hours"),
+         tight=as_factor(tight),tight=fct_relevel(tight,"Tight Hours"),
+         Plant_Type="All Plants")%>%
+
+
+  mutate(term=gsub("offer","",term))%>%
+  mutate(term=gsub(":net","",term))%>%
+  #mutate(term=gsub("peak_facTRUE:","",term))%>%
+  #filter(grepl("net",term))%>%
+  ggplot(aes(x=percentile, y=estimate, ymin=conf.low, ymax=conf.high,group=term,color=term)) +
+  #geom_pointrange() +
+  #geom_line(size=1.25)+
+  geom_point()+
+  #geom_errorbar(width=2.85)+
+  geom_errorbar(width=rel(.75),linewidth=.85)+
+  scale_x_continuous(expand=c(0,0),breaks=pretty_breaks())+
+  #expand_limits(x=0)+
+  expand_limits(y=c(-.7,.7))+
+  expand_limits(x=c(0,100))+
+  scale_y_continuous(expand=c(0,0),breaks=pretty_breaks())+
+  facet_grid(rows = vars(tight),scales="free_y")+
   geom_hline(yintercept = 0, col = "black") +
   labs(
     x = "Percentile of total offered power (%)", y = "Marginal effect (Δ in offer : Δ in $/MWh in net carbon policy costs)",
@@ -486,10 +604,16 @@ flex_all%>% #filter(percentile<=95 & percentile>=40)%>%
   #guides(color= guide_legend(nrow = 2,byrow = F))+
   guides(color= "none")+
   NULL
-ggsave(filename = "images/all_plants_net_peak_flex.png",dpi=150,width = 14, height=8)
+ggsave(filename = "images/all_plants_net_tight.png",dpi=150,width = 14, height=8)
+
+
+
+latex_table(all_plants_net,"paper/tables/all_plants_tight.tex")
+
 
 rm(merit_bids_all)
-rm(all_plants)
+
+
 
 #by plant fuel: coal and gas
 
@@ -500,60 +624,20 @@ bids_files<- list.files("data/") %>% as_tibble() %>% filter(grepl("synth_type",v
 
 load(file = paste("data/",bids_files$value,sep=""))
 paste("loaded file=data/",bids_files$value,sep="")
-by_type<-merit_aug%>%ungroup()%>%
-  mutate(plants=as.character(plants),
-         offer=as.character(offer)
-  )
-rm(merit_aug)
-
-#pick 10% of the date/he combos at random
-#sample_share<-.15
-
-by_type <- by_type %>%
-  na.omit()%>%
-  mutate(
-    net=ctax-oba,
-    gas2=nit_settle_cad_gj^2,gas3=nit_settle_cad_gj^3,
-    year_fac=as.factor(year), yearmonth=interaction(month_fac,year_fac),
-    tight=(supply_cushion<=500),really_tight=(supply_cushion<200),he_fac=as.factor(he),pctl_fac=factor(percentile),
-    peak_fac=factor(on_peak),
-    out_mkt=(bid>forecast_pool_price)*(bid-forecast_pool_price),
-    policy=case_when(year(date)<2016 ~ "SGER_15",
-                     year(date)==2016 ~ "SGER_20",
-                     year(date)==2017 ~ "SGER_30",
-                     year(date)==2018 ~ "CCIR_30",
-                     year(date)==2019 ~ "CCIR_30",
-                     year(date)==2020 ~ "TIER_30",
-                     year(date)==2021 ~ "TIER_40",
-                     year(date)==2022 ~ "TIER_50",
-                     year(date)==2023 ~ "TIER_65",
-                     year(date)==2024 ~ "TIER_80",
-                     TRUE ~ "TIER_80")
-  )
-
-
-
-by_type<-by_type %>% left_join(offer_test %>% select(-total,-time))%>%    
-  mutate(net=ctax-oba,
-           #plant=fct_other(plant,keep=c("SCGT","NGCC","COAL")),
-           #plant=fct_relevel(plant,"Other"),
-           ail_error=actual_ail-day_ahead_forecasted_ail,
-           #offer=fct_other(offer,keep=c("Balancing Pool","Other"),other_level = "Other key"),
-           #offer=fct_relevel(offer,"Other")
-    )
-
-
-#unique(by_type$Plant_Type)
 
 fossils<-c("GAS","COAL")
+by_type<-merit_aug%>% filter(Plant_Type %in% fossils)%>%
+  select_reg_data()
 
 
-#
-this_formula <- update(base_formula, paste(". ~ . +", peak_adj,"+ net - plants"))
-#this_formula <- base_formula
 
 
-reg_by_type<-by_type %>% filter(Plant_Type %in% fossils)%>%
+# by type, separate ctax and oba
+
+
+this_formula <- update(base_formula, paste(". ~ . +", peak_adj,"+ net - plants -offer"))
+
+reg_by_type<-by_type %>%
   nest(data = -c(percentile,Plant_Type)) %>%
   mutate(fit = map(data, ~ lm(this_formula, data = .x)),
          #key_marginals = map2(fit, data, ~margins_summary(.x, data = .y,variables=c("ctax","oba"))),
@@ -606,6 +690,80 @@ ggsave(filename = "images/by_fuel_net.png",dpi=120,width = 14, height=14)
 rm(merit_bids_type,by_type)
 
 
+
+
+# by plant type, net
+
+#by plant fuel: coal and gas
+
+bids_files<- list.files("data/") %>% as_tibble() %>% filter(grepl("synth_offer_type",value))%>%
+  mutate(file_date=gsub("synth_offer_type_","",value),
+         file_date=ymd_hm(gsub(".RData","",file_date))
+  )%>% filter(file_date==max(file_date))
+
+load(file = paste("data/",bids_files$value,sep=""))
+paste("loaded file=data/",bids_files$value,sep="")
+
+fossils<-c("GAS","COAL")
+by_p_type<-merit_aug%>% #filter(Plant_Type %in% fossils)%>%
+  select_reg_data()
+
+
+
+this_formula <- update(base_formula, paste(". ~ . +", peak_adj,"+ net - plants -offer"))
+
+reg_by_type<-by_p_type %>%
+  nest(data = -c(percentile,Plant_Type)) %>%
+  mutate(fit = map(data, ~ lm(this_formula, data = .x)),
+         #key_marginals = map2(fit, data, ~margins_summary(.x, data = .y,variables=c("ctax","oba"))),
+         #tidied = map(fit, tidy,conf.int = T),
+         tidied = map(fit, tidy,conf.int = T),
+         glanced = map(fit, glance),
+         #augmented = map(fit, augment)
+  )%>%unnest(tidied)%>%
+  select(-data,-fit)
+
+
+ctax_type<-reg_by_type %>% 
+  filter(grepl("net",term)) %>%
+  mutate(peak="All Hours")
+
+ctax_type%>% #filter(percentile<=95) %>%
+  mutate(Plant_Type=case_when(                 Plant_Type=="GAS"~"Natural Gas",
+                                               Plant_Type=="SCGT"~"Natural Gas\nSimple Cycle",
+                                               Plant_Type=="NGCC"~"Natural Gas\nCombined Cycle",
+                                               Plant_Type=="LEGACY COAL"~"Coal- or Gas-\nFired Steam",
+  ))%>%
+  ggplot(aes(x=percentile, y=estimate, ymin=conf.low, ymax=conf.high,group=term,color=term)) +
+  #geom_pointrange() +
+  #geom_line(size=1.25)+
+  geom_point()+
+  geom_errorbar(width=rel(.75),size=.85)+
+  geom_hline(yintercept = 1,linetype="dotted")+
+  scale_x_continuous(expand=c(0,0),breaks=pretty_breaks())+
+  expand_limits(x=c(0,100))+
+  scale_y_continuous(expand=c(0,0),breaks=pretty_breaks())+
+  #expand_limits(y=c(-6,6))+
+  facet_grid(rows=vars(Plant_Type),scales="free_y")+
+  geom_hline(yintercept = 0, col = "black") +
+  labs(
+    x = "Percentile of total offered power (%)", y = "Marginal effect (Δ in offer : Δ in $/MWh of carbon policy cost)",
+    #title = "Marginal effect of carbon tax cost and output-based allocation values on power offers by plant type"
+    #subtitle = "Conditional on plant type"
+  ) +
+  theme_ps()+
+  theme(panel.spacing = unit(3, "lines"))+
+  #theme_ipsum() + theme(legend.position = "bottom")+
+  scale_color_manual("",values=c("black"),labels=c("Marginal effect of net carbon policy cost"))+
+  #guides(color= "none")+
+  NULL
+ggsave(filename = "images/by_plant_net.png",dpi=300,width = 12, height=8)
+
+rm(merit_bids_type,by_type)
+
+
+
+
 #by offer control
 
 bids_files<- list.files("data/") %>% as_tibble() %>% filter(grepl("synth_offer",value))%>% filter(!grepl("type",value))%>%
@@ -615,38 +773,14 @@ bids_files<- list.files("data/") %>% as_tibble() %>% filter(grepl("synth_offer",
 
 load(file = paste("data/",bids_files$value,sep=""))
 paste("loaded file=data/",bids_files$value,sep="")
-merit_bids_offer<-merit_aug%>%ungroup()%>%
-  mutate(plants=as.character(plants),
-         offer=as.character(offer)
-  )
+merit_bids_offer<-merit_aug%>%
+  filter(year>=2013)%>%
+  select_reg_data()
 rm(merit_aug)
-
 
 #pick 10% of the date/he combos at random
 #sample_share<-.15
 #merit_bids_offer<-merit_bids_offer%>% #sample_n(nrow(.)*sample_share, replace = F) #no replacement - don't duplicate
-
-# regression on all the plants
-by_offer <- merit_bids_offer %>%  filter(year>=2013)%>%
-  mutate(net=ctax-oba)%>%
-  #select(bid,percentile,offer_gen,ctax,oba,net,supply_cushion,hourly_renewables,hour,on_peak,supply_cushion,day_ahead_forecasted_ail,forecast_pool_price,
-  #       day_ahead_forecasted_ail,total_export_capability,total_import_capability,nit_settle_cad_gj,hdd_YEG,hdd_YMM,hdd_YYC,
-  #       cdd_YEG,cdd_YMM,cdd_YYC,year,month_fac,he)%>%
-  na.omit()%>%
-  mutate(gas2=nit_settle_cad_gj^2,gas3=nit_settle_cad_gj^3,
-         year_fac=as.factor(year), yearmonth=interaction(month_fac,year_fac),
-         tight=(supply_cushion<=500),really_tight=(supply_cushion<200),he_fac=as.factor(he),pctl_fac=factor(percentile),
-         peak_fac=factor(on_peak),
-         out_mkt=(bid>forecast_pool_price)*(bid-forecast_pool_price) )
-by_offer<-by_offer %>% left_join(offer_test %>% select(-total,-time))%>%    
-  mutate(net=ctax-oba,
-         #plant=fct_other(plant,keep=c("SCGT","NGCC","COAL")),
-         #plant=fct_relevel(plant,"Other"),
-         ail_error=actual_ail-day_ahead_forecasted_ail,
-         #offer=fct_other(offer,keep=c("Balancing Pool","Other"),other_level = "Other key"),
-         #offer=fct_relevel(offer,"Other")
-  )
-
 
 this_formula <- update(base_formula, paste(". ~ . +", peak_adj,"+ net - plants - offer"))
 
@@ -795,8 +929,8 @@ offer_co%>% filter(percentile<100,
   scale_x_continuous(expand=c(0,0),breaks=pretty_breaks())+
   #expand_limits(x=0)+
   #expand_limits(y=c(-.55,.55))+
-  scale_y_continuous(expand=c(0,0),breaks=pretty_breaks())+
-  facet_grid(row=vars(offer_gen))+
+  scale_y_continuous(expand=c(0,0.1),breaks=pretty_breaks())+
+  facet_grid(row=vars(offer_gen),scales="free_y")+
   geom_hline(yintercept = 0, col = "black") +
   labs(
     x = "Percentile of total offered power (%)", y = "Marginal effect (Δ in offer : Δ in $/MWh of net carbon policy cost)",
@@ -816,29 +950,71 @@ ggsave(filename = "images/offer.png",width = 14, height=15,dpi=120)
 #by unit
 
 bids_files<- list.files("data/") %>% as_tibble() %>% filter(grepl("synth_focus",value))%>%
-  mutate(file_date=gsub("synth_focus_","",value),
+  mutate(file_date=gsub("synth_focus_EGC1_","",value),
          file_date=ymd_hm(gsub(".RData","",file_date))
-  )%>% filter(file_date==max(file_date))
+  )%>% na.omit()%>%filter(file_date==max(file_date))
 
 load(file = paste("data/",bids_files$value,sep=""))
 paste("loaded file=data/",bids_files$value,sep="")
-merit_bids_unit<-merit_aug
+merit_bids_unit<-merit_aug %>%select_reg_data()
 
-#pick 10% of the date/he combos at random
-#sample_share<-.15
-#merit_bids_unit<-merit_bids_unit%>% sample_n(nrow(.)*sample_share, replace = F) #no replacement - don't duplicate
+this_formula <- update(base_formula, paste(". ~ . +", peak_adj,"+ net - plants - offer"))
 
-# regression on all the plants
-by_unit <- merit_bids_unit %>%  #filter(offer_gen %in% c("GN3"))%>%
-  select(bid,percentile,offer_gen,ctax,oba,supply_cushion,hourly_renewables,hour,on_peak,supply_cushion,day_ahead_forecasted_ail,forecast_pool_price,
-         day_ahead_forecasted_ail,total_export_capability,total_import_capability,nit_settle_cad_gj,hdd_YEG,hdd_YMM,hdd_YYC,
-         cdd_YEG,cdd_YMM,cdd_YYC,year,month_fac,he,time)%>%
-  na.omit()%>%
-  mutate(net=ctax-oba,gas2=nit_settle_cad_gj^2,gas3=nit_settle_cad_gj^3,
-         year_fac=as.factor(year), yearmonth=interaction(month_fac,year_fac),
-         tight=(supply_cushion<=500),really_tight=(supply_cushion<200),he_fac=as.factor(he),pctl_fac=factor(percentile),
-         peak_fac=factor(on_peak),
-         out_mkt=(bid>forecast_pool_price)*(bid-forecast_pool_price) )
+offer_shep_2020<-by_offer %>% 
+  #filter(percentile<=95)%>%
+  nest(data = -c(percentile)) %>%
+  mutate(fit = map(data, ~ lm(this_formula
+                              , data = .x)),
+         #key_marginals = map2(fit, data, ~margins_summary(.x, data = .y,variables=c("ctax","oba"))),
+         #tidied = map(fit, tidy,conf.int = T),
+         tidied = map(fit, tidy,conf.int = T),
+         glanced = map(fit, glance),
+         #augmented = map(fit, augment)
+  ) %>%
+  unnest(tidied)%>%
+  select(-data,-fit)
+
+
+offer_shep_2020%>%
+  filter(grepl("net",term),percentile<100) %>%
+  
+  ggplot(aes(x=percentile, y=estimate, ymin=conf.low, ymax=conf.high,group=term,color=term)) +
+  #geom_pointrange() +
+  #geom_line(size=1.25)+
+  geom_point()+
+  geom_hline(yintercept = 1,linetype="dotted")+
+  #geom_errorbar(width=2.85)+
+  geom_errorbar(width=rel(.5))+
+  scale_x_continuous(expand=c(0,0),breaks=pretty_breaks())+
+  expand_limits(x=c(0,100))+
+  expand_limits(y=c(-.55,.55))+
+  scale_y_continuous(expand=c(0,0),breaks=pretty_breaks())+
+  #facet_grid(row=vars(offer_gen),scales="free_y")+
+  geom_hline(yintercept = 0, col = "black") +
+  labs(
+    x = "Percentile of total offered power (%)", y = "Marginal effect (Δ in offer : Δ in $/MWh of net carbon policy cost)",
+    #title = "Marginal effect of carbon tax cost and output-based allocation values on power offers by plant type"
+    #subtitle = "Conditional on plant type"
+  ) +
+  theme_ps()+
+  theme(panel.spacing = unit(1, "lines"))+
+  #theme_ipsum() + theme(legend.position = "bottom")+
+  scale_color_manual("",values=c("black"),labels=c("Marginal effect of net carbon policy cost"))+
+  guides(color= "none")+
+  NULL
+ggsave(filename = "images/offer_shep.png",dpi=290,width = 14, height=10,bg = "transparent")
+
+
+
+
+
+
+
+
+# END OF QUEEN'S PAPER STUFF
+
+
+
 
 
 
