@@ -1,0 +1,161 @@
+\documentclass[aspectratio=169]{beamer}
+
+\usepackage{graphicx,hyperref,url}
+\usepackage[english]{babel}
+\usepackage[latin1]{inputenc}
+%\usepackage{times}
+\usepackage[T1]{fontenc}
+\usepackage{multirow}
+\usepackage{capt-of}
+\usepackage{graphicx}
+\usepackage{array}
+\usepackage{tikz}
+\usepackage{hyperref}
+\usepackage{fes}
+
+% Add a date and possibly the name of the event to the slides
+%  - again first a short version to be shown at the bottom of each slide
+%  - second the full date and event name for the title slide
+
+\renewcommand{\(}{\begin{columns}}
+\renewcommand{\)}{\end{columns}}
+\newcommand{\<}[1]{\begin{column}{#1}}
+\renewcommand{\>}{\end{column}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+
+
+\newcommand{\degC}{$^o$C$\,$}
+\newcommand{\co}{$\text{CO}_{2}\,$}
+\newcommand{\tx}{$G_{2\times\text{CO}_2}$}
+\newcommand{\Real}{\mathbb R}
+
+
+
+% The main document
+
+
+
+\begin{document}
+
+\title[Carbon price pass-through]{Carbon price pass-through in Alberta's electricity market}
+
+%\author{Branko Bo\v skovi\'{c} \and Andrew Leach \and Charles F.\ Mason}
+%\institute{University of Alberta  \and University of Alberta  \and University of Wyoming}
+
+%\author[shortname]{author1 \inst{1} \and author2 \inst{2}}
+%\institute[shortinst]{\inst{1} affiliation for author1 \and %
+ %                     \inst{2} affiliation for author2}
+
+
+
+\author[Andrew Leach]{
+\begin{columns}
+      \column{.1\linewidth}
+      \column{.8\linewidth}
+      \vbox to .8\textheight{\centering
+      Andrew Leach \\University of Alberta
+      }
+      \vfill
+      \column{.1\linewidth}
+      \end{columns}
+ }
+
+
+\institute[QED]{
+  Queeen's Economics Department\\
+  Kingston, ON}
+
+
+\date[QED Quant Seminar]{April, 2025}
+
+\frame
+  \titlepage
+  
+\section{Introduction}
+\begin{frame}{Carbon Pricing's Effect on Electricity Markets}
+    \begin{itemize}
+    \item We want to understand how carbon prices impact firm offer behaviour in electricity markets
+    \item Electricity markets, at least in certain jurisdictions, are ideal environments in which to study responses to carbon prices
+    \item Alberta policy changes alter both carbon prices and output-based credit allocations
+    \item Rich, hourly electricity market data allows us to observe firm-level decisions with respect to carbon price pass through
+    \item Fabra and Reguant (2014) shows how firms respond to emissions credit prices and that lump-sum credit allocations were not distortionary in the short run
+    \item Brown et al. (2018) have looked at the dynamics of such a market in a simplified, simulation model
+    \end{itemize}
+\vfill
+\end{frame}
+
+
+\section{Motivation and Context}
+
+%\begin{frame}{Oil sands reserves\hspace{3cm} \small Source: AER (2013)}
+%\pgfputat{\pgfxy(0,.25)}{\pgfimage[width=4.25in]{AB_reserves.pdf}}
+%\end{frame}
+
+\begin{frame}{Alberta's Power Market is an Ideal Laboratory}
+    \begin{itemize}
+    \item Alberta's power market is relatively small, isolated, and features a mix of generation technologies
+    \item Significant hourly variability in intertie capacity helps us with identification
+     \item Alberta has minimal intertie capacity: WECC (1325 MW export and 1500 MW import path-rating) and Saskatchewan (150 MW path-rating)
+      \item Peak internal load for 2018 was 11,697 MW, minimum internal load was 7,819 MW. Sustained low prices prevailed from 2015 through 2018.
+    \item Supply mix (2018) was 45\% coal, 21\% net-to-grid from combined heat and power plants, 19\% natural gas, 3\% hydro, 6\% wind, 1\% other sources including solar and 5\% imports.
+  \end{itemize}
+\vfill
+\end{frame}
+
+
+\begin{frame}{Alberta's Power Market is an Ideal Laboratory}
+    \begin{itemize}
+    \item Alberta's power market is relatively small, isolated, and features a mix of generation technologies
+    \item Significant hourly variability in intertie capacity helps us with identification
+     \item Alberta has minimal intertie capacity: WECC (1325 MW export and 1500 MW import path-rating) and Saskatchewan (150 MW path-rating)
+      \item Peak internal load for 2018 was 11,697 MW, minimum internal load was 7,819 MW. Sustained low prices prevailed from 2015 through 2018.
+    \item Supply mix (2018) was 45\% coal, 21\% net-to-grid from combined heat and power plants, 19\% natural gas, 3\% hydro, 6\% wind, 1\% other sources including solar and 5\% imports.
+  \end{itemize}
+\vfill
+\end{frame}
+
+
+\begin{frame}{Alberta's Power Market is an Ideal Laboratory}
+    \begin{itemize}
+    \item Alberta's power market is relatively small, isolated, and features a mix of generation technologies
+    \item Significant hourly variability in intertie capacity helps us with identification
+     \item Alberta has minimal intertie capacity: WECC (1325 MW export and 1500 MW import path-rating) and Saskatchewan (150 MW path-rating)
+      \item Peak internal load for 2018 was 11,697 MW, minimum internal load was 7,819 MW. Sustained low prices prevailed from 2015 through 2018.
+    \item Supply mix (2018) was 45\% coal, 21\% net-to-grid from combined heat and power plants, 19\% natural gas, 3\% hydro, 6\% wind, 1\% other sources including solar and 5\% imports.
+  \end{itemize}
+\vfill
+\end{frame}
+
+
+
+
+\section{Discussion}
+
+\begin{frame}{Discussion}
+   \begin{itemize}
+   \item Alberta's energy-only power market provides an ideal environment to study carbon price pass-through
+    \item Alberta policy changes alter both carbon prices and output-based credit allocations provide facility-specific treatment
+    \item Preliminary results show that policy changes in 2016, 2017, and 2018 saw significant changes in offers from coal and natural gas combined cycle plants
+    \item Framework allows us to examine changes in firm, offer control, fuel or other dimensions as well as market power implications
+    \item Machine-learning-based estimation of synthetic offer curves due to market conditions still to come
+    \item Glass half-full: impact of new policies and other proposed changes might provide an additional treatment.  
+    \end{itemize}
+   \vfill
+\end{frame}
+
+
+\begin{frame}{Contact info}
+\begin{center}
+Andrew Leach\bigskip \\
+School of Business, University of Alberta\bigskip \\
+Email: \href{mailto:aleach@ualberta.ca}{andrew.leach@ualberta.ca}\bigskip \\
+Twitter: \href{http://twitter.com/andrew_leach}{\url{@andrew_leach}}
+\end{center}
+\vfill
+\end{frame}
+
+
+\end{document} 

@@ -1,0 +1,116 @@
+\documentclass[12pt]{article}
+\usepackage{fullpage}
+\usepackage{multirow}
+\usepackage{graphicx}
+\usepackage[sort&compress]{natbib}
+\usepackage{amssymb, amsmath, amsthm}
+\usepackage[breaklinks=true]{hyperref}
+\hypersetup{
+    colorlinks,
+    citecolor= black,
+    filecolor= black,
+    linkcolor= black,
+    urlcolor= black
+}
+\usepackage{setspace}
+\usepackage{tikz}
+\usetikzlibrary{patterns,arrows,decorations.pathreplacing}
+\usepackage{subcaption}
+\usepackage{booktabs}
+\usepackage{multicol}
+\usepackage{rotating}
+\usepackage{tabularx}
+\usepackage[normalem]{ulem}
+
+\usepackage{siunitx}
+\sisetup{group-separator={,},group-minimum-digits=3}
+
+\usepackage[multiple]{footmisc}
+
+\newcommand{\insitu}{\textit{in situ} }
+%%%%%%%%%%
+
+
+
+% FOR COMMENTING:
+\usepackage{comment}
+\usepackage{ifthen}
+\usepackage{color}
+\usepackage{tabularx}
+
+\specialcomment{ALnote}{\begingroup\sffamily\colorbox{blue}{Andrew: } \color{blue}}{\endgroup}
+\specialcomment{BBnote}{\begingroup\sffamily\colorbox{red}{Branko: }\color{red}}{\endgroup}
+
+
+\setlength{\abovecaptionskip}{10pt}
+\setlength{\belowcaptionskip}{10pt}
+
+\addtolength{\parskip}{5pt}
+
+%\usepackage[normalem]{ulem}
+
+%%%% TITLE %%%%
+\title{Carbon price pass-through to electricity prices}
+
+%%%% DATE %%%%
+\date{\today}
+
+
+%%%% AUTHOR INFORMATION %%%%
+% AUTHOR INFO
+\author{Andrew Leach\thanks{Corresponding author. Address: Alberta School of Business, University of Alberta, Edmonton, Alberta T6G 2R6, Canada. Email: \href{mailto:andrew.leach@ualberta.ca}{\texttt{andrew.leach@ualberta.ca}}.}\\
+University of Alberta
+\and
+Blake Shaffer\\
+ Stanford University
+ }
+\begin{document}
+\maketitle
+
+\section*{Extended Abstract}
+We exploit a unique set of significant policy variations over time and across facilities to measure carbon pricing pass-through to electricity prices.  Beginning in 2007, the province of Alberta, Canada, instituted carbon pricing which affected generators in its energy-only wholesale electricity market.  Fossil-fuel-fired generators were charged a carbon price of \$15/tonne on emissions net of allocations of emissions credits. Emissions credits were allocated per unit output at rates based on facility-specific emissions-intensity histories. Renewable generators were also able to qualify for offset credits which provided an alternative revenue stream.
+
+\noindent Beginning with a change in provincial government in 2015, the emissions pricing scheme was changed 3 times in 4 years, with the changes all announced during the 2015 calendar year. First, in June 2015, it was announced that the carbon price would increase to \$20 per tonne and that output-based allocations would decrease beginning in 2016. The price was also set to increase further, to \$30 per tonne, in 2017.  Later in 2015, following the recommendations of an expert panel, the government announced that it would alter the formula by which output-based allocations were provided to one which was consistent across all electricity generators beginning in 2018. This change was material, with coal plant allocations reduced by more than 0.5t/MWh in many cases, leading to changes in average costs of output of more than \$15/MWh for some facilities.  This combination of policy changes implies that the effective marginal cost of emissions and the average emissions cost per unit output both changed significantly, with changes having different impacts on generators within and across fuel types.  We show the effect of the policy changes on average revenue by fuel type in Figure 1.
+
+\begin{figure}[!h]%
+	\centering \vspace{-.25cm} \includegraphics[width=6.5in]{../../alberta_power/price_capture_ctax.png}
+\label{fig:masnadi_1}
+\vspace{-0.75cm}	\caption{Impact of changes in carbon pricing on plant revenues by type}
+\end{figure}
+
+\newpage \noindent We use data including hourly electricity prices and loads, plant availability, as well as offer functions at the plant level, historic emissions intensities, and emissions policy compliance records to assess the degree to which carbon prices have been passed through to wholesale electricity prices. We also assess the degree to which changes in the composition of the market including changes to offer control and firm concentration, as well as changes due to facility exit, have altered the pass-through of carbon prices.  Our work builds largely on the analysis of electricity price pass-through of \citet{fabra_reguant}, but also draws on work by \citet{hintermann17} on market power, \citet{hintermann15} and \citet{hintermann16} on impacts of carbon pricing in the EU-ETS, \citet{nazifi16} on pass-through in Australia's electricity market, and \citet{woo_et_al} on pass-through in California's market.
+
+\noindent Our preliminary analysis suggests that there has been both a significant effect on emissions (see Figure \ref{fig:monthly_ghg}) and on the composition of the market (see Figure \ref{fig:monthly_gen}) with significant reduction in the generation from coal plants and significant increase in the hourly daily cycling of coal plants as the change in carbon prices push coal plants higher in the merit order relative to gas generation, a dynamic examined in \citet{cullen_mansur}.
+
+\begin{figure}[p]%
+	\centering \vspace{-.25cm} \includegraphics[width=5.5in]{../../alberta_power//monthly_ghg_mwh.png}
+\vspace{-0.75cm}	\caption{Impact of changes in carbon pricing on GHG emissions}\label{fig:monthly_ghg}
+\end{figure}
+
+
+\begin{figure}[p]%
+	\centering \vspace{-.25cm} \includegraphics[width=5.5in]{../../alberta_power/gen_ghg_price.png}
+\vspace{-.5cm}	\caption{Impact of changes in carbon pricing on market share by fuel. Combined heat and power (COGEN), simple-cycle gas turbines (SCGT) and natural gas combined cycle (NGCC) facilities are each natural-gas-fired.}\label{fig:monthly_gen}
+\end{figure}
+
+
+%\begin{figure}[!h]%
+	%\centering \vspace{-.5cm} \includegraphics[width=6.5in]{CJE/masnadi_fig_1.png} %\label{fig:masnadi_1}
+%	\caption{Figure 1 from Masnadi et al. (2018)}
+%	\vspace{-.5cm}
+%\end{figure}
+\newpage
+\vspace{10cm}
+
+
+\begin{figure}[!h]%
+	\centering \vspace{-.25cm} \includegraphics[width=6.5in]{../../alberta_power/peak_prices_2009_2019.png}
+\label{fig:masnadi_1}
+\vspace{-0.75cm}	\caption{Impact of changes in carbon pricing on plant revenues by type}
+\end{figure}
+
+
+\bibliographystyle{chicago}
+\bibliography{../env}
+
+\end{document}

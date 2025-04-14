@@ -3,6 +3,7 @@ library(skimr)
 library(broom)
 library(purrr)
 library(margins)
+library(kableExtra)
 source("power_paper_base.R")
 
 #make a market power indicator
@@ -124,7 +125,42 @@ mkt_power_ind<-function(){
   
   save(offer_test,file=format(Sys.time(),format="data/offer_data_%Y_%b_%d_%H_%M.RData"))  
 
-}
+
+load("data/annual_offers.rdata")
+annuals_clean<-annuals%>%#filter(year(date)<2022)%>%
+         filter(Plant_Type %in% c("COAL","NGCC","NGCONV","SCGT","HYDRO"),
+                year<=2023)%>%
+         mutate(
+           Plant_Type=case_when(                 Plant_Type=="HYDRO"~"Hydroelectric Dams",
+                                                      Plant_Type=="SCGT"~"Natural Gas Simple Cycle",
+                                                      Plant_Type=="NGCC"~"Natural Gas Combined Cycle",
+                                                      Plant_Type=="NGCONV"~"Gas-Fired Steam",
+                                                      Plant_Type=="COAL"~"Coal-Fired Steam"))
+  ggplot(annuals_clean) +
+  geom_col(
+    aes(x = date, y = offers, fill = Plant_Type),
+    colour = "black", linewidth = 0, position = "stack"
+  ) +
+  facet_grid(rows = vars(offer_sum)) +
+  scale_x_date(expand=c(0,0),date_breaks = "1 year",date_labels = "%Y") +
+  scale_fill_manual("",values =c("black","grey50","dodgerblue","grey30","grey80"))+
+  theme_ps() +
+  theme(
+    panel.spacing = unit(0.5, "lines"),
+    legend.key.width = unit(2, "lines"),
+    strip.text = element_text(color = "black")
+  ) +
+  labs(
+    x = "",
+    y = expression("Key Firms' Total Annual Dispatchable Plant Offers (TWh)"),
+    fill = NULL
+  )
+  
+ggsave("images/mkt_offers.png",dpi=300,width=12,height=14.5)
+
+
+  
+  }
 
 offer_files<- list.files("data/") %>% as_tibble() %>% filter(grepl("offer_data",value))%>%
   mutate(file_date=gsub("offer_data_","",value),
@@ -182,7 +218,7 @@ select_reg_data<-function(data_sent){
   
   }
 
-latex_table<-function(reg_output,latex_file="paper/tables/reg_output.tex"){
+latex_table<-function(reg_output,caption_sent="Table",latex_file="paper/tables/reg_output.tex"){
   #reg_output<-all_plants_reg
   #reg_output<-all_plants_flex
   latex_tabling<-
@@ -232,7 +268,7 @@ latex_table<-function(reg_output,latex_file="paper/tables/reg_output.tex"){
       linesep = "",
       align = "l",  # Left-align terms
       escape = FALSE,  # Allow LaTeX to interpret the stars and parentheses
-      caption = "Regression Coefficients by Percentile. Standard errors in parentheses, {** p$<$0.01, * p$<$0.05}"
+      caption = caption_sent
     ) %>%
     kable_styling(
       latex_options = c("hold_position", "scale_down")
@@ -335,25 +371,9 @@ this_formula <- update(base_formula, paste(". ~ . +", peak_adj,"+ ctax + oba"))
 ggsave(filename = "images/all_plants_no_peaks.png",dpi=300,width = 10, height=6)
 
 
-
-all_plants_reg <- merit_bids_all %>%
-  nest(data = -c(percentile)) %>%
-  mutate(
-    fit = map(data, ~ lm(this_formula, data = .x)),
-    tidied = map(fit, ~ tidy(.x, conf.int = FALSE)),
-    glanced = map(fit, glance)
-  ) %>%
-  select(percentile, tidied) %>%
-  unnest(tidied)
-
-# Ensure estimates are numeric and create a label for each model
-all_plants_reg <- all_plants_reg %>%
-  mutate(
-    percentile_label = paste0("P", percentile),
-    estimate = as.numeric(estimate)  # ensure no list columns
-  )
-
-latex_table(all_plants_reg,"paper/tables/all_plants_no_peaks.tex")
+latex_table(all_plants_reg,
+            caption_sent="All Plants, Carbon Pricing Effects Regression Coefficients by Percentile. Standard errors in parentheses, {** p$<$0.01, * p$<$0.05}",
+            latex_file = "paper/tables/all_plants_no_peaks.tex")
 
 
 #net effect only
@@ -403,7 +423,9 @@ net_all%>% #filter(percentile<=95 & percentile>=40)%>%
   NULL
 ggsave(filename = "images/all_plants_net.png",dpi=300,width = 10, height=6)
 
-latex_table(all_plants_net,"paper/tables/all_plants_net.tex")
+latex_table(all_plants_net,
+            caption_sent="All Plants, Net Carbon Pricing Effect Regression Coefficients by Percentile. Standard errors in parentheses, {** p$<$0.01, * p$<$0.05}",
+            latex_file = "paper/tables/all_plants_net.tex")
 
 # FLEX
 
@@ -486,8 +508,14 @@ flex_all%>% #filter(percentile<=95 & percentile>=40)%>%
   NULL
 ggsave(filename = "images/all_plants_net_peak_flex.png",dpi=300,width = 10, height=6)
 
-latex_table(all_plants_flex%>%filter(peak_fac=="TRUE"),"paper/tables/all_plants_net_flex_peak.tex")
-latex_table(all_plants_flex%>%filter(peak_fac=="FALSE"),"paper/tables/all_plants_net_flex_offpeak.tex")
+
+
+latex_table(all_plants_flex%>%filter(peak_fac=="TRUE"),
+            caption_sent ="All Plants, Net Carbon Pricing Effect Regression Coefficients by Percentile for Peak Hours. Standard errors in parentheses, {** p$<$0.01, * p$<$0.05}",
+  latex_file = "paper/tables/all_plants_net_flex_peak.tex")
+latex_table(all_plants_flex%>%filter(peak_fac=="FALSE"),
+            caption_sent ="All Plants, Net Carbon Pricing Effect Regression Coefficients by Percentile for Off-Peak Hours. Standard errors in parentheses, {** p$<$0.01, * p$<$0.05}",
+            latex_file ="paper/tables/all_plants_net_flex_offpeak.tex")
 
 #ctax flex
 this_formula <- update(base_formula, paste(". ~ . +", no_peak_adj,"+ ctax + oba"))
@@ -543,8 +571,12 @@ flex_all%>% #filter(percentile<=95 & percentile>=40)%>%
   NULL
 ggsave(filename = "images/all_plants_ctax_peak_flex.png",dpi=300,width = 10, height=7)
 
-latex_table(all_plants_flex%>%filter(peak_fac=="TRUE"),"paper/tables/all_plants_ctax_flex_peak.tex")
-latex_table(all_plants_flex%>%filter(peak_fac=="TRUE"),"paper/tables/all_plants_ctax_flex_offpeak.tex")
+latex_table(all_plants_flex%>%filter(peak_fac=="TRUE"),
+            caption_sent ="All Plants, Carbon Pricing Effects Regression Coefficients by Percentile for Peak Hours. Standard errors in parentheses, {** p$<$0.01, * p$<$0.05}",
+            latex_file ="paper/tables/all_plants_ctax_flex_peak.tex")
+latex_table(all_plants_flex%>%filter(peak_fac=="TRUE"),
+            caption_sent ="All Plants, Carbon Pricing Effects Regression Coefficients by Percentile for Off-Peak Hours. Standard errors in parentheses, {** p$<$0.01, * p$<$0.05}",
+            latex_file ="paper/tables/all_plants_ctax_flex_offpeak.tex")
 
 #latex_table(flex_all,"paper/tables/all_plants_ctax_flex.tex")
 
@@ -598,17 +630,19 @@ all_plants_flex %>%
   #paper_theme()+
   theme_ps()+
   #theme_ipsum() + theme(legend.position = "bottom")+
-  scale_color_manual("",values=c("black"),labels=c("Marginal effect of net carbon pricing cost, off-peak hours","Marginal effect of net carbon pricing cost, peak hours"))+
+  scale_color_manual("",values=c("black"),labels=c("Marginal effect of net carbon pricing cost","Marginal effect of net carbon pricing cost, peak hours"))+
   #scale_color_manual("",values=colors_tableau10())+
   
   #guides(color= guide_legend(nrow = 2,byrow = F))+
-  guides(color= "none")+
+  #guides(color= "none")+
   NULL
-ggsave(filename = "images/all_plants_net_tight.png",dpi=150,width = 14, height=8)
+ggsave(filename = "images/all_plants_net_tight.png",dpi=300,width = 10, height=7)
 
 
 
-latex_table(all_plants_net,"paper/tables/all_plants_tight.tex")
+latex_table(all_plants_flex %>% filter(tight=="TRUE"),
+            caption_sent ="All Plants, Net Carbon Pricing Effect Regression Coefficients by Percentile for Tight Market Conditions. Standard errors in parentheses, {** p$<$0.01, * p$<$0.05} \\label{tab:tight}",
+            latex_file ="paper/tables/all_plants_tight.tex")
 
 
 rm(merit_bids_all)
@@ -687,6 +721,11 @@ ctax_type%>% #filter(percentile<=95) %>%
   NULL
 ggsave(filename = "images/by_fuel_net.png",dpi=120,width = 14, height=14)
 
+latex_table(reg_by_type %>% filter(Plant_Type=="COAL"),
+            caption_sent ="Coal Plants, Net Carbon Pricing Effect Regression Coefficients by Percentile. Standard errors in parentheses, {** p$<$0.01, * p$<$0.05} \\label{tab:coal}",
+            latex_file ="paper/tables/coal_plants_tight.tex")
+
+
 rm(merit_bids_type,by_type)
 
 
@@ -708,6 +747,8 @@ fossils<-c("GAS","COAL")
 by_p_type<-merit_aug%>% #filter(Plant_Type %in% fossils)%>%
   select_reg_data()
 
+#by_p_type %>%
+#  tabyl(Plant_Type,year)
 
 
 this_formula <- update(base_formula, paste(". ~ . +", peak_adj,"+ net - plants -offer"))
@@ -723,8 +764,21 @@ reg_by_type<-by_p_type %>%
   )%>%unnest(tidied)%>%
   select(-data,-fit)
 
+reg_by_type_short<-by_p_type %>% filter(year<=2019,Plant_Type!="NGCONV")%>% #take out the gas conversions
+  mutate(reg="short")%>%
+  nest(data = -c(percentile,Plant_Type)) %>%
+  mutate(fit = map(data, ~ lm(this_formula, data = .x)),
+         #key_marginals = map2(fit, data, ~margins_summary(.x, data = .y,variables=c("ctax","oba"))),
+         #tidied = map(fit, tidy,conf.int = T),
+         tidied = map(fit, tidy,conf.int = T),
+         glanced = map(fit, glance),
+         #augmented = map(fit, augment)
+  )%>%unnest(tidied)%>%
+  select(-data,-fit)
 
 ctax_type<-reg_by_type %>% 
+  mutate(reg="full")%>%
+  bind_rows(reg_by_type_short%>%mutate(reg="short"))%>%
   filter(grepl("net",term)) %>%
   mutate(peak="All Hours")
 
@@ -732,8 +786,54 @@ ctax_type%>% #filter(percentile<=95) %>%
   mutate(Plant_Type=case_when(                 Plant_Type=="GAS"~"Natural Gas",
                                                Plant_Type=="SCGT"~"Natural Gas\nSimple Cycle",
                                                Plant_Type=="NGCC"~"Natural Gas\nCombined Cycle",
-                                               Plant_Type=="LEGACY COAL"~"Coal- or Gas-\nFired Steam",
+                                               Plant_Type=="NGCONV"~"Gas-Fired\nSteam",
+                                               Plant_Type=="COAL"~"Coal-Fired\nSteam",
   ))%>%
+  ggplot(aes(x=percentile, y=estimate, ymin=conf.low, ymax=conf.high,group=reg,color=reg)) +
+  #geom_pointrange() +
+  #geom_line(size=1.25)+
+  geom_point()+
+  geom_errorbar(width=rel(.75),size=.85)+
+  geom_hline(yintercept = 1,linetype="dotted")+
+  scale_x_continuous(expand=c(0,0),breaks=pretty_breaks())+
+  expand_limits(x=c(0,100))+
+  scale_y_continuous(expand=c(0,0),breaks=pretty_breaks())+
+  #expand_limits(y=c(-6,6))+
+  facet_grid(rows=vars(Plant_Type),scales="free_y")+
+  geom_hline(yintercept = 0, col = "black") +
+  labs(
+    x = "Percentile of total offered power (%)", y = "Marginal effect (Δ in offer : Δ in $/MWh of carbon policy cost)",
+    #title = "Marginal effect of carbon tax cost and output-based allocation values on power offers by plant type"
+    #subtitle = "Conditional on plant type"
+  ) +
+  theme_ps()+
+  theme(panel.spacing = unit(3, "lines"),
+        legend.title = element_text())+
+  #theme_ipsum() + theme(legend.position = "bottom")+
+  scale_color_manual("Marginal effect of net carbon policy cost",values=c("black","dodgerblue"),labels=c("Full sample","Pre-2020"))+
+  #guides(color= "none")+
+  NULL
+ggsave(filename = "images/by_plant_net.png",dpi=300,width = 12, height=10)
+
+
+load(file = paste("data/",bids_files$value,sep=""))
+paste("loaded file=data/",bids_files$value,sep="")
+
+
+reg_by_type_short<-by_p_type %>% filter(year<=2019)%>%
+  nest(data = -c(percentile,Plant_Type)) %>%
+  mutate(fit = map(data, ~ lm(this_formula, data = .x)),
+         #key_marginals = map2(fit, data, ~margins_summary(.x, data = .y,variables=c("ctax","oba"))),
+         #tidied = map(fit, tidy,conf.int = T),
+         tidied = map(fit, tidy,conf.int = T),
+         glanced = map(fit, glance),
+         #augmented = map(fit, augment)
+  )%>%unnest(tidied)%>%
+  select(-data,-fit)
+
+
+reg_by_type_short %>% 
+  filter(grepl("net",term)) %>%
   ggplot(aes(x=percentile, y=estimate, ymin=conf.low, ymax=conf.high,group=term,color=term)) +
   #geom_pointrange() +
   #geom_line(size=1.25)+
@@ -757,7 +857,8 @@ ctax_type%>% #filter(percentile<=95) %>%
   scale_color_manual("",values=c("black"),labels=c("Marginal effect of net carbon policy cost"))+
   #guides(color= "none")+
   NULL
-ggsave(filename = "images/by_plant_net.png",dpi=300,width = 12, height=8)
+ggsave(filename = "images/by_plant_net_pre_2019.png",dpi=300,width = 12, height=8)
+
 
 rm(merit_bids_type,by_type)
 
@@ -784,7 +885,7 @@ rm(merit_aug)
 
 this_formula <- update(base_formula, paste(". ~ . +", peak_adj,"+ net - plants - offer"))
 
-offer_reg<-by_offer %>% #filter(Plant_Type %in%fossils) %>%
+offer_reg<-merit_bids_offer %>% #filter(Plant_Type %in%fossils) %>%
   #filter(percentile<=95)%>%
   nest(data = -c(percentile,offer_gen)) %>%
   mutate(fit = map(data, ~ lm(this_formula
@@ -796,16 +897,35 @@ offer_reg<-by_offer %>% #filter(Plant_Type %in%fossils) %>%
          #augmented = map(fit, augment)
   ) %>%
   unnest(tidied)%>%
-  select(-data,-fit)
+  select(-data,-fit)%>%
+  mutate(sample="full")
+
+offer_reg_short<-merit_bids_offer %>% filter(year<2020) %>%
+  #filter(percentile<=95)%>%
+  nest(data = -c(percentile,offer_gen)) %>%
+  mutate(fit = map(data, ~ lm(this_formula
+                              , data = .x)),
+         #key_marginals = map2(fit, data, ~margins_summary(.x, data = .y,variables=c("ctax","oba"))),
+         #tidied = map(fit, tidy,conf.int = T),
+         tidied = map(fit, tidy,conf.int = T),
+         glanced = map(fit, glance),
+         #augmented = map(fit, augment)
+  ) %>%
+  unnest(tidied)%>%
+  select(-data,-fit)%>%
+  mutate(sample="short")
 
 
-offer_co<-offer_reg%>%
+offer_reg%>%bind_rows(offer_reg_short)%>%
+  filter(offer_gen%in% c("ATCO","Balancing Pool","Capital Power","ENMAX","TransAlta"))%>%
+  mutate(offer_gen=as_factor(offer_gen),
+         offer_gen=fct_relevel(offer_gen,c("Balancing Pool","ATCO","Capital Power","ENMAX","TransAlta"))
+         )%>%
   filter(grepl("net",term)) %>%
-  mutate(peak=ifelse(grepl("peak_facTRUE",term),"Peak Hours","Off-Peak Hours"),
-         Plant_Type="All Plants")
+  #mutate(peak=ifelse(grepl("peak_facTRUE",term),"Peak Hours","Off-Peak Hours"),
+  #       Plant_Type="All Plants")
 
-offer_co%>% #filter(percentile<95,offer_gen %in% c("ENMAX"))%>%
-  ggplot(aes(x=percentile, y=estimate, ymin=conf.low, ymax=conf.high,group=term,color=term)) +
+  ggplot(aes(x=percentile, y=estimate, ymin=conf.low, ymax=conf.high,group=sample,color=sample)) +
   #geom_pointrange() +
   #geom_line(size=1.25)+
   geom_point()+
@@ -813,7 +933,7 @@ offer_co%>% #filter(percentile<95,offer_gen %in% c("ENMAX"))%>%
   #geom_errorbar(width=2.85)+
   geom_errorbar(width=rel(.5))+
   scale_x_continuous(expand=c(0,0),breaks=pretty_breaks())+
-  expand_limits(x=0)+
+  expand_limits(x=c(0,100))+
   expand_limits(y=c(-.55,.55))+
   scale_y_continuous(expand=c(0,0),breaks=pretty_breaks())+
   facet_grid(row=vars(offer_gen),scales="free_y")+
@@ -824,12 +944,15 @@ offer_co%>% #filter(percentile<95,offer_gen %in% c("ENMAX"))%>%
     #subtitle = "Conditional on plant type"
   ) +
   theme_ps()+
-  theme(panel.spacing = unit(1, "lines"))+
+  theme(
+         panel.spacing = unit(1, "lines"),
+         legend.title = element_text()
+         )+
   #theme_ipsum() + theme(legend.position = "bottom")+
-  scale_color_manual("",values=c("black"),labels=c("Marginal effect of net carbon policy cost"))+
-  guides(color= "none")+
+  scale_color_manual("Marginal effect of net carbon policy cost",values=c("black","dodgerblue"),labels=c("Full sample","Pre-2020"))+
+  #guides(color= "none")+
   NULL
-ggsave(filename = "images/offers.png",dpi=290,width = 14, height=10,bg = "transparent")
+ggsave(filename = "images/offers.png",dpi=300,width = 12, height=10,bg = "transparent")
 
 
 offer_co%>% filter(offer_gen %in% c("Balancing Pool"))%>%
@@ -860,6 +983,9 @@ offer_co%>% filter(offer_gen %in% c("Balancing Pool"))%>%
 ggsave(filename = "images/offers_bp.png",dpi=290,width = 14, height=6,bg = "transparent")
 
 
+latex_table(offer_reg_short %>% filter(offer_gen=="Balancing Pool"),
+            caption_sent ="Balancing Pool, Net Carbon Pricing Effect Regression Coefficients by Percentile. Standard errors in parentheses, {** p$<$0.01, * p$<$0.05} \\label{tab:bp}",
+            latex_file ="paper/tables/bp.tex")
 
 
 
@@ -1014,7 +1140,7 @@ ggsave(filename = "images/offer_shep.png",dpi=290,width = 14, height=10,bg = "tr
 # END OF QUEEN'S PAPER STUFF
 
 
-
+#To correct in part for facilities which face different incentives, we build an indicator of overall market-responsive behaviour which requires two elements to be true of a firm's offer strategy: a facility must have variability in the average value of power offered to the market (inter-quartile range of offer values greater than zero) and it much have variability in its upper quartile (80th percentile) offers as well. If both of these conditions are met, we deem a facility to be market-responsive.  Figure \ref{fig:price_sense} shows how this indicator allows up to separate facilities in our data, with the implication that we should only expect to see pass-through from market-responsive facilities. We find that there are 11 facilities which do not meet either of these criteria and so we designated them non-market-responsive. 
 
 
 

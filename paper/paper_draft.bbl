@@ -125,6 +125,13 @@ Kara, M., S.~Syri, A.~Lehtil{\"a}, S.~Helynen, V.~Kekkonen, M.~Ruska, and
   electricity consumers in finland.
 \newblock {\em Energy Economics\/}~{\em 30\/}(2), 193--211.
 
+\bibitem[\protect\citeauthoryear{Leach, Rivers, and Shaffer}{Leach
+  et~al.}{2020}]{leach_rivers_shaffer}
+Leach, A., N.~Rivers, and B.~Shaffer (2020, August).
+\newblock {Canadian Electricity Markets during the COVID-19 Pandemic: An
+  Initial Assessment}.
+\newblock {\em Canadian Public Policy\/}~{\em 46\/}(S2), 145--159.
+
 \bibitem[\protect\citeauthoryear{Leach and Tombe}{Leach and
   Tombe}{2016}]{leach_tombe_ppa}
 Leach, A. and T.~Tombe (2016).
@@ -157,12 +164,5 @@ Nazifi, F. (2016, January).
 Nazifi, F., S.~Tr{\"u}ck, and L.~Zhu (2021).
 \newblock Carbon pass-through rates on spot electricity prices in australia.
 \newblock {\em Energy Economics\/}~{\em 96}, 105178.
-
-\bibitem[\protect\citeauthoryear{Rivers and Shaffer}{Rivers and
-  Shaffer}{2020}]{rivers_stretching_2020}
-Rivers, N. and B.~Shaffer (2020, September).
-\newblock Stretching the {Duck}: {How} {Rising} {Temperatures} will {Change}
-  the {Level} and {Shape} of {Future} {Electricity} {Consumption}.
-\newblock {\em The Energy Journal\/}~{\em 41\/}(1).
 
 \end{thebibliography}

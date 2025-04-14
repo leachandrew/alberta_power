@@ -13,7 +13,7 @@ options(scipen=999)
 update<-0 #add new data
 save<-1 #save files at the end
 synth<-1 #synthetic plants?
-  synth_type<-5  #5 is a target facility, focus_id,4 is facility,3 is by Plant Type, 2 is by offer_control,1 is by plant_fuel, 0 is full merit as synthetic plant
+  synth_type<-2  #5 is a target facility, focus_id,4 is facility,3 is by Plant Type, 2 is by offer_control,1 is by plant_fuel, 0 is full merit as synthetic plant
   if(synth_type==5)
     focus_id<-c("EGC1")
 
@@ -153,6 +153,8 @@ load("data/forecast_data.RData")
    grepl("Suncor",offer_control)~"Suncor",
    grepl("Capital Power",offer_control)~'Capital Power',
    grepl("ATCO",offer_control)~"ATCO",
+   grepl("Alberta Power",offer_control) & (date<ymd("2019-09-30")) ~"ATCO",
+   grepl("Alberta Power",offer_control) & (date>=ymd("2019-09-30")) ~"Heartland",
    grepl("Balancing Pool",offer_control)~"Balancing Pool",
    TRUE~"Other" #if it's not one of these, it's false
  ),key_firm=(offer_sum!="Other"))
@@ -386,6 +388,10 @@ anci<-merit_aug %>% filter(is.na(Plant_Type))%>%
   merit_aug<-
   #   test<-
     merit_aug%>% #
+    mutate(offer_control=ifelse(offer_control=="",NA,offer_control))%>%
+    group_by(asset_id)%>%
+        fill(offer_control,.direction="up")%>%  #carry offer control info backwards%>%
+    ungroup()%>%
     mutate(offer_sum=case_when(
       grepl("TransAlta",offer_control)~"TransAlta",
       grepl("TransCanada",offer_control)~"TransCanada",
@@ -395,6 +401,8 @@ anci<-merit_aug %>% filter(is.na(Plant_Type))%>%
       grepl("Calgary Energy",offer_control)~"ENMAX", #calgary energy centre
       grepl("Capital Power",offer_control)~'Capital Power',
       grepl("ATCO",offer_control)~"ATCO",
+      grepl("Alberta Power",offer_control) & (date<ymd("2019-09-30")) ~"ATCO",
+      grepl("Alberta Power",offer_control) & (date>=ymd("2019-09-30")) ~"Heartland",
       grepl("Heartland",offer_control)~"Heartland",
       grepl("Balancing Pool",offer_control)~"Balancing Pool",
       grepl("Canadian Natural",offer_control)~"CNRL",
@@ -522,13 +530,25 @@ anci<-merit_aug %>% filter(is.na(Plant_Type))%>%
       }
       
       if(synth_type==3){ #by plant type, but focus on fossils
-        merit_aug <- merit_aug%>% filter(offer_sum!="Other", offer_sum!="TRADE",Plant_Type %in% fossils)%>%
-          mutate(Plant_Type=fct_recode(Plant_Type,"LEGACY COAL"="COAL","LEGACY COAL"="NGCONV"))%>%
+        merit_aug <- merit_aug%>% 
+          filter(!is.na(offer_control),
+                  offer_sum!="Other",
+                  offer_sum!="Suncor",
+                  offer_sum!="TRADE",Plant_Type %in% fossils)%>%
+        mutate(offer_sum=fct_recode(offer_sum,"ATCO/Heartland"="ATCO","ATCO/Heartland"="Heartland")
+        )%>%
+          #mutate(Plant_Type=fct_recode(Plant_Type,"LEGACY COAL"="COAL","LEGACY COAL"="NGCONV"))%>%
           I()
       }
       
       if(synth_type==2){ #offer control w dispatchable plants
-        merit_aug <- merit_aug%>% filter(!is.na(offer_control),offer_sum!="Other", offer_sum!="TRADE",Plant_Type %in% fossils)
+        merit_aug <- merit_aug%>% 
+          filter(year(date)>=2013)%>% #only use years for which we have AESO offer control
+          filter(!is.na(offer_control),offer_sum!="Other",
+                 offer_sum!="Suncor",
+                 offer_sum!="TRADE",Plant_Type %in% fossils)%>%
+          mutate(offer_sum=fct_recode(offer_sum,"ATCO/Heartland"="ATCO","ATCO/Heartland"="Heartland")
+                 )
       }
       
             
@@ -818,4 +838,8 @@ anci<-merit_aug %>% filter(is.na(Plant_Type))%>%
 # 
 # marco_data%>%write_csv("marco_data.csv")
 
+      
+#annuals<-merit_aug %>% group_by(year,month,offer_sum,Plant_Type)%>%summarize(offers=sum(size,na.rm=T)/10^6)%>%
+#  ungroup()%>% mutate(date=ymd(paste(year,month,1,sep="-")))
 
+#save(annuals,file="data/annual_offers.Rdata")
