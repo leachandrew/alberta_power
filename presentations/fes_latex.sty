@@ -16,7 +16,7 @@
 %Added by Martijn Sprengers (Same as oxygen theme)
 \usetheme{Rochester}
 \RequirePackage{pgf}
-\pgfdeclareimage[width=\paperwidth]{header-logo}{ua_banner}
+\pgfdeclareimage[width=1.0\paperwidth]{header-logo}{fes_header}
 \setbeamercovered{transparent}
 
 % Layout scheme for outer elements: split header and footer
@@ -59,50 +59,33 @@
 
 
 %%%
-%%% Tweak definitions of outer theme to match UAlberta style
+%%% Tweak definitions of outer theme to match Radboud (website) style
 %%%
 
 % Background
-%\pgfdeclareimage[width=\paperwidth,height=\paperheight]{bg}{ru_background}
-%\setbeamertemplate{background}{\pgfuseimage{bg}}
+\pgfdeclareimage[width=\paperwidth,height=\paperheight]{bg}{fes_background}
+\setbeamertemplate{background}{\pgfuseimage{bg}}
 
-% Colors now U of A Green
-\definecolor{ualbertagreen}{HTML}{235b3b}
-\definecolor{ualbertagold}{HTML}{FFDB05}
-
-\definecolor{ualbertagrey}{HTML}{7D9AAA}
-
-\usecolortheme[RGB={35,91,59}]{structure}
+% Colors now red
+\usecolortheme[RGB={190,49,26}]{structure}
 
 %frametitle = red and frametitle right = black
+\setbeamercolor{frametitle}{parent=subsection in head/foot}
+\setbeamercolor{frametitle right}{parent=section in head/foot}
 
-
-%\setbeamercolor{frametitle}{parent=subsection in head/foot}
-%\setbeamercolor{frametitle right}{parent=section in head/foot}
-
-
-
-%Added by Andrew Leach
-\setbeamercolor*{Title bar}{fg=ualbertagreen}
+%Added by Martijn Sprengers
+\definecolor{rured}{HTML}{BE311A}
+\setbeamercolor*{Title bar}{fg=white}
 \setbeamercolor*{frametitle}{parent=Title bar}
-\setbeamercolor*{author in head/foot}{parent=title in head/foot}
 
-\setbeamercolor{section in head/foot}{fg=ualbertagold}
-\setbeamercolor{section in head/foot}{fg=white}
-\setbeamercolor{section in head/foot shaded}{bg=red}
 
-\setbeamercolor{headline}{bg=ualbertagold,fg=ualbertagreen}
 
-\setbeamercolor{section in head/foot}{parent=palette tertiary,fg=ualbertagold}
-\setbeamertemplate{section in head/foot shaded}{\color{white}\usebeamertemplate{section in head/foot}}
 
-\setbeamercolor{block body}{bg=ualbertagrey!70}
 
-\setbeamercolor{title}{bg=white,fg=ualbertagreen}
 
 % Footline: AUTHOR | TITLE | DATE FRAMENUMBER
 
-\defbeamertemplate*{footline}{fes theme}{%
+\defbeamertemplate*{footline}{ru theme}{%
   \leavevmode%
   \hbox{%
   \begin{beamercolorbox}[wd=.25\paperwidth,ht=2.25ex,dp=1ex,center]{author in head/foot}%
@@ -121,24 +104,24 @@
 }
 
 %Added by Martijn Sprengers:
-\beamer@headheight=0.045\paperwidth
+\beamer@headheight=0.13\paperwidth
 
 
-\defbeamertemplate*{frametitle}{fes theme}
+\defbeamertemplate*{frametitle}{ru theme}
 {
-  %\vskip-0.25\beamer@headheight
-  %\vskip-\baselineskip
+  \vskip-0.25\beamer@headheight
+  \vskip-\baselineskip
   %\hskip0.5cm
-  %\vskip-0.2cm
-  \hskip0.0cm\usebeamerfont*{frametitle}\insertframetitle
-  %\vskip-0.20em
-  %\hskip0.0cm\usebeamerfont*{framesubtitle}\insertframesubtitle
+  \vskip-0.2cm
+  \hskip0.7cm\usebeamerfont*{frametitle}\insertframetitle
+  \vskip-0.10em
+  \hskip0.7cm\usebeamerfont*{framesubtitle}\insertframesubtitle
 }
 
-\defbeamertemplate*{headline}{fes theme}{%
+\defbeamertemplate*{headline}{fes_latex theme}{%
 
   \pgfuseimage{header-logo}
-  \vskip -0.5cm
+  \vskip -1.95cm
   \linethickness{0pt}
 
   \framelatex{
@@ -146,9 +129,8 @@
     \usebeamerfont{section in head/foot}%
     \insertsectionnavigationhorizontal{0pt}{\hskip0.22cm}{}%
   \end{beamercolorbox}}
-%\vskip 1.1cm
+
   \framelatex{
   \begin{beamercolorbox}[wd=\paperwidth,ht=0.9\beamer@headheight]{Title bar}
   \end{beamercolorbox}}
-
-  }
+}
