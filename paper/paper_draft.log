@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (MiKTeX 23.4) (preloaded format=pdflatex 2023.9.1)  10 APR 2025 22:15
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (MiKTeX 23.4) (preloaded format=pdflatex 2023.9.1)  13 APR 2025 21:08
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -489,7 +489,7 @@ Package: tabularx 2020/01/15 v2.11c `tabularx' package (DPC)
 \TX@ftn=\toks31
 )
 Package translations Info: No language package found. I am going to use `englis
-h' as default language. on input line 66.
+h' as default language. on input line 68.
 
 (C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/latex/l3backend\l3backend-pd
 ftex.def
@@ -498,29 +498,29 @@ File: l3backend-pdftex.def 2023-03-30 L3 backend support: PDF output (pdfTeX)
 \l__pdf_internal_box=\box108
 ) (paper_draft.aux
 
-LaTeX Warning: Label `fig:decomp_peaks' multiply defined.
+LaTeX Warning: Label `tab:tight' multiply defined.
 
 )
 \openout1 = `paper_draft.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 66.
-LaTeX Font Info:    ... okay on input line 66.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 66.
-LaTeX Font Info:    ... okay on input line 66.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 66.
-LaTeX Font Info:    ... okay on input line 66.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 66.
-LaTeX Font Info:    ... okay on input line 66.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 66.
-LaTeX Font Info:    ... okay on input line 66.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 66.
-LaTeX Font Info:    ... okay on input line 66.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 66.
-LaTeX Font Info:    ... okay on input line 66.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 66.
-LaTeX Font Info:    ... okay on input line 66.
-LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 66.
-LaTeX Font Info:    ... okay on input line 66.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 68.
+LaTeX Font Info:    ... okay on input line 68.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 68.
+LaTeX Font Info:    ... okay on input line 68.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 68.
+LaTeX Font Info:    ... okay on input line 68.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 68.
+LaTeX Font Info:    ... okay on input line 68.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 68.
+LaTeX Font Info:    ... okay on input line 68.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 68.
+LaTeX Font Info:    ... okay on input line 68.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 68.
+LaTeX Font Info:    ... okay on input line 68.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 68.
+LaTeX Font Info:    ... okay on input line 68.
+LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 68.
+LaTeX Font Info:    ... okay on input line 68.
 
 (C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/context/base/mkii\supp-pdf.m
 kii
@@ -547,7 +547,7 @@ Package epstopdf-base Info: Redefining graphics rule for `.eps' on input line 4
 cfg
 File: epstopdf-sys.cfg 2021/03/18 v2.0 Configuration of epstopdf for MiKTeX
 ))
-Package hyperref Info: Link coloring ON on input line 66.
+Package hyperref Info: Link coloring ON on input line 68.
  (paper_draft.out) (paper_draft.out)
 \@outlinefile=\write4
 \openout4 = `paper_draft.out'.
@@ -559,214 +559,225 @@ File: translations-basic-dictionary-english.trsl (english translation file `tra
 nslations-basic-dictionary')
 )
 Package translations Info: loading dictionary `translations-basic-dictionary' f
-or `english'. on input line 66.
-LaTeX Font Info:    Trying to load font information for U+msa on input line 68.
+or `english'. on input line 68.
+LaTeX Font Info:    Trying to load font information for U+msa on input line 70.
 
 
 (C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/latex/amsfonts\umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
-LaTeX Font Info:    Trying to load font information for U+msb on input line 68.
+LaTeX Font Info:    Trying to load font information for U+msb on input line 70.
 
 
 (C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/latex/amsfonts\umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 )
-Underfull \hbox (badness 10000) in paragraph at lines 74--77
-
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 74--77
-
- []
-
 [1
 
 {C:/Users/aleach/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map}] [2]
-[3] [4] [5] [6] [7]
-Underfull \hbox (badness 1648) in paragraph at lines 142--142
+[3] [4] [5] [6]
+Underfull \hbox (badness 1648) in paragraph at lines 143--143
 [][][]\OT1/cmr/m/n/10 Cite. Sub-se-quently re-duced to 0.59t/MWh (2015), 0.53t/
 MWh (2019), 0.52t/MWh(2020), and
  []
 
-[8] [9]
+[7] [8] [9]
 <../../SGER/sector_compliance_cost.png, id=197, 867.24pt x 361.35pt>
 File: ../../SGER/sector_compliance_cost.png Graphic file (type png)
 <use ../../SGER/sector_compliance_cost.png>
 Package pdftex.def Info: ../../SGER/sector_compliance_cost.png  used on input l
-ine 151.
+ine 152.
 (pdftex.def)             Requested size: 469.75499pt x 195.7326pt.
  [10 <../../SGER/sector_compliance_cost.png>]
 <../images/loads_clean.png, id=209, 1011.78pt x 505.89pt>
 File: ../images/loads_clean.png Graphic file (type png)
 <use ../images/loads_clean.png>
-Package pdftex.def Info: ../images/loads_clean.png  used on input line 163.
+Package pdftex.def Info: ../images/loads_clean.png  used on input line 164.
 (pdftex.def)             Requested size: 469.75499pt x 234.88132pt.
 <../images/peak_prices.png, id=210, 1011.78pt x 505.89pt>
 File: ../images/peak_prices.png Graphic file (type png)
 <use ../images/peak_prices.png>
-Package pdftex.def Info: ../images/peak_prices.png  used on input line 164.
+Package pdftex.def Info: ../images/peak_prices.png  used on input line 165.
 (pdftex.def)             Requested size: 469.75499pt x 234.88132pt.
 
 
 LaTeX Warning: `!h' float specifier changed to `!ht'.
 
+<../images/load_compare.png, id=212, 1011.78pt x 275.3487pt>
+File: ../images/load_compare.png Graphic file (type png)
+<use ../images/load_compare.png>
+Package pdftex.def Info: ../images/load_compare.png  used on input line 173.
+(pdftex.def)             Requested size: 469.75499pt x 127.84254pt.
 [11] [12 <../images/loads_clean.png> <../images/peak_prices.png>]
 <../images/gen_fuel_policies.png, id=226, 1300.86pt x 722.7pt>
 File: ../images/gen_fuel_policies.png Graphic file (type png)
 <use ../images/gen_fuel_policies.png>
-Package pdftex.def Info: ../images/gen_fuel_policies.png  used on input line 17
-4.
+Package pdftex.def Info: ../images/gen_fuel_policies.png  used on input line 18
+3.
 (pdftex.def)             Requested size: 469.75499pt x 260.9768pt.
-<../images/load_compare.png, id=228, 1011.78pt x 275.3487pt>
-File: ../images/load_compare.png Graphic file (type png)
-<use ../images/load_compare.png>
-Package pdftex.def Info: ../images/load_compare.png  used on input line 182.
-(pdftex.def)             Requested size: 469.75499pt x 127.84254pt.
- [13 <../images/gen_fuel_policies.png>]
-<../images/price_capture.png, id=240, 1084.05pt x 578.16pt>
-File: ../images/price_capture.png Graphic file (type png)
-<use ../images/price_capture.png>
-Package pdftex.def Info: ../images/price_capture.png  used on input line 190.
-(pdftex.def)             Requested size: 469.75499pt x 250.53596pt.
+
+Overfull \hbox (18.7872pt too wide) in paragraph at lines 194--221
+[][] 
+ []
 
 
 LaTeX Warning: `!h' float specifier changed to `!ht'.
 
-[14 <../images/load_compare.png> <../images/price_capture.png>] [15]
-<../images/mkt_power.png, id=267, 1156.32pt x 650.43pt>
+[13 <../images/load_compare.png>]
+<../images/mkt_power.png, id=249, 1156.32pt x 650.43pt>
 File: ../images/mkt_power.png Graphic file (type png)
 <use ../images/mkt_power.png>
-Package pdftex.def Info: ../images/mkt_power.png  used on input line 232.
+Package pdftex.def Info: ../images/mkt_power.png  used on input line 229.
 (pdftex.def)             Requested size: 446.26582pt x 251.01677pt.
- [16 <../images/mkt_power.png>] [17] [18] [19] [20]
-<../images/sampling.png, id=304, 1011.78pt x 505.89pt>
+ [14 <../images/gen_fuel_policies.png>]
+
+LaTeX Warning: `!h' float specifier changed to `!ht'.
+
+[15] [16 <../images/mkt_power.png>] [17] [18] [19] [20]
+<../images/sampling.png, id=302, 1011.78pt x 505.89pt>
 File: ../images/sampling.png Graphic file (type png)
 <use ../images/sampling.png>
-Package pdftex.def Info: ../images/sampling.png  used on input line 275.
+Package pdftex.def Info: ../images/sampling.png  used on input line 272.
 (pdftex.def)             Requested size: 422.77664pt x 211.39165pt.
- [21] [22 <../images/sampling.png>]
-<../images/coal_merit.png, id=321, 1011.78pt x 722.7pt>
+ [21 <../images/sampling.png>]
+<../images/coal_merit.png, id=313, 1011.78pt x 722.7pt>
 File: ../images/coal_merit.png Graphic file (type png)
 <use ../images/coal_merit.png>
-Package pdftex.def Info: ../images/coal_merit.png  used on input line 291.
+Package pdftex.def Info: ../images/coal_merit.png  used on input line 288.
 (pdftex.def)             Requested size: 211.3883pt x 150.98853pt.
-<../images/coal_synth_merit.png, id=322, 1011.78pt x 722.7pt>
+<../images/coal_synth_merit.png, id=314, 1011.78pt x 722.7pt>
 File: ../images/coal_synth_merit.png Graphic file (type png)
 <use ../images/coal_synth_merit.png>
-Package pdftex.def Info: ../images/coal_synth_merit.png  used on input line 297
+Package pdftex.def Info: ../images/coal_synth_merit.png  used on input line 294
 .
 (pdftex.def)             Requested size: 211.3883pt x 150.98853pt.
-<../images/all_coal_merit.png, id=326, 1011.78pt x 722.7pt>
+ [22]
+<../images/all_coal_merit.png, id=324, 1011.78pt x 722.7pt>
 File: ../images/all_coal_merit.png Graphic file (type png)
 <use ../images/all_coal_merit.png>
-Package pdftex.def Info: ../images/all_coal_merit.png  used on input line 311.
+Package pdftex.def Info: ../images/all_coal_merit.png  used on input line 308.
 (pdftex.def)             Requested size: 211.3883pt x 150.98853pt.
-<../images/coal_synth_2019.png, id=327, 1011.78pt x 722.7pt>
+<../images/coal_synth_2019.png, id=325, 1011.78pt x 722.7pt>
 File: ../images/coal_synth_2019.png Graphic file (type png)
 <use ../images/coal_synth_2019.png>
-Package pdftex.def Info: ../images/coal_synth_2019.png  used on input line 317.
+Package pdftex.def Info: ../images/coal_synth_2019.png  used on input line 314.
 
 (pdftex.def)             Requested size: 211.3883pt x 150.98853pt.
-
-[23 <../images/coal_merit.png> <../images/coal_synth_merit.png>]
-<../images/expectation.png, id=336, 844.87071pt x 507.61072pt>
+ [23 <../images/coal_merit.png> <../images/coal_synth_merit.png> <../images/all
+_coal_merit.png> <../images/coal_synth_2019.png>]
+<../images/expectation.png, id=334, 844.87071pt x 507.61072pt>
 File: ../images/expectation.png Graphic file (type png)
 <use ../images/expectation.png>
-Package pdftex.def Info: ../images/expectation.png  used on input line 328.
+Package pdftex.def Info: ../images/expectation.png  used on input line 325.
 (pdftex.def)             Requested size: 433.62pt x 260.52783pt.
- [24 <../images/all_coal_merit.png> <../images/coal_synth_2019.png> <../images/
-expectation.png>]
-
-LaTeX Warning: Reference `fig:price_sense' on page 25 undefined on input line 3
-45.
-
-[25]
-<../images/all_plants_net.png, id=361, 722.7pt x 433.62pt>
+ [24 <../images/expectation.png>] [25]
+<../images/all_plants_net.png, id=358, 722.7pt x 433.62pt>
 File: ../images/all_plants_net.png Graphic file (type png)
 <use ../images/all_plants_net.png>
-Package pdftex.def Info: ../images/all_plants_net.png  used on input line 356.
-(pdftex.def)             Requested size: 375.80544pt x 225.48369pt.
- [26]
-<../images/all_plants_net_peak_flex.png, id=369, 722.7pt x 433.62pt>
+Package pdftex.def Info: ../images/all_plants_net.png  used on input line 353.
+(pdftex.def)             Requested size: 446.26582pt x 267.76312pt.
+<../images/all_plants_net_peak_flex.png, id=360, 722.7pt x 433.62pt>
 File: ../images/all_plants_net_peak_flex.png Graphic file (type png)
 <use ../images/all_plants_net_peak_flex.png>
 Package pdftex.def Info: ../images/all_plants_net_peak_flex.png  used on input 
-line 366.
-(pdftex.def)             Requested size: 375.80544pt x 225.48369pt.
- [27 <../images/all_plants_net.png>]
-<../images/all_plants_no_peaks.png, id=377, 722.7pt x 433.62pt>
+line 363.
+(pdftex.def)             Requested size: 446.26582pt x 267.76312pt.
+ [26] [27 <../images/all_plants_net.png>]
+<../images/all_plants_no_peaks.png, id=374, 722.7pt x 433.62pt>
 File: ../images/all_plants_no_peaks.png Graphic file (type png)
 <use ../images/all_plants_no_peaks.png>
 Package pdftex.def Info: ../images/all_plants_no_peaks.png  used on input line 
-378.
-(pdftex.def)             Requested size: 375.80544pt x 225.48369pt.
-<../images/all_plants_ctax_peak_flex.png, id=378, 722.7pt x 505.89pt>
+375.
+(pdftex.def)             Requested size: 446.26582pt x 267.76312pt.
+<../images/all_plants_ctax_peak_flex.png, id=375, 722.7pt x 505.89pt>
 File: ../images/all_plants_ctax_peak_flex.png Graphic file (type png)
 <use ../images/all_plants_ctax_peak_flex.png>
 Package pdftex.def Info: ../images/all_plants_ctax_peak_flex.png  used on input
- line 385.
-(pdftex.def)             Requested size: 375.80544pt x 263.0643pt.
- [28 <../images/all_plants_net_peak_flex.png>] [29 <../images/all_plants_no_pea
-ks.png> <../images/all_plants_ctax_peak_flex.png>]
-<../images/by_plant_net.png, id=396, 867.24pt x 578.16pt>
+ line 382.
+(pdftex.def)             Requested size: 446.26582pt x 312.3903pt.
+ [28 <../images/all_plants_net_peak_flex.png>]
+<../images/all_plants_net_tight.png, id=385, 722.7pt x 505.89pt>
+File: ../images/all_plants_net_tight.png Graphic file (type png)
+<use ../images/all_plants_net_tight.png>
+Package pdftex.def Info: ../images/all_plants_net_tight.png  used on input line
+ 393.
+(pdftex.def)             Requested size: 446.26582pt x 312.3903pt.
+ [29 <../images/all_plants_no_peaks.png>]
+<../images/by_plant_net.png, id=394, 867.24pt x 722.7pt>
 File: ../images/by_plant_net.png Graphic file (type png)
 <use ../images/by_plant_net.png>
-Package pdftex.def Info: ../images/by_plant_net.png  used on input line 397.
-(pdftex.def)             Requested size: 375.80544pt x 250.53596pt.
+Package pdftex.def Info: ../images/by_plant_net.png  used on input line 406.
+(pdftex.def)             Requested size: 446.26582pt x 371.8914pt.
 
 
 LaTeX Warning: `!h' float specifier changed to `!ht'.
 
-[30] [31 <../images/by_plant_net.png>]
-<../images/offer.png, id=407, 1011.78pt x 1084.05pt>
-File: ../images/offer.png Graphic file (type png)
-<use ../images/offer.png>
-Package pdftex.def Info: ../images/offer.png  used on input line 410.
-(pdftex.def)             Requested size: 375.80544pt x 402.6471pt.
-<../images/offers_bp.png, id=408, 1011.78pt x 433.62pt>
-File: ../images/offers_bp.png Graphic file (type png)
-<use ../images/offers_bp.png>
-Package pdftex.def Info: ../images/offers_bp.png  used on input line 419.
-(pdftex.def)             Requested size: 375.80544pt x 161.05884pt.
- [32 <../images/offer.png>] [33 <../images/offers_bp.png>]
-Overfull \hbox (3.9735pt too wide) in paragraph at lines 438--439
-[]\OT1/cmr/m/n/12 ENMAX - pro-to-typ-i-cal re-sults partly be-cause its fleet i
-s largely highly-flexible combined-
- []
+[30 <../images/all_plants_ctax_peak_flex.png>] [31 <../images/all_plants_net_ti
+ght.png>]
+<../images/mkt_offers.png, id=408, 867.24pt x 1047.915pt>
+File: ../images/mkt_offers.png Graphic file (type png)
+<use ../images/mkt_offers.png>
+Package pdftex.def Info: ../images/mkt_offers.png  used on input line 422.
+(pdftex.def)             Requested size: 469.75502pt x 567.62456pt.
+ [32 <../images/by_plant_net.png>]
+<../images/offers.png, id=418, 867.24pt x 722.7pt>
+File: ../images/offers.png Graphic file (type png)
+<use ../images/offers.png>
+Package pdftex.def Info: ../images/offers.png  used on input line 432.
+(pdftex.def)             Requested size: 446.26582pt x 371.8914pt.
+ [33]
 
-[34] (tables/all_plants_no_peaks.tex) [35
+LaTeX Warning: Text page 34 contains only floats.
 
-] (tables/all_plants_net.tex) [36
+
+Overfull \vbox (6.52786pt too high) has occurred while \output is active []
+
+
+[34 <../images/mkt_offers.png>] (paper_draft.bbl [35 <../images/offers.png>]
+[36] [37]) [38] (tables/all_plants_no_peaks.tex
+pdfTeX warning (ext4): destination with the same identifier (name{table.1}) has
+ been already used, duplicate ignored
+<to be read again> 
+                   \relax 
+l.3 ... in parentheses, {** p$<$0.01, * p$<$0.05}}
+                                                  
+pdfTeX warning (ext4): destination with the same identifier (name{table.1}) has
+ been already used, duplicate ignored
+<to be read again> 
+                   \relax 
+l.3 ... in parentheses, {** p$<$0.01, * p$<$0.05}}
+                                                  ) [39
+
+]
+(tables/all_plants_net.tex) [40
+
+
+] (tables/all_plants_net_flex_peak.tex) [41
 
 
 ]
-(tables/all_plants_net_flex_peak.tex) [37
+(tables/all_plants_net_flex_offpeak.tex) [42
 
 
 ]
-(tables/all_plants_net_flex_offpeak.tex) [38
+(tables/all_plants_ctax_flex_peak.tex) [43
 
 
 ]
-(tables/all_plants_ctax_flex_peak.tex) [39
-
-
-]
-(tables/all_plants_ctax_flex_offpeak.tex) [40
+(tables/all_plants_ctax_flex_offpeak.tex) [44
 
 
 ] (tables/all_plants_tight.tex)
-[41
+[45
 
 
-] (paper_draft.bbl [42
+] (tables/coal_plants_tight.tex) [46
 
-] [43]) [44] (paper_draft.aux)
 
-LaTeX Warning: There were undefined references.
+] (tables/bp.tex) [47
 
+
+] (paper_draft.aux)
 
 LaTeX Warning: There were multiply-defined labels.
 
@@ -774,17 +785,13 @@ Package rerunfilecheck Info: File `paper_draft.out' has not changed.
 (rerunfilecheck)             Checksum: 9248E8F3A04D9EA9C352DC77C15FADFC;1656.
  ) 
 Here is how much of TeX's memory you used:
- 15117 strings out of 476331
- 301015 string characters out of 5787294
+ 15135 strings out of 476331
+ 301492 string characters out of 5787294
  1949660 words of memory out of 5000000
- 35195 multiletter control sequences out of 15000+600000
- 525595 words of font info for 82 fonts, out of 8000000 for 9000
+ 35205 multiletter control sequences out of 15000+600000
+ 526536 words of font info for 86 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 75i,16n,76p,2732b,1044s stack positions out of 10000i,1000n,20000p,200000b,200000s
-
-pdfTeX warning (dest): name{Hfootnote.19} has been referenced but does not exis
-t, replaced by a fixed one
-
+ 75i,16n,76p,3154b,1050s stack positions out of 10000i,1000n,20000p,200000b,200000s
 
 pdfTeX warning (dest): name{Hfootnote.18} has been referenced but does not exis
 t, replaced by a fixed one
@@ -876,12 +883,13 @@ eX/fonts/type1/public/amsfonts/cm/cmr6.pfb><C:/Users/aleach/AppData/Local/Progr
 ams/MiKTeX/fonts/type1/public/amsfonts/cm/cmr7.pfb><C:/Users/aleach/AppData/Loc
 al/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr8.pfb><C:/Users/aleach/App
 Data/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy10.pfb><C:/Users/
-aleach/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmti10.pfb>
-<C:/Users/aleach/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/c
-mti12.pfb>
-Output written on paper_draft.pdf (44 pages, 4535453 bytes).
+aleach/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy8.pfb><
+C:/Users/aleach/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cm
+ti10.pfb><C:/Users/aleach/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsf
+onts/cm/cmti12.pfb>
+Output written on paper_draft.pdf (47 pages, 4843722 bytes).
 PDF statistics:
- 585 PDF objects out of 1000 (max. 8388607)
- 129 named destinations out of 1000 (max. 500000)
+ 609 PDF objects out of 1000 (max. 8388607)
+ 132 named destinations out of 1000 (max. 500000)
  189 words of extra memory for PDF output out of 10000 (max. 10000000)
 
