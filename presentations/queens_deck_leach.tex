@@ -88,13 +88,28 @@
 \section{Introduction}
 \begin{frame}{Carbon Pricing's Effect on Electricity Markets}
     \begin{itemize}
-    \item We want to understand how carbon prices impact firm offer behaviour in electricity markets
+    \item Our key question is how carbon prices impact firm offer behaviour in electricity markets? Since demand is nearly perfectly inelastic in the short run, these offer changes translate to price changes.
     \item Electricity markets, at least in certain jurisdictions, are ideal environments in which to study responses to carbon prices
-    \item Alberta policy changes alter both carbon prices and output-based credit allocations
-    \item Rich, hourly electricity market data allows us to observe firm-level decisions with respect to carbon price pass through
-    \item Fabra and Reguant (2014) shows how firms respond to emissions credit prices and that lump-sum credit allocations were not distortionary in the short run
+    \item A series of policy changes in Alberta have altered both carbon prices and output-based credit allocations differently for different facilities over time, creating a policy experiment
+    \item Rich, hourly electricity market data allows us to identify facility- and firm-level decisions with respect to carbon price pass through
+        \end{itemize}
+\vfill
+\end{frame}
+
+\begin{frame}{Literature on Carbon Price Pass-Through}
+    \begin{itemize}
+\item Fabra and Reguant (2014) shows how firms respond to emissions credit prices argues that lump-sum credit allocations were not distortionary in the short run
     \item Brown et al. (2018) have looked at the dynamics of such a market in a simplified, simulation model
-    \end{itemize}
+        \end{itemize}
+\vfill
+\end{frame}
+
+
+\begin{frame}{Other Related Literature}
+    \begin{itemize}
+\item Fabra and Reguant (2014) shows how firms respond to emissions credit prices argues that lump-sum credit allocations were not distortionary in the short run
+    \item Brown et al. (2018) have looked at the dynamics of such a market in a simplified, simulation model
+        \end{itemize}
 \vfill
 \end{frame}
 
@@ -139,6 +154,218 @@
   \end{itemize}
 \vfill
 \end{frame}
+
+\section{Alberta Markets and Policies}
+
+\begin{frame}{Price Volatility}
+   \tikz [remember picture,overlay]
+    \node[yshift=0cm,xshift=0cm] at (current page.center)
+        {\includegraphics[width=.92\paperwidth]{../images/peak_prices.png}};   \vfill
+\end{frame}
+
+
+\begin{frame}
+   \tikz [remember picture,overlay]
+    \node[yshift=-0.2cm,xshift=0cm] at (current page.center)
+        {\includegraphics[width=.92\paperwidth]{../images/loads_clean.png}}; \vspace{1cm}
+   \vfill
+\end{frame}
+
+\section{Estimation}
+
+\begin{frame}
+   \tikz [remember picture,overlay]
+    \node[yshift=-0.2cm,xshift=0cm] at (current page.center)
+        {\includegraphics[width=.85\paperwidth]{../images/gen_fuel_policies.png}}; \vspace{1cm}
+   \vfill
+\end{frame}
+
+
+
+
+
+\begin{frame}
+   \tikz [remember picture,overlay]
+    \node[yshift=-0.3cm,xshift=0cm] at (current page.center)
+        {\includegraphics[width=.92\paperwidth]{../images/mkt_power.png}}; \vspace{1cm}
+   \vfill
+\end{frame}
+
+
+\begin{frame}
+   \tikz [remember picture,overlay]
+    \node[yshift=-0.3cm,xshift=0cm] at (current page.center)
+        {\includegraphics[width=.92\paperwidth]{../images/sampling.png}}; \vspace{1cm}
+   \vfill
+\end{frame}
+
+
+
+\begin{frame}
+   \tikz [remember picture,overlay]
+    \node[yshift=-0.3cm,xshift=0cm] at (current page.center)
+        {\includegraphics[width=.92\paperwidth]{../images/sampling.png}}; \vspace{1cm}
+   \vfill
+\end{frame}
+
+
+\begin{frame}{Merit Order Sampling}
+  \tikz[remember picture,overlay] {
+    \node[yshift=-0.3cm, xshift=-0.25\paperwidth] at (current page.center)
+      {\includegraphics[width=0.46\paperwidth]{../images/coal_merit.png}};
+    \node[yshift=-0.3cm, xshift=0.25\paperwidth] at (current page.center)
+      {\includegraphics[width=0.46\paperwidth]{../images/coal_synth_merit.png}};
+  }
+\end{frame}
+
+
+\begin{frame}{Merit Order Sampling with Coal Offers}
+  \tikz[remember picture,overlay] {
+    \node[yshift=-0.3cm, xshift=-0.25\paperwidth] at (current page.center)
+      {\includegraphics[width=0.42\paperwidth]{../images/all_coal_merit.png}};
+    \node[yshift=-0.3cm, xshift=0.25\paperwidth] at (current page.center)
+      {\includegraphics[width=0.42\paperwidth]{../images/coal_synth_2019.png}};
+  }
+\end{frame}
+
+
+\begin{frame}{Merit Order Sampling with Coal Offers}
+
+The variation in carbon pricing over time, as well as variation in which firms are participating in  the market, and which facilities' offers are present at a sampling point in the merit order at different times all allow us to identify the impact of carbon costs on offer values. For each sampled point in the synthetic merit order, we identify facility ($F$) and market conditions ($M$), as well as carbon policy compliance costs, which we use to explain changes in the level offer levels over time. The regression equation is given by:
+\begin{align}\label{eq:regression}
+ \underbrace{P_{j,t}}_{\substack{\text{Offer value} \\ \text{at percentile }j\\ \text{at time }t}}&=
+ \underbrace{\alpha_{j}}_{\substack{\text{Constant for} \\ \text{percentile }j}}+
+ \underbrace{\beta_j M_t}_{\substack{\text{Market, policy, and} \\ \text{climate variables} \\\text{at time }t}}+
+ \underbrace{\delta_j F_{j,t}}_{\substack{\text{Facility} \\ \text{characteristics} \\ \text{at percentile }j\\ \text{at time }t}}+
+ \underbrace{\zeta_j t_{j,t}}_{\substack{\text{Carbon cost} \\ \text{at percentile j}\\ \text{at time }t}}+
+ \underbrace{\kappa_j O_{j,t}}_{\substack{\text{OBA value} \\ \text{at percentile j}\\ \text{at time }t}}+
+ \underbrace{\epsilon_{j,t}.}_{\substack{\text{Error term}}}
+\end{align}
+\vfill
+\end{frame}
+
+\begin{frame}
+   \tikz [remember picture,overlay]
+    \node[yshift=-0.3cm,xshift=0cm] at (current page.center)
+        {\includegraphics[width=.92\paperwidth]{../images/expectation.png}}; \vspace{1cm}
+   \vfill
+\end{frame}
+
+
+
+
+\begin{frame}
+   \tikz [remember picture,overlay]
+    \node[yshift=-0.3cm,xshift=0cm] at (current page.center)
+        {\includegraphics[width=.92\paperwidth]{../images/all_plants_net_peak.png}}; \vspace{1cm}
+   \vfill
+\end{frame}
+
+
+\begin{frame}
+   \tikz [remember picture,overlay]
+    \node[yshift=-0.3cm,xshift=0cm] at (current page.center)
+        {\includegraphics[width=.92\paperwidth]{../images/all_plants_net_peak_flex.png}}; \vspace{1cm}
+   \vfill
+\end{frame}
+
+
+\begin{frame}
+   \tikz [remember picture,overlay]
+    \node[yshift=-0.3cm,xshift=0cm] at (current page.center)
+        {\includegraphics[width=.92\paperwidth]{../images/all_plants_no_peaks.png}}; \vspace{1cm}
+   \vfill
+\end{frame}
+
+
+\begin{frame}
+   \tikz [remember picture,overlay]
+    \node[yshift=-0.3cm,xshift=0cm] at (current page.center)
+        {\includegraphics[width=.92\paperwidth]{../images/all_plants_ctax_peak_flex.png}}; \vspace{1cm}
+   \vfill
+\end{frame}
+
+
+\begin{frame}
+   \tikz [remember picture,overlay]
+    \node[yshift=-0.3cm,xshift=0cm] at (current page.center)
+        {\includegraphics[width=.92\paperwidth]{../images/all_plants_net_peak_flex.png}}; \vspace{1cm}
+   \vfill
+\end{frame}
+
+
+
+\begin{frame}
+   \tikz [remember picture,overlay]
+    \node[yshift=-0.3cm,xshift=0cm] at (current page.center)
+        {\includegraphics[width=.92\paperwidth]{../images/all_plants_net_tight.png}}; \vspace{1cm}
+   \vfill
+\end{frame}
+
+\begin{frame}
+   \tikz [remember picture,overlay]
+    \node[yshift=-0.3cm,xshift=0cm] at (current page.center)
+        {\includegraphics[width=.92\paperwidth]{../images/by_plant_net.png}}; \vspace{1cm}
+   \vfill
+\end{frame}
+
+
+\begin{frame}
+   \tikz [remember picture,overlay]
+    \node[yshift=-0.3cm,xshift=0cm] at (current page.center)
+        {\includegraphics[width=.92\paperwidth]{../images/mkt_offers.png}}; \vspace{1cm}
+   \vfill
+\end{frame}
+
+
+
+\begin{frame}
+   \tikz [remember picture,overlay]
+    \node[yshift=-0.3cm,xshift=0cm] at (current page.center)
+        {\includegraphics[width=.92\paperwidth]{../images/offers.png}}; \vspace{1cm}
+   \vfill
+\end{frame}
+
+
+\begin{frame}
+\begin{table}[!h]
+\vspace{-0.5cm}
+\tiny
+\begin{tabular}{lcccccc}
+\\[0.5ex]\hline
+Facility&Plant&Unit& Capacity& End of& Returned to&Conversion to\\
+&Owner&         ID   &  (MW) &  PPA Term &Balancing&gas-fired steam\\
+&&                 &    &      & Pool&or retirement\\[+0.5ex]
+\hline \\[-1.5ex]
+Battle River& ATCO& BR3 &147& Dec 31, 2013&NA&NA\\
+&&BR4 &147& Dec 31, 2013&NA&Mar 8, 2022\\
+&&BR5 &368& Dec 31, 2020&Jan 1, 2016&Nov 19, 2021\\[+0.75ex]
+Genesee &Capital Power &GN1 &381 &Dec 31, 2020&NA&May 1, 2024$^*$\\
+&&GN2 &381 &Dec 31, 2020&NA&July 1, 2024$^*$\\
+&&GN3 &466 &NA&NA&July 12, 2024$^*$\\[+0.75ex]
+HR Milner &ATCO& HRM& 144& Jan 01, 2013&NA&May 8, 2020\\[+0.75ex]
+Keephills& TransAlta & KH1 &383& Dec 31, 2020&May 5, 2016&Jan 11, 2022\\
+&&KH2& 383& Dec 31, 2020&May 5, 2016&July 21, 2021\\
+&&KH3 &466 &NA&NA&Jan 11, 2022$^*$\\[+0.75ex]
+Sheerness &ATCO (50\%) & SH1& 378& Dec 31, 2020&Mar 7, 2016&July 30, 2021\\
+&TransAlta (50\%)&SH2& 378& Dec 31, 2020&Mar 7, 2016&July 30, 2021\\[+0.75ex]
+Sundance A &TransAlta&  SD1 &280& Dec 31, 2020&Mar 7, 2016&Jan 1, 2018$^*$\\
+&&SD2 &280& Dec 31, 2020&Mar 7, 2016&July 31, 2018$^*$\\[+0.75ex]
+Sundance B &TransAlta & SD3& 353& Dec 31, 2020&Mar 7, 2016&July 31, 2020$^*$\\
+&&SD4 &353 &Dec 31, 2020&Mar 7, 2016&Apr 1, 2022$^*$\\[+0.75ex]
+Sundance C &TransAlta& SD5& 353& Dec 31, 2020&Mar 24, 2016&Nov 1, 2021$^*$\\
+&&SD6& 357& Dec 31, 2020&Mar 7, 2016&Feb 1, 2021\\[+0.75ex]
+  \hline
+\end{tabular}\\
+Note: * denotes a retirement as opposed to a conversion. Supercritical coal units at Keephills (KH3, 466MW, converted to gas Jan 11, 2022) and Genesee (GN3, 466 MW, converted to gas July 12, 2024) were never part of the PPA system, as they were built as merchant generators. A more extensive re-power of the Genesee 1 and 2 units saw them reclassified as natural gas combined-cycle plants after the retirements listed above. 
+\end{table}
+   \vfill
+\end{frame}
+
+
+
+\section{Results}
+
 
 
 

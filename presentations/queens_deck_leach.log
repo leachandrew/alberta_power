@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (MiKTeX 23.4) (preloaded format=pdflatex 2023.9.1)  14 APR 2025 17:21
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (MiKTeX 23.4) (preloaded format=pdflatex 2023.9.1)  15 APR 2025 09:30
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1111,8 +1111,8 @@ Dictionary: translator-numbers-dictionary, Language: English
 theorem-dictionary-English.dict
 Dictionary: translator-theorem-dictionary, Language: English 
 ) (queens_deck_leach.nav)
-Overfull \hbox (170.02533pt too wide) detected at line 52
-  [] [] [] [] [] [] 
+Overfull \hbox (322.06308pt too wide) detected at line 52
+  [] [] [] [] [] [] [] [] [] 
  []
 
 
@@ -1120,8 +1120,8 @@ Package hyperref Warning: Option `pdfauthor' has already been used,
 (hyperref)                setting the option has no effect on input line 75.
 
 
-Overfull \hbox (170.02533pt too wide) detected at line 86
-  [] [] [] [] [] [] 
+Overfull \hbox (322.06308pt too wide) detected at line 86
+  [] [] [] [] [] [] [] [] [] 
  []
 
 LaTeX Font Info:    Trying to load font information for U+msa on input line 86.
@@ -1151,83 +1151,459 @@ Overfull \vbox (108.01862pt too high) detected at line 86
  []
 
 
-Overfull \hbox (170.02533pt too wide) has occurred while \output is active
-  [] [] [] [] [] [] 
+Overfull \hbox (322.06308pt too wide) has occurred while \output is active
+  [] [] [] [] [] [] [] [] [] 
  []
 
 [1{C:/Users/aleach/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map}
 
  <./ua_banner.png>]
-Overfull \hbox (170.02533pt too wide) detected at line 99
-  [] [] [] [] [] [] 
+Overfull \hbox (322.06308pt too wide) detected at line 97
+  [] [] [] [] [] [] [] [] [] 
  []
 
 
-Overfull \hbox (170.02533pt too wide) has occurred while \output is active
-  [] [] [] [] [] [] 
+Overfull \hbox (322.06308pt too wide) has occurred while \output is active
+  [] [] [] [] [] [] [] [] [] 
  []
 
 [2
 
 ]
-Overfull \hbox (170.02533pt too wide) detected at line 117
-  [] [] [] [] [] [] 
+Overfull \hbox (322.06308pt too wide) detected at line 105
+  [] [] [] [] [] [] [] [] [] 
  []
 
 
-Overfull \hbox (170.02533pt too wide) has occurred while \output is active
-  [] [] [] [] [] [] 
+Overfull \hbox (322.06308pt too wide) has occurred while \output is active
+  [] [] [] [] [] [] [] [] [] 
  []
 
 [3
 
 ]
-Overfull \hbox (170.02533pt too wide) detected at line 129
-  [] [] [] [] [] [] 
+Overfull \hbox (322.06308pt too wide) detected at line 114
+  [] [] [] [] [] [] [] [] [] 
  []
 
 
-Overfull \hbox (170.02533pt too wide) has occurred while \output is active
-  [] [] [] [] [] [] 
+Overfull \hbox (322.06308pt too wide) has occurred while \output is active
+  [] [] [] [] [] [] [] [] [] 
  []
 
 [4
 
 ]
-Overfull \hbox (170.02533pt too wide) detected at line 141
-  [] [] [] [] [] [] 
+Overfull \hbox (322.06308pt too wide) detected at line 132
+  [] [] [] [] [] [] [] [] [] 
  []
 
 
-Overfull \hbox (170.02533pt too wide) has occurred while \output is active
-  [] [] [] [] [] [] 
+Overfull \hbox (322.06308pt too wide) has occurred while \output is active
+  [] [] [] [] [] [] [] [] [] 
  []
 
 [5
 
 ]
-Overfull \hbox (170.02533pt too wide) detected at line 158
-  [] [] [] [] [] [] 
+Overfull \hbox (322.06308pt too wide) detected at line 144
+  [] [] [] [] [] [] [] [] [] 
  []
 
 
-Overfull \hbox (170.02533pt too wide) has occurred while \output is active
-  [] [] [] [] [] [] 
+Overfull \hbox (322.06308pt too wide) has occurred while \output is active
+  [] [] [] [] [] [] [] [] [] 
  []
 
 [6
 
 ]
-Overfull \hbox (170.02533pt too wide) detected at line 169
-  [] [] [] [] [] [] 
+Overfull \hbox (322.06308pt too wide) detected at line 156
+  [] [] [] [] [] [] [] [] [] 
  []
 
 
-Overfull \hbox (170.02533pt too wide) has occurred while \output is active
-  [] [] [] [] [] [] 
+Overfull \hbox (322.06308pt too wide) has occurred while \output is active
+  [] [] [] [] [] [] [] [] [] 
  []
 
 [7
+
+]
+Overfull \hbox (322.06308pt too wide) detected at line 164
+  [] [] [] [] [] [] [] [] [] 
+ []
+
+<../images/peak_prices.png, id=197, 1011.78pt x 505.89pt>
+File: ../images/peak_prices.png Graphic file (type png)
+<use ../images/peak_prices.png>
+Package pdftex.def Info: ../images/peak_prices.png  used on input line 164.
+(pdftex.def)             Requested size: 418.82372pt x 209.41551pt.
+
+Overfull \hbox (322.06308pt too wide) has occurred while \output is active
+  [] [] [] [] [] [] [] [] [] 
+ []
+
+[8
+
+ <../images/peak_prices.png>]
+Overfull \hbox (322.06308pt too wide) detected at line 172
+  [] [] [] [] [] [] [] [] [] 
+ []
+
+<../images/loads_clean.png, id=216, 1011.78pt x 505.89pt>
+File: ../images/loads_clean.png Graphic file (type png)
+<use ../images/loads_clean.png>
+Package pdftex.def Info: ../images/loads_clean.png  used on input line 172.
+(pdftex.def)             Requested size: 418.82372pt x 209.41551pt.
+
+Overfull \hbox (322.06308pt too wide) has occurred while \output is active
+  [] [] [] [] [] [] [] [] [] 
+ []
+
+[9
+
+ <../images/loads_clean.png>]
+Overfull \hbox (322.06308pt too wide) detected at line 181
+  [] [] [] [] [] [] [] [] [] 
+ []
+
+<../images/gen_fuel_policies.png, id=236, 1300.86pt x 722.7pt>
+File: ../images/gen_fuel_policies.png Graphic file (type png)
+<use ../images/gen_fuel_policies.png>
+Package pdftex.def Info: ../images/gen_fuel_policies.png  used on input line 18
+1.
+(pdftex.def)             Requested size: 386.96024pt x 214.97008pt.
+
+Overfull \hbox (322.06308pt too wide) has occurred while \output is active
+  [] [] [] [] [] [] [] [] [] 
+ []
+
+[10
+
+ <../images/gen_fuel_policies.png>]
+Overfull \hbox (322.06308pt too wide) detected at line 192
+  [] [] [] [] [] [] [] [] [] 
+ []
+
+<../images/mkt_power.png, id=256, 1156.32pt x 650.43pt>
+File: ../images/mkt_power.png Graphic file (type png)
+<use ../images/mkt_power.png>
+Package pdftex.def Info: ../images/mkt_power.png  used on input line 192.
+(pdftex.def)             Requested size: 418.82372pt x 235.58379pt.
+
+Overfull \hbox (322.06308pt too wide) has occurred while \output is active
+  [] [] [] [] [] [] [] [] [] 
+ []
+
+[11
+
+ <../images/mkt_power.png>]
+Overfull \hbox (322.06308pt too wide) detected at line 200
+  [] [] [] [] [] [] [] [] [] 
+ []
+
+<../images/sampling.png, id=277, 1011.78pt x 505.89pt>
+File: ../images/sampling.png Graphic file (type png)
+<use ../images/sampling.png>
+Package pdftex.def Info: ../images/sampling.png  used on input line 200.
+(pdftex.def)             Requested size: 418.82372pt x 209.41551pt.
+
+Overfull \hbox (322.06308pt too wide) has occurred while \output is active
+  [] [] [] [] [] [] [] [] [] 
+ []
+
+[12
+
+ <../images/sampling.png>]
+Overfull \hbox (322.06308pt too wide) detected at line 209
+  [] [] [] [] [] [] [] [] [] 
+ []
+
+File: ../images/sampling.png Graphic file (type png)
+<use ../images/sampling.png>
+Package pdftex.def Info: ../images/sampling.png  used on input line 209.
+(pdftex.def)             Requested size: 418.82372pt x 209.41551pt.
+
+Overfull \hbox (322.06308pt too wide) has occurred while \output is active
+  [] [] [] [] [] [] [] [] [] 
+ []
+
+[13
+
+]
+Overfull \hbox (322.06308pt too wide) detected at line 219
+  [] [] [] [] [] [] [] [] [] 
+ []
+
+<../images/coal_merit.png, id=318, 1011.78pt x 722.7pt>
+File: ../images/coal_merit.png Graphic file (type png)
+<use ../images/coal_merit.png>
+Package pdftex.def Info: ../images/coal_merit.png  used on input line 219.
+(pdftex.def)             Requested size: 209.41533pt x 149.577pt.
+<../images/coal_synth_merit.png, id=319, 1011.78pt x 722.7pt>
+File: ../images/coal_synth_merit.png Graphic file (type png)
+<use ../images/coal_synth_merit.png>
+Package pdftex.def Info: ../images/coal_synth_merit.png  used on input line 219
+.
+(pdftex.def)             Requested size: 209.41533pt x 149.577pt.
+
+Overfull \hbox (322.06308pt too wide) has occurred while \output is active
+  [] [] [] [] [] [] [] [] [] 
+ []
+
+[14
+
+ <../images/coal_merit.png> <../images/coal_synth_merit.png>]
+Overfull \hbox (322.06308pt too wide) detected at line 229
+  [] [] [] [] [] [] [] [] [] 
+ []
+
+<../images/all_coal_merit.png, id=341, 1011.78pt x 722.7pt>
+File: ../images/all_coal_merit.png Graphic file (type png)
+<use ../images/all_coal_merit.png>
+Package pdftex.def Info: ../images/all_coal_merit.png  used on input line 229.
+(pdftex.def)             Requested size: 191.20168pt x 136.56454pt.
+<../images/coal_synth_2019.png, id=342, 1011.78pt x 722.7pt>
+File: ../images/coal_synth_2019.png Graphic file (type png)
+<use ../images/coal_synth_2019.png>
+Package pdftex.def Info: ../images/coal_synth_2019.png  used on input line 229.
+
+(pdftex.def)             Requested size: 191.20168pt x 136.56454pt.
+
+Overfull \hbox (322.06308pt too wide) has occurred while \output is active
+  [] [] [] [] [] [] [] [] [] 
+ []
+
+[15
+
+ <../images/all_coal_merit.png> <../images/coal_synth_2019.png>]
+Overfull \hbox (322.06308pt too wide) detected at line 245
+  [] [] [] [] [] [] [] [] [] 
+ []
+
+
+Overfull \hbox (24.961pt too wide) detected at line 245
+[]
+ []
+
+
+Overfull \hbox (322.06308pt too wide) has occurred while \output is active
+  [] [] [] [] [] [] [] [] [] 
+ []
+
+[16
+
+]
+Overfull \hbox (322.06308pt too wide) detected at line 252
+  [] [] [] [] [] [] [] [] [] 
+ []
+
+<../images/expectation.png, id=390, 844.87071pt x 507.61072pt>
+File: ../images/expectation.png Graphic file (type png)
+<use ../images/expectation.png>
+Package pdftex.def Info: ../images/expectation.png  used on input line 252.
+(pdftex.def)             Requested size: 418.82372pt x 251.63599pt.
+
+Overfull \hbox (322.06308pt too wide) has occurred while \output is active
+  [] [] [] [] [] [] [] [] [] 
+ []
+
+[17
+
+ <../images/expectation.png>]
+Overfull \hbox (322.06308pt too wide) detected at line 262
+  [] [] [] [] [] [] [] [] [] 
+ []
+
+<../images/all_plants_net_peak.png, id=411, 722.7pt x 433.62pt>
+File: ../images/all_plants_net_peak.png Graphic file (type png)
+<use ../images/all_plants_net_peak.png>
+Package pdftex.def Info: ../images/all_plants_net_peak.png  used on input line 
+262.
+(pdftex.def)             Requested size: 418.82372pt x 251.29466pt.
+
+Overfull \hbox (322.06308pt too wide) has occurred while \output is active
+  [] [] [] [] [] [] [] [] [] 
+ []
+
+[18
+
+ <../images/all_plants_net_peak.png>]
+Overfull \hbox (322.06308pt too wide) detected at line 270
+  [] [] [] [] [] [] [] [] [] 
+ []
+
+<../images/all_plants_net_peak_flex.png, id=432, 722.7pt x 433.62pt>
+File: ../images/all_plants_net_peak_flex.png Graphic file (type png)
+<use ../images/all_plants_net_peak_flex.png>
+Package pdftex.def Info: ../images/all_plants_net_peak_flex.png  used on input 
+line 270.
+(pdftex.def)             Requested size: 418.82372pt x 251.29466pt.
+
+Overfull \hbox (322.06308pt too wide) has occurred while \output is active
+  [] [] [] [] [] [] [] [] [] 
+ []
+
+[19
+
+ <../images/all_plants_net_peak_flex.png>]
+Overfull \hbox (322.06308pt too wide) detected at line 278
+  [] [] [] [] [] [] [] [] [] 
+ []
+
+<../images/all_plants_no_peaks.png, id=454, 722.7pt x 433.62pt>
+File: ../images/all_plants_no_peaks.png Graphic file (type png)
+<use ../images/all_plants_no_peaks.png>
+Package pdftex.def Info: ../images/all_plants_no_peaks.png  used on input line 
+278.
+(pdftex.def)             Requested size: 418.82372pt x 251.29466pt.
+
+Overfull \hbox (322.06308pt too wide) has occurred while \output is active
+  [] [] [] [] [] [] [] [] [] 
+ []
+
+[20
+
+ <../images/all_plants_no_peaks.png>]
+Overfull \hbox (322.06308pt too wide) detected at line 286
+  [] [] [] [] [] [] [] [] [] 
+ []
+
+<../images/all_plants_ctax_peak_flex.png, id=475, 722.7pt x 505.89pt>
+File: ../images/all_plants_ctax_peak_flex.png Graphic file (type png)
+<use ../images/all_plants_ctax_peak_flex.png>
+Package pdftex.def Info: ../images/all_plants_ctax_peak_flex.png  used on input
+ line 286.
+(pdftex.def)             Requested size: 418.82372pt x 293.1771pt.
+
+Overfull \hbox (322.06308pt too wide) has occurred while \output is active
+  [] [] [] [] [] [] [] [] [] 
+ []
+
+[21
+
+ <../images/all_plants_ctax_peak_flex.png>]
+Overfull \hbox (322.06308pt too wide) detected at line 294
+  [] [] [] [] [] [] [] [] [] 
+ []
+
+File: ../images/all_plants_net_peak_flex.png Graphic file (type png)
+<use ../images/all_plants_net_peak_flex.png>
+Package pdftex.def Info: ../images/all_plants_net_peak_flex.png  used on input 
+line 294.
+(pdftex.def)             Requested size: 418.82372pt x 251.29466pt.
+
+Overfull \hbox (322.06308pt too wide) has occurred while \output is active
+  [] [] [] [] [] [] [] [] [] 
+ []
+
+[22
+
+]
+Overfull \hbox (322.06308pt too wide) detected at line 303
+  [] [] [] [] [] [] [] [] [] 
+ []
+
+<../images/all_plants_net_tight.png, id=515, 722.7pt x 505.89pt>
+File: ../images/all_plants_net_tight.png Graphic file (type png)
+<use ../images/all_plants_net_tight.png>
+Package pdftex.def Info: ../images/all_plants_net_tight.png  used on input line
+ 303.
+(pdftex.def)             Requested size: 418.82372pt x 293.1771pt.
+
+Overfull \hbox (322.06308pt too wide) has occurred while \output is active
+  [] [] [] [] [] [] [] [] [] 
+ []
+
+[23
+
+ <../images/all_plants_net_tight.png>]
+Overfull \hbox (322.06308pt too wide) detected at line 310
+  [] [] [] [] [] [] [] [] [] 
+ []
+
+<../images/by_plant_net.png, id=536, 867.24pt x 722.7pt>
+File: ../images/by_plant_net.png Graphic file (type png)
+<use ../images/by_plant_net.png>
+Package pdftex.def Info: ../images/by_plant_net.png  used on input line 310.
+(pdftex.def)             Requested size: 418.82372pt x 349.02036pt.
+
+Overfull \hbox (322.06308pt too wide) has occurred while \output is active
+  [] [] [] [] [] [] [] [] [] 
+ []
+
+[24
+
+ <../images/by_plant_net.png>]
+Overfull \hbox (322.06308pt too wide) detected at line 318
+  [] [] [] [] [] [] [] [] [] 
+ []
+
+<../images/mkt_offers.png, id=557, 867.24pt x 1047.915pt>
+File: ../images/mkt_offers.png Graphic file (type png)
+<use ../images/mkt_offers.png>
+Package pdftex.def Info: ../images/mkt_offers.png  used on input line 318.
+(pdftex.def)             Requested size: 418.82372pt x 506.07953pt.
+
+Overfull \hbox (322.06308pt too wide) has occurred while \output is active
+  [] [] [] [] [] [] [] [] [] 
+ []
+
+[25
+
+ <../images/mkt_offers.png>]
+Overfull \hbox (322.06308pt too wide) detected at line 327
+  [] [] [] [] [] [] [] [] [] 
+ []
+
+<../images/offers.png, id=579, 867.24pt x 722.7pt>
+File: ../images/offers.png Graphic file (type png)
+<use ../images/offers.png>
+Package pdftex.def Info: ../images/offers.png  used on input line 327.
+(pdftex.def)             Requested size: 418.82372pt x 349.02036pt.
+
+Overfull \hbox (322.06308pt too wide) has occurred while \output is active
+  [] [] [] [] [] [] [] [] [] 
+ []
+
+[26
+
+ <../images/offers.png>]
+Overfull \hbox (322.06308pt too wide) detected at line 363
+  [] [] [] [] [] [] [] [] [] 
+ []
+
+
+Overfull \hbox (322.06308pt too wide) has occurred while \output is active
+  [] [] [] [] [] [] [] [] [] 
+ []
+
+[27
+
+]
+Overfull \hbox (322.06308pt too wide) detected at line 385
+  [] [] [] [] [] [] [] [] [] 
+ []
+
+
+Overfull \hbox (322.06308pt too wide) has occurred while \output is active
+  [] [] [] [] [] [] [] [] [] 
+ []
+
+[28
+
+]
+Overfull \hbox (322.06308pt too wide) detected at line 396
+  [] [] [] [] [] [] [] [] [] 
+ []
+
+
+Overfull \hbox (322.06308pt too wide) has occurred while \output is active
+  [] [] [] [] [] [] [] [] [] 
+ []
+
+[29
 
 ]
 \tf@nav=\write6
@@ -1241,25 +1617,33 @@ Overfull \hbox (170.02533pt too wide) has occurred while \output is active
 
  (queens_deck_leach.aux)
 Package rerunfilecheck Info: File `queens_deck_leach.out' has not changed.
-(rerunfilecheck)             Checksum: F7E14A3F9F46F00E90D52A26C1B8017E;355.
+(rerunfilecheck)             Checksum: D2C8A03CDAE723DE8C13BFF95921B0D8;718.
  ) 
 Here is how much of TeX's memory you used:
- 26357 strings out of 476331
- 536125 string characters out of 5787294
- 1863660 words of memory out of 5000000
- 46221 multiletter control sequences out of 15000+600000
- 522278 words of font info for 59 fonts, out of 8000000 for 9000
+ 26677 strings out of 476331
+ 543016 string characters out of 5787294
+ 1879660 words of memory out of 5000000
+ 46472 multiletter control sequences out of 15000+600000
+ 524393 words of font info for 65 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 128i,19n,122p,394b,633s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 128i,19n,122p,564b,644s stack positions out of 10000i,1000n,20000p,200000b,200000s
  <C:\Users\aleach\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecs
 s0800.pk> <C:\Users\aleach\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi
 600\ecss1095.pk> <C:\Users\aleach\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen
 /ec/dpi600\ecss1440.pk> <C:\Users\aleach\AppData\Local\MiKTeX\fonts/pk/ljfour/j
 knappen/ec/dpi600\ecss0600.pk><C:/Users/aleach/AppData/Local/Programs/MiKTeX/fo
-nts/type1/public/amsfonts/cm/cmsy10.pfb>
-Output written on queens_deck_leach.pdf (7 pages, 92672 bytes).
+nts/type1/public/amsfonts/cm/cmex10.pfb><C:/Users/aleach/AppData/Local/Programs
+/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi10.pfb><C:/Users/aleach/AppData/Loca
+l/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi8.pfb><C:/Users/aleach/App
+Data/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmss10.pfb><C:/Users/
+aleach/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmssi10.pfb
+><C:/Users/aleach/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/
+cmssi8.pfb><C:/Users/aleach/AppData/Local/Programs/MiKTeX/fonts/type1/public/am
+sfonts/cm/cmsy10.pfb><C:/Users/aleach/AppData/Local/Programs/MiKTeX/fonts/type1
+/public/amsfonts/cm/cmsy5.pfb>
+Output written on queens_deck_leach.pdf (29 pages, 4554321 bytes).
 PDF statistics:
- 307 PDF objects out of 1000 (max. 8388607)
- 18 named destinations out of 1000 (max. 500000)
- 72 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 916 PDF objects out of 1000 (max. 8388607)
+ 66 named destinations out of 1000 (max. 500000)
+ 186 words of extra memory for PDF output out of 10000 (max. 10000000)
 
