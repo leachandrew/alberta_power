@@ -4,6 +4,7 @@ library(broom)
 library(purrr)
 library(margins)
 library(kableExtra)
+library(AER)
 source("power_paper_base.R")
 
 #make a market power indicator
@@ -139,11 +140,11 @@ annuals_clean<-annuals%>%#filter(year(date)<2022)%>%
   ggplot(annuals_clean) +
   geom_col(
     aes(x = date, y = offers, fill = Plant_Type),
-    colour = "black", linewidth = 0, position = "stack"
+    colour = "black", linewidth = 0.01, position = "stack"
   ) +
   facet_grid(rows = vars(offer_sum)) +
   scale_x_date(expand=c(0,0),date_breaks = "1 year",date_labels = "%Y") +
-  scale_fill_manual("",values =c("black","grey50","dodgerblue","grey30","grey80"))+
+  scale_fill_manual("",values =c("black","grey60","white","grey40","grey90"))+
   theme_ps() +
   theme(
     panel.spacing = unit(0.5, "lines"),
@@ -178,7 +179,8 @@ select_reg_data<-function(data_sent){
     ungroup()%>%
     filter(percentile<100)%>%
     mutate(plants=as.character(plants),
-           offer=as.character(offer)
+           offer=as.character(offer),
+           he=gsub("02*","02",he)
     )%>%
     #select(bid,percentile,ctax,oba,supply_cushion,hourly_renewables,hour,on_peak,supply_cushion,day_ahead_forecasted_ail,forecast_pool_price,actual_ail,
     #     day_ahead_forecasted_ail,total_export_capability,total_import_capability,nit_settle_cad_gj,hdd_YEG,hdd_YMM,hdd_YYC,
@@ -223,6 +225,7 @@ latex_table<-function(reg_output,caption_sent="Table",latex_file="paper/tables/r
   #reg_output<-all_plants_flex
   latex_tabling<-
     reg_output %>%
+    filter(!grepl("he_fac",term))%>%
     filter(!grepl("month_fac",term))%>%
     filter(!grepl("plants",term))%>%
     filter(!grepl("offer",term))%>%
@@ -327,9 +330,9 @@ merit_bids_all %>%
 
 
 #all effects, peak adjustment, separate ctax and oba
-this_formula <- update(base_formula, paste(". ~ . +", peak_adj,"+ ctax + oba"))
-
-  all_plants_reg<-merit_bids_all %>% 
+this_formula <- update(base_formula, paste(". ~ . +", peak_adj,"+ ctax + oba+ he_fac"))
+#sample_share=.5
+all_plants_reg<-merit_bids_all %>% 
   #sample_n(nrow(.)*sample_share, replace = F)%>% #no replacement - don't duplicate
   #mutate(offer=fct_relevel(offer,"Other"))%>%
   nest(data = -c(percentile)) %>%
@@ -347,7 +350,8 @@ this_formula <- update(base_formula, paste(". ~ . +", peak_adj,"+ ctax + oba"))
   filter(grepl("ctax",term)|grepl("oba",term)) %>%
   mutate(peak="All Hours",
          Plant_Type="All Plants")%>%
-  filter(grepl("ctax",term)|grepl("oba",term))%>%ggplot(aes(x=percentile, y=estimate, ymin=conf.low, ymax=conf.high,group=term,color=term)) +
+  filter(grepl("ctax",term)|grepl("oba",term))%>%
+    ggplot(aes(x=percentile, y=estimate, ymin=conf.low, ymax=conf.high,group=term,color=term)) +
   #geom_pointrange() +
   #geom_line(size=1.25)+
   geom_point()+
@@ -372,13 +376,91 @@ ggsave(filename = "images/all_plants_no_peaks.png",dpi=300,width = 10, height=6)
 
 
 latex_table(all_plants_reg,
-            caption_sent="All Plants, Carbon Pricing Effects Regression Coefficients by Percentile. Standard errors in parentheses, {** p$<$0.01, * p$<$0.05}",
+            caption_sent="All Plants, Carbon Pricing Effects Regression Coefficients by Percentile. Standard errors in parentheses, {** p$<$0.01, * p$<$0.05}\\label{tab:ctax_no_peaks}",
             latex_file = "paper/tables/all_plants_no_peaks.tex")
 
 
 #net effect only
 
+this_formula <- update(base_formula, paste(". ~ . +", peak_adj,"+net+he_fac"))
+
+tobits<-function(){
+  #using Tobit model from https://m-clark.github.io/models-by-example/tobit.html
+  
+  
+  tobit_ll_mod <- function(par, X, y, ul = Inf, ll = -Inf) {
+    # Extract parameters
+    sigma <- exp(par[length(par)])
+    beta <- par[-length(par)]
+    
+    # Linear predictor
+    lp <- as.vector(X %*% beta)
+    
+    # Initialize log-likelihood components
+    loglik <- numeric(length(y))
+    
+    # Uncensored observations
+    uncensored <- (y > ll) & (y < ul)
+    loglik[uncensored] <- log(dnorm(y[uncensored], mean = lp[uncensored], sd = sigma) + 1e-10)
+    
+    # Left-censored
+    left_censored <- (y <= ll)
+    loglik[left_censored] <- log(pnorm((ll - lp[left_censored]) / sigma) + 1e-10)
+    
+    # Right-censored
+    right_censored <- (y >= ul)
+    loglik[right_censored] <- log(1 - pnorm((ul - lp[right_censored]) / sigma) + 1e-10)
+    
+    # Return negative log-likelihood
+    return(-sum(loglik))
+  }
+  
+  sample_share=.15
+  merit_bids_all<-merit_bids_all %>% filter(percentile==90)%>%
+   sample_n(nrow(.)*sample_share, replace = F)#%>% #no replacement - don't duplicate
+    
+  start_time <- Sys.time()
+  X <- model.matrix(this_formula, data = merit_bids_all)
+  y <- model.response(model.frame(this_formula, data = merit_bids_all))
+  lm_fit <- lm(this_formula, data = merit_bids_all)
+  start_beta <- coef(lm_fit)
+  start_sigma <- log(sigma(lm_fit))  # log of residual SD
+  start_vals <- c(start_beta, start_sigma)
+  fit <- optim(
+    par = start_vals,
+    fn = tobit_ll_mod,
+    X = X,
+    y = y,
+    ll = 0,
+    ul = 1000,
+    method = "BFGS",
+    hessian = TRUE
+  )
+  
+  
+  mod <- tobit(this_formula, 
+               left = 0, right = 1000, 
+               data = merit_bids_all)
+  
+}
+
+all_plants_net <- merit_bids_all %>%
+  group_by(percentile) %>%
+  nest() %>%
+  mutate(
+    fit_lm = map(data, ~ lm(this_formula, data = .x)),  # Optional: for diagnostics
+    #fit_tobit = map(data, ~ tobit(this_formula, left = 0, right = 1000, data = .x)),
+    tidied = map(fit_lm, tidy),
+    #tidied = map(fit_tobit, tidy),
+    #glanced = map(fit_tobit, glance)
+  ) %>%
+  unnest(tidied)# %>%
+  #select(-data, -fit_lm, -fit_tobit)
+
+
+
 this_formula <- update(base_formula, paste(". ~ . +", peak_adj,"+net"))
+
 
 all_plants_net<-merit_bids_all %>%
   nest(data = -c(percentile)) %>%
@@ -389,7 +471,10 @@ all_plants_net<-merit_bids_all %>%
   )%>%
   unnest(tidied)%>%
   select(-data,-fit)
-  
+
+
+
+
 
 net_all<-all_plants_net %>%
   filter(grepl("net",term)) %>%
@@ -407,7 +492,7 @@ net_all%>% #filter(percentile<=95 & percentile>=40)%>%
   geom_errorbar(width=rel(.75),linewidth=.85)+
   scale_x_continuous(expand=c(0,0),breaks=pretty_breaks())+
   expand_limits(x=c(0,100))+
-  expand_limits(y=c(-.55,.55))+
+  expand_limits(y=c(-.25,.7))+
   scale_y_continuous(expand=c(0,0),breaks=pretty_breaks())+
   #facet_grid(rows = vars(peak))+
   geom_hline(yintercept = 0, col = "black") +
@@ -424,7 +509,7 @@ net_all%>% #filter(percentile<=95 & percentile>=40)%>%
 ggsave(filename = "images/all_plants_net.png",dpi=300,width = 10, height=6)
 
 latex_table(all_plants_net,
-            caption_sent="All Plants, Net Carbon Pricing Effect Regression Coefficients by Percentile. Standard errors in parentheses, {** p$<$0.01, * p$<$0.05}",
+            caption_sent="All Plants, Net Carbon Pricing Effect Regression Coefficients by Percentile. Standard errors in parentheses, {** p$<$0.01, * p$<$0.05}\\label{tab:net_no_peaks}",
             latex_file = "paper/tables/all_plants_net.tex")
 
 # FLEX
@@ -453,7 +538,7 @@ latex_table(all_plants_net,
 #   poly(nit_settle_cad_gj,2,raw = TRUE)+
 #   hdd_YEG+hdd_YYC+hdd_YMM+cdd_YEG+cdd_YMM+cdd_YYC
 
-this_formula <- update(base_formula, paste(". ~ . +", no_peak_adj,"+ net"))
+this_formula <- update(base_formula, paste(". ~ . +", no_peak_adj,"+ net+he_fac"))
 
 all_plants_flex<-merit_bids_all %>% 
 nest(data = -c(percentile,peak_fac)) %>%
@@ -511,14 +596,14 @@ ggsave(filename = "images/all_plants_net_peak_flex.png",dpi=300,width = 10, heig
 
 
 latex_table(all_plants_flex%>%filter(peak_fac=="TRUE"),
-            caption_sent ="All Plants, Net Carbon Pricing Effect Regression Coefficients by Percentile for Peak Hours. Standard errors in parentheses, {** p$<$0.01, * p$<$0.05}",
+            caption_sent ="All Plants, Net Carbon Pricing Effect Regression Coefficients by Percentile for Peak Hours. Standard errors in parentheses, {** p$<$0.01, * p$<$0.05} \\label{tab:peak_flex}",
   latex_file = "paper/tables/all_plants_net_flex_peak.tex")
 latex_table(all_plants_flex%>%filter(peak_fac=="FALSE"),
-            caption_sent ="All Plants, Net Carbon Pricing Effect Regression Coefficients by Percentile for Off-Peak Hours. Standard errors in parentheses, {** p$<$0.01, * p$<$0.05}",
+            caption_sent ="All Plants, Net Carbon Pricing Effect Regression Coefficients by Percentile for Off-Peak Hours. Standard errors in parentheses, {** p$<$0.01, * p$<$0.05}\\label{tab:offpeak_flex}",
             latex_file ="paper/tables/all_plants_net_flex_offpeak.tex")
 
 #ctax flex
-this_formula <- update(base_formula, paste(". ~ . +", no_peak_adj,"+ ctax + oba"))
+this_formula <- update(base_formula, paste(". ~ . +", no_peak_adj,"+ ctax + oba+he_fac"))
 
 all_plants_flex<-merit_bids_all %>% 
   nest(data = -c(percentile,peak_fac)) %>%
@@ -583,7 +668,7 @@ latex_table(all_plants_flex%>%filter(peak_fac=="TRUE"),
 
 # tight market
 
-this_formula <- update(base_formula, paste(". ~ . +", peak_adj,"+ net"))
+this_formula <- update(base_formula, paste(". ~ . +", peak_adj,"+ net+he_fac"))
 
 all_plants_flex<-merit_bids_all %>% 
   nest(data = -c(percentile,tight)) %>%
@@ -669,7 +754,7 @@ by_type<-merit_aug%>% filter(Plant_Type %in% fossils)%>%
 # by type, separate ctax and oba
 
 
-this_formula <- update(base_formula, paste(". ~ . +", peak_adj,"+ net - plants -offer"))
+this_formula <- update(base_formula, paste(". ~ . +", peak_adj,"+ net - plants -offer+he_fac"))
 
 reg_by_type<-by_type %>%
   nest(data = -c(percentile,Plant_Type)) %>%
@@ -751,7 +836,7 @@ by_p_type<-merit_aug%>% #filter(Plant_Type %in% fossils)%>%
 #  tabyl(Plant_Type,year)
 
 
-this_formula <- update(base_formula, paste(". ~ . +", peak_adj,"+ net - plants -offer"))
+this_formula <- update(base_formula, paste(". ~ . +", peak_adj,"+ net - plants -offer+he_fac"))
 
 reg_by_type<-by_p_type %>%
   nest(data = -c(percentile,Plant_Type)) %>%
@@ -883,7 +968,7 @@ rm(merit_aug)
 #sample_share<-.15
 #merit_bids_offer<-merit_bids_offer%>% #sample_n(nrow(.)*sample_share, replace = F) #no replacement - don't duplicate
 
-this_formula <- update(base_formula, paste(". ~ . +", peak_adj,"+ net - plants - offer"))
+this_formula <- update(base_formula, paste(". ~ . +", peak_adj,"+ net - plants - offer+he_fac"))
 
 offer_reg<-merit_bids_offer %>% #filter(Plant_Type %in%fossils) %>%
   #filter(percentile<=95)%>%
@@ -917,9 +1002,9 @@ offer_reg_short<-merit_bids_offer %>% filter(year<2020) %>%
 
 
 offer_reg%>%bind_rows(offer_reg_short)%>%
-  filter(offer_gen%in% c("ATCO","Balancing Pool","Capital Power","ENMAX","TransAlta"))%>%
+  filter(offer_gen%in% c("ATCO/Heartland","Balancing Pool","Capital Power","ENMAX","TransAlta"))%>%
   mutate(offer_gen=as_factor(offer_gen),
-         offer_gen=fct_relevel(offer_gen,c("Balancing Pool","ATCO","Capital Power","ENMAX","TransAlta"))
+         offer_gen=fct_relevel(offer_gen,c("Balancing Pool","ATCO/Heartland","Capital Power","ENMAX","TransAlta"))
          )%>%
   filter(grepl("net",term)) %>%
   #mutate(peak=ifelse(grepl("peak_facTRUE",term),"Peak Hours","Off-Peak Hours"),
@@ -934,7 +1019,7 @@ offer_reg%>%bind_rows(offer_reg_short)%>%
   geom_errorbar(width=rel(.5))+
   scale_x_continuous(expand=c(0,0),breaks=pretty_breaks())+
   expand_limits(x=c(0,100))+
-  expand_limits(y=c(-.55,.55))+
+  expand_limits(y=c(0,1.65))+
   scale_y_continuous(expand=c(0,0),breaks=pretty_breaks())+
   facet_grid(row=vars(offer_gen),scales="free_y")+
   geom_hline(yintercept = 0, col = "black") +
@@ -949,7 +1034,7 @@ offer_reg%>%bind_rows(offer_reg_short)%>%
          legend.title = element_text()
          )+
   #theme_ipsum() + theme(legend.position = "bottom")+
-  scale_color_manual("Marginal effect of net carbon policy cost",values=c("black","dodgerblue"),labels=c("Full sample","Pre-2020"))+
+  scale_color_manual("Marginal effect of net carbon policy cost",values=c("black","dodgerblue"),labels=c("Full sample (2013-2023)","Pre-2020"))+
   #guides(color= "none")+
   NULL
 ggsave(filename = "images/offers.png",dpi=300,width = 12, height=10,bg = "transparent")
@@ -989,7 +1074,7 @@ latex_table(offer_reg_short %>% filter(offer_gen=="Balancing Pool"),
 
 
 
-this_formula <- update(base_formula, paste(". ~ . +", peak_adj,"+ net - plants - offer"))
+this_formula <- update(base_formula, paste(". ~ . +", peak_adj,"+ net - plants - offer+he_fac"))
 
 offer_reg_2020<-by_offer %>% filter(date<ymd("2020-03-01")) %>%
   #filter(percentile<=95)%>%
@@ -2123,3 +2208,248 @@ ggplot(data=supply_cushion) +
   labs(y="Number of hours with tight supply cushion",x="",
        title="Monthly Incidents of Tight Supply Cushions, 2012-2019)",
        caption="Source: AESO Data, Graph by Andrew Leach")
+
+
+
+#testing a Tobit model w censoring adjustment
+library(AER)
+
+
+chunk<-all_plants %>% filter(percentile==75) %>% mutate(year_mon=as_factor(yearmonth))%>%
+  mutate(bid=pmin(bid,999), #fix trunc at 999 flat
+         bid_fac=as_factor(bid),
+         bid_fac=fct_other(bid_fac,keep = c("0","999")))
+
+table(chunk$bid_fac)
+
+
+#using Tobit model from https://m-clark.github.io/models-by-example/tobit.html
+
+initmod = lm(bid ~
+               peak_fac/oba+
+               peak_fac/ctax+
+               #poly(hourly_renewables,2,raw=TRUE)+
+               peak_fac/as.factor(yearmonth)+
+               as.factor(he)+
+               #total_import_capability+
+               #total_export_capability+
+               #peak_fac/nit_settle_cad_gj+
+               #hdd_YEG+hdd_YYC+hdd_YMM+cdd_YEG+cdd_YMM+cdd_YYC+
+               
+               #peak_fac/poly(supply_cushion,3,raw=TRUE)+
+               #forecast_pool_price+
+               #day_ahead_forecasted_ail+
+               #poly(out_mkt,3,raw=TRUE)+
+               NULL,
+             data=chunk)
+X = model.matrix(initmod)
+init = c(coef(initmod), log_sigma = log(summary(initmod)$sigma))
+
+tobit_ll_mod <- function(par, X, y, ul = -Inf, ll = Inf) {
+  
+  # modified function for upper and lower limit data
+  
+  # parameters
+  sigma = exp(par[length(par)])
+  beta  = par[-length(par)]
+  
+  
+  # update relevant limit and censoring indicators
+  
+  limit= ((!is.infinite(ul))&(y>ul))*ul+((!is.infinite(ll))&(y<=ll))*ll
+  
+  censored<- (!((y<ul)&(y>ll))) *1
+  h_censor<- (y>=ul)*1
+  l_censor<- (y<=ll)*1
+  
+  
+  #uncensored if:
+  #indicator<- h_indicator & l_indicator
+  
+  
+  # linear predictor
+  lp = X %*% beta
+  
+  
+  #need to transform this or else the unexplained deviations may get too big
+  
+  #y=y/10
+  #lp=lp/10
+  
+  
+  #likelihood contributions, with corrections for numerical zeros
+  lt1=(1-censored) * log((1/sigma)*dnorm((y-lp)/sigma)+10^(-10))
+  lt2=(l_censor) * log(pnorm((lp-limit)/sigma, lower = 0)+10^(-10))
+  lt3=(h_censor) * log(pnorm((lp-limit)/sigma, lower = 1))+10^(-10)
+  
+  #lt1=(1-censored) * ((1/sigma)*dnorm((y-lp)/sigma))
+  #lt2=(l_censor) * (pnorm((lp-limit)/sigma, lower = 0))
+  #lt3=(h_censor) * (pnorm((lp-limit)/sigma, lower = 1))
+  
+  
+  #indicator_tbl<<-as_tibble(y)%>%cbind(lp,ul,ll,censored,h_censor,l_censor,limit,lt1,lt2,lt3)
+  
+  ll=sum(lt1)+sum(lt2)+sum(lt3)
+  
+  #print(paste("log likelihood ",ll))
+  
+  # return negative log likelihood
+  
+  -ll
+}
+
+start_time <- Sys.time()
+# Time difference of 1.000327 mins
+sv<-tobit_ll_mod(init,X=X,y=chunk$bid,ul=999,ll=0)
+end_time <- Sys.time()
+print(end_time - start_time)
+
+
+
+
+fit_tobit = optim(
+  par = init,
+  tobit_ll_mod,
+  y  = chunk$bid,
+  X  = X,
+  ll = 0,
+  ul = 999,
+  method  = 'BFGS',
+  #method  = 'CG',
+  hessian = TRUE,
+  control = list(maxit = 2000, reltol = 1e-15,trace=1,REPORT=1)
+)
+
+options(scipen=999)
+
+#test<-
+rbind(
+  tobit = c(
+    fit_tobit$par[1:(NROW(fit_tobit$par)-1)],
+    sigma = exp(fit_tobit$par[NROW(fit_tobit$par)]),
+    logLike = -fit_tobit$value
+  ),
+  ols=c(init[-length(init)],
+        exp(init[length(init)]),
+        sv))%>%
+  t() %>% as_tibble(rownames = NA)%>% rownames_to_column(var="measure") %>%mutate(diff=tobit-ols)
+
+
+
+
+
+library(AER)
+#tobit test
+all_plants_reg<-all_plants %>%
+  filter(percentile %in% c(55))%>%
+  nest(data = -c(percentile)) %>%
+  mutate(fit_tobit = optim(
+    par = init,
+    tobit_ll_mod,
+    y  = chunk$bid,
+    X  = X,
+    ll = 0,
+    ul = 999,
+    method  = 'BFGS',
+    control = list(maxit = 2000, reltol = 1e-15,trace=1)
+  ))
+
+
+
+
+
+
+
+
+options(scipen=999)
+
+test<-rbind(
+  tobit = c(
+    fit_tobit$par[1:(NROW(fit_tobit$par)-1)],
+    sigma = exp(fit_tobit$par[NROW(fit_tobit$par)]),
+    logLike = -fit_tobit$value
+  ),
+  ols=c(init,sv))%>% t() %>% as_tibble(rownames = NA)%>% rownames_to_column(var="measure") %>%mutate(diff=tobit-ols)
+
+
+numDeriv::hessian(tobit_ll_mod, fit_tobit$par,y=chunk$bid, method="Richardson")
+
+
+
+
+tobit<-all_plants_reg %>%
+  #mutate(tidied = map(fit, tidy,conf.int = T))
+  select(fit)%>%
+  #unnest(coefficients)%>%
+  filter(grepl("ctax",term)|grepl("oba",term)) %>%
+  mutate(peak="All Hours",
+         Plant_Type="All Plants")
+
+
+
+
+
+estResult <- tobit(bid ~        hourly_renewables+
+                     #ctax+
+                     #oba+
+                     peak_fac/ctax+
+                     peak_fac/oba+
+                     poly(out_mkt,3,raw=TRUE)+
+                     peak_fac/as.factor(yearmonth)+
+                     
+                     peak_fac/poly(supply_cushion,3,raw=TRUE)+
+                     forecast_pool_price+
+                     day_ahead_forecasted_ail+
+                     total_import_capability+
+                     total_export_capability+
+                     peak_fac/nit_settle_cad_gj+
+                     hdd_YEG+hdd_YYC+hdd_YMM+
+                     cdd_YEG+cdd_YMM+cdd_YYC+
+                     NULL,
+                   right = 999,
+                   left = 0,
+                   iter.max=50,
+                   data = chunk)
+
+
+
+
+ctax_all<-all_plants_reg %>%
+  unnest(tidied)%>%
+  select(-data,-fit)%>%
+  filter(grepl("ctax",term)|grepl("oba",term)) %>%
+  mutate(peak=ifelse(grepl("peak_facTRUE",term),"Peak Hours","Off-Peak Hours"),
+         Plant_Type="All Plants")
+
+#library(hrbrthemes)
+#hrbrthemes::import_roboto_condensed()
+ctax_all%>% filter(percentile<=100 & percentile>=0)%>%
+  filter(grepl("ctax",term)|grepl("oba",term))%>%
+  mutate(term=gsub("peak_facFALSE:","",term))%>%
+  mutate(term=gsub("peak_facTRUE:","",term))%>%
+  mutate(peak2=fct_relevel(peak,"Peak Hours"))%>%
+  ggplot(aes(x=percentile, y=estimate, ymin=conf.low, ymax=conf.high,group=term,color=term)) +
+  #geom_pointrange() +
+  #geom_line(size=1.25)+
+  geom_point(size=1.25)+
+  #geom_errorbar(width=2.85)+
+  geom_errorbar(width=rel(.75),size=.85)+
+  scale_y_continuous(expand=c(0,0),breaks=pretty_breaks())+
+  expand_limits(y=c(-.5,.5))+
+  scale_x_continuous(expand=c(0,0),breaks=pretty_breaks())+
+  expand_limits(x=c(0,100))+
+  facet_grid(rows = vars(peak2))+
+  #facet_grid(rows=fct_relevel(peak,"Peak Hours"))+
+  geom_hline(yintercept = 0, col = "black") +
+  labs(
+    x = "Percentile of total offered power (%)", y = "Marginal effect (Δ in offer : Δ in $/MWh in cost or value)",
+    #title = "Marginal effect of carbon tax cost and output-based allocation values on power offers by plant type"
+    #subtitle = "Conditional on plant type"
+  ) +
+  paper_theme()+
+  #theme_ipsum() + theme(legend.position = "bottom")+
+  scale_color_manual("",values=c("black","grey50"),labels=c("Marginal effect of carbon tax cost","Marginal effect of OBA value"))+
+  #scale_shape_manual("",values=c(6,7),labels=c("Marginal effect of carbon tax cost","Marginal effect of OBA value"))+
+  guides(color= guide_legend(nrow = 1,byrow = F))+
+  NULL
+ggsave(filename = "images/all_plants_1.png",dpi=150,width = 14, height=9)

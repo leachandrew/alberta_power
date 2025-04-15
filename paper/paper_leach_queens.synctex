@@ -1,5 +1,5 @@
 SyncTeX Version:1
-Input:1:C:\Users\aleach\Documents\data_projects\alberta_power\paper\paper_draft.tex
+Input:1:C:\Users\aleach\Documents\data_projects\alberta_power\paper\paper_leach_queens.tex
 Input:2:C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex\latex\base\article.cls
 Input:3:C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex\latex\base\size12.clo
 Input:4:C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex\latex\preprint\fullpage.sty
@@ -62,12 +62,12 @@ Input:60:C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex\latex\graphics-cfg\co
 Input:61:C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex\latex\graphics\mathcolor.ltx
 Input:62:C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex\latex\tools\tabularx.sty
 Input:63:C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex\latex\l3backend\l3backend-pdftex.def
-Input:64:C:\Users\aleach\Documents\data_projects\alberta_power\paper\paper_draft.aux
+Input:64:C:\Users\aleach\Documents\data_projects\alberta_power\paper\paper_leach_queens.aux
 Input:65:C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex\context\base\mkii\supp-pdf.mkii
 Input:66:C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex\latex\epstopdf-pkg\epstopdf-base.sty
 Input:67:C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex\latex\00miktex\epstopdf-sys.cfg
-Input:68:C:\Users\aleach\Documents\data_projects\alberta_power\paper\paper_draft.out
-Input:69:C:\Users\aleach\Documents\data_projects\alberta_power\paper\paper_draft.out
+Input:68:C:\Users\aleach\Documents\data_projects\alberta_power\paper\paper_leach_queens.out
+Input:69:C:\Users\aleach\Documents\data_projects\alberta_power\paper\paper_leach_queens.out
 Input:70:C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex\latex\translations\dicts\translations-basic-dictionary-english.trsl
 Input:71:C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex\latex\amsfonts\umsa.fd
 Input:72:C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex\latex\amsfonts\umsb.fd
@@ -77,7 +77,7 @@ Unit:1
 X Offset:0
 Y Offset:0
 Content:
-!6393
+!6421
 {1
 [1,85:4736286,47362867:30785865,42626581,0
 h1,85:4736286,4736286:0,0,0
@@ -36581,8 +36581,8 @@ k1,466:35522150,47362867:15007912
 ]
 !21905
 }35
-Input:73:C:\Users\aleach\Documents\data_projects\alberta_power\paper\paper_draft.bbl
-!96
+Input:73:C:\Users\aleach\Documents\data_projects\alberta_power\paper\paper_leach_queens.bbl
+!103
 {36
 [73,93:4736286,47362867:30785865,42626581,0
 (73,93:4736286,4736286:0,0,0
@@ -37741,7 +37741,7 @@ k73,93:35522150,47362867:15007912
 ]
 ]
 ]
-!29439
+!29440
 }36
 !11
 {37
@@ -87301,9 +87301,9 @@ k1,522:35522150,47362867:15007912
 ]
 !223335
 }43
-Input:80:C:\Users\aleach\Documents\data_projects\alberta_power\paper\paper_draft.aux
-!97
+Input:80:C:\Users\aleach\Documents\data_projects\alberta_power\paper\paper_leach_queens.aux
+!104
 Postamble:
 Count:62281
-!27
+!28
 Post scriptum:

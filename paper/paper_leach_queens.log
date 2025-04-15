@@ -1,9 +1,9 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (MiKTeX 23.4) (preloaded format=pdflatex 2023.9.1)  14 APR 2025 21:24
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (MiKTeX 23.4) (preloaded format=pdflatex 2023.9.1)  14 APR 2025 21:27
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
-**./paper_draft.tex
-(paper_draft.tex
+**./paper_leach_queens.tex
+(paper_leach_queens.tex
 LaTeX2e <2022-11-01> patch level 1
 L3 programming layer <2023-03-30>
 (C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/latex/base\article.cls
@@ -496,8 +496,8 @@ ftex.def
 File: l3backend-pdftex.def 2023-03-30 L3 backend support: PDF output (pdfTeX)
 \l__color_backend_stack_int=\count314
 \l__pdf_internal_box=\box108
-) (paper_draft.aux)
-\openout1 = `paper_draft.aux'.
+) (paper_leach_queens.aux)
+\openout1 = `paper_leach_queens.aux'.
 
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 68.
 LaTeX Font Info:    ... okay on input line 68.
@@ -544,9 +544,9 @@ cfg
 File: epstopdf-sys.cfg 2021/03/18 v2.0 Configuration of epstopdf for MiKTeX
 ))
 Package hyperref Info: Link coloring ON on input line 68.
- (paper_draft.out) (paper_draft.out)
+ (paper_leach_queens.out) (paper_leach_queens.out)
 \@outlinefile=\write4
-\openout4 = `paper_draft.out'.
+\openout4 = `paper_leach_queens.out'.
 
 
 (C:\Users\aleach\AppData\Local\Programs\MiKTeX\tex/latex/translations/dicts\tra
@@ -725,7 +725,7 @@ File: ../images/offers.png Graphic file (type png)
 Package pdftex.def Info: ../images/offers.png  used on input line 436.
 (pdftex.def)             Requested size: 446.26582pt x 371.8914pt.
  [34 <../images/offers.png>] [35]
-(paper_draft.bbl [36]) [37] (tables/all_plants_net.tex
+(paper_leach_queens.bbl [36]) [37] (tables/all_plants_net.tex
 pdfTeX warning (ext4): destination with the same identifier (name{table.1}) has
  been already used, duplicate ignored
 <to be read again> 
@@ -757,18 +757,22 @@ l.3 ...$0.01, * p$<$0.05}\label{tab:net_no_peaks}}
 ] (tables/bp.tex) [43
 
 
-] (paper_draft.aux)
-Package rerunfilecheck Info: File `paper_draft.out' has not changed.
+]
+(paper_leach_queens.aux)
+
+LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
+
+Package rerunfilecheck Info: File `paper_leach_queens.out' has not changed.
 (rerunfilecheck)             Checksum: 9248E8F3A04D9EA9C352DC77C15FADFC;1656.
  ) 
 Here is how much of TeX's memory you used:
  15117 strings out of 476331
- 300771 string characters out of 5787294
+ 300925 string characters out of 5787294
  1950660 words of memory out of 5000000
  35203 multiletter control sequences out of 15000+600000
  526536 words of font info for 86 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 75i,16n,76p,2501b,1045s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 75i,16n,76p,2508b,1045s stack positions out of 10000i,1000n,20000p,200000b,200000s
 
 pdfTeX warning (dest): name{Hfootnote.18} has been referenced but does not exis
 t, replaced by a fixed one
@@ -864,7 +868,7 @@ aleach/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy8.pfb><
 C:/Users/aleach/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cm
 ti10.pfb><C:/Users/aleach/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsf
 onts/cm/cmti12.pfb>
-Output written on paper_draft.pdf (43 pages, 4914164 bytes).
+Output written on paper_leach_queens.pdf (43 pages, 4914164 bytes).
 PDF statistics:
  596 PDF objects out of 1000 (max. 8388607)
  125 named destinations out of 1000 (max. 500000)
