@@ -1,0 +1,564 @@
+---
+title: "Electricity price prediction with machine learning"
+output: html_document
+date: "2025-04-18"
+---
+
+```{r}
+
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+# Packages from the link.
+library(dplyr)
+library(tidyverse)
+library(purrr)
+library(ggplot2)
+# Let's load in our other packages that we usually use.
+library(viridis)
+library(forcats)
+# library(httr)
+# library(jsonlite)
+library(lubridate)
+library(janitor)
+library(kableExtra)
+library(scales)
+library(readxl)
+# library(data.table)
+# library(plm)
+# library(tseries)
+# library(stargazer)
+library(stats)
+# library(Hmisc)
+# library(nloptr)
+# library(NlcOptim)
+
+# Library to let Rstudio read in python
+library(reticulate)
+library(fpp2)
+library(glmnet)
+# library(VGAM)
+library(AER)
+```
+
+
+Loading in the raw data below:
+
+```{r}
+
+# Loading in merit data
+
+data <- read_csv("data/student_data.csv")
+# Unlike the previous dataset it does not have the column "dispatched"
+data <- data |> 
+  #data<- merit_aug %>%clean_names%>%
+  mutate(dispatched=case_when(dispatched_mw!=0~'Y',.default='N'))
+
+
+```
+
+I realized that we're not predicting with the recalculated prices that we have. So let's try everything with the prices that we have recalculated.
+
+```{r}
+
+marco_data<-data %>% 
+  # filter(date==ymd("2024-04-10"),size>0)%>%
+  filter(size>0) %>%
+  #select(c('date',"he","actual_posted_pool_price","actual_ail","month",
+  #                           "day","hour","year","on_peak","hourly_renewables",
+  #                          "temp_yeg","temp_yyc","hourly_imports","hourly_exports",
+  #                           "dispatched_mw",'size',"asset_id","dispatched","flexible","nit_settle_cad_gj"))%>%
+  group_by(date,he)%>%
+  arrange(date,he,actual_posted_pool_price,size,asset_id)%>%
+  mutate(block=row_number(),
+         merit=cumsum(size),
+         mkt_price=max(actual_posted_pool_price*(dispatched=="Y"))
+         )%>%
+  #fix the estimated ail using the last block in each hour. Assume half the last flexible block is dispatched
+  mutate(
+    dispatched_mw=case_when(
+      # The ~ separates the left and right side of a formula
+      # Here, used for the function "case_when()":
+        # This line below makes the last dispatched flexible block dispatch half
+        block==which(block==max(block*(dispatched=='Y')))*(flexible=='Y') ~ size*.5,
+        # Old Code:
+        # block==which(block==max(block*(dispatched=="Y")*(flexible=="Y"))) ~ size*.5,
+        # block==max(block*(dispatched=="Y")*(flexible=="Y")) ~ size*.5,
+        # Here, if it says dispatched then it dispatched full
+        dispatched=="Y" ~ size,
+        # If it doesn't say dispatched then it's at zero
+        dispatched =="N" ~ 0)) %>%
+  mutate(ail=sum(dispatched_mw),
+  dispatched_merit=cumsum(dispatched_mw))
+
+marco_data <- marco_data |> filter(he!='02*') # Deleting the extra hour from daylight savings for now.
+
+
+
+marco_data<-marco_data %>% 
+  group_by(date,he)%>%
+  mutate(hourly_solar=sum(dispatched_mw*(plant_type=="SOLAR")),
+         hourly_wind=sum(dispatched_mw*(plant_type=="WIND")),
+          )%>%
+  ungroup()
+
+```
+
+Now let's separate our data into the training part, and the testing part.
+
+```{r}
+
+# Making the split 3:1 for now.
+#why do you need to do this here? Why
+train_data <- marco_data |> filter(year<=2023)
+test_data <- marco_data |> filter(year>2023)
+
+```
+
+Now we can start creating a machine learning model. Let's use the methods we learned in class. First, let's try different models and see what fits our regression.
+
+```{r}
+
+# Let's try different models for our prediction model and set them:
+#model1 <- as.formula(mkt_price ~ he + month + hourly_renewables + p_natgas + on_peak)
+#model2 <- as.formula(mkt_price ~ mktp_daylag)
+
+model3 <- as.formula(mkt_price ~ he + factor(month) + hourly_renewables + nit_settle_cad_gj + on_peak + factor(month)*he + factor(month)*hourly_renewables + factor(month)*on_peak)
+
+
+# Fit the models
+reg1 <- lm(model1, data = marco_data%>%filter(year>=2018,year<=2024))
+reg2 <- lm(model2, data = marco_data%>%filter(year>=2018,year<2024))
+
+reg3 <- lm(model3, data = marco_data%>%
+             group_by(date,he)|> slice_head(n=1)%>%ungroup()%>%
+             select(mkt_price=actual_posted_pool_price,he,month,year,hourly_renewables,nit_settle_cad_gj,on_peak)%>%
+             filter(year>=2018,year<2024))
+
+tob1 <- AER::tobit(model3,left=0,right=1000,data = marco_data%>%
+             group_by(date,he)|> slice_head(n=1)%>%ungroup()%>%
+             select(mkt_price=actual_posted_pool_price,he,month,year,hourly_renewables,nit_settle_cad_gj,on_peak)%>%
+             filter(year>=2018,year<2024)
+                     )
+
+# model selection 
+table1 <- rbind(CV(reg1), CV(reg2), CV(reg3))
+rownames(table1) <- c('Model1', 'Model2', 'Model3')
+
+# print nice table
+table1 |> 
+  kbl(caption = "Model selection using `fpp2::CV()`.") |> 
+  kable_styling(bootstrap_options = c("striped", "hover"))
+
+```
+
+Now, let us try to fit a ridge regression.
+
+```{r}
+
+# lambda values
+lambdas <- 10^seq(3, -4, length = 100)
+
+# Adding in the temperatures for Edmonton and Calgary causes an error with glmnet().
+# That's because glmnet() does not omit these values, so we have to do that ourselves.
+train_set <- train_data |> na.omit()
+# train_set
+
+# ridge reg for different values of lambda
+# We're using the same variables as model 3
+est_ridge <- glmnet(
+  x = train_set |> dplyr::select(-c('mkt_price','date','hour','day','on_peak','year',"ail","temp_yeg","temp_yyc","hourly_imports","hourly_exports")) |> as.matrix(),
+  y = train_set$mkt_price, 
+  alpha = 0, 
+  standardize = F,
+  lambda = lambdas
+)
+
+
+```
+
+Associated with each value of λ is a vector of ridge regression coefficients, stored in a matrix that can be accessed by coef().
+ 
+Now let’s plot the ridge regression coefficients using ggplot2.
+
+```{r}
+
+# organize results
+ridge_df <- est_ridge |> coef() |> t() |> as.matrix() |> as.data.frame()
+ridge_df <- ridge_df |> dplyr::select(-1) |> mutate(lambda = est_ridge$lambda)
+ridge_df <- ridge_df |> gather(key = "variable", value = "coefficient", -lambda)
+# plot
+ggplot(
+  data = ridge_df,
+  aes(x = lambda, y = coefficient, color = variable)
+) +
+geom_line() +
+scale_x_continuous(
+  expression(lambda),
+  labels = c("0.1", "10", "1,000", "100,000"),
+  breaks = c(0.1, 10, 1000, 100000),
+  trans = "log10"
+) +
+scale_y_continuous("Ridge coefficient") +
+scale_color_viridis_d("Predictor", option = "magma", end = 0.8) +
+theme_minimal() +
+theme(legend.position = "bottom")
+
+```
+
+We now use cross-validation to choose the tuning parameter $\lambda$. Choosing the number of folds to be 10, since we have 10 years in our training data.
+
+```{r}
+
+# ridge cv
+ridge_cv <- cv.glmnet(
+  x = train_set |> dplyr::select(-c('mkt_price','date','hour','day','on_peak','year',"ail","temp_yeg","temp_yyc","hourly_imports","hourly_exports")) |> as.matrix(),
+  y = train_set$mkt_price, 
+  alpha = 0,
+  standardize = F,
+  lambda = lambdas,
+  type.measure = "mse",
+  nfolds = 10
+)
+
+```
+
+And now we plot to see the the appropriate $\lambda$.
+
+```{r}
+
+# create data frame with results
+ridge_cv_df <- data.frame(
+  lambda = ridge_cv$lambda, 
+  rmse = sqrt(ridge_cv$cvm)
+)
+# plot
+ggplot(
+  data = ridge_cv_df,
+  aes(x = lambda, y = rmse)
+) +
+geom_line() +
+geom_point(
+  data = ridge_cv_df |> filter(rmse == min(rmse)),
+  size = 3.5,
+  color = "darkorange"
+) +
+scale_y_continuous("RMSE") +
+scale_x_continuous(
+  expression(lambda),
+  trans = "log10",
+  labels = c("0.1", "10", "1,000", "100,000"),
+  breaks = c(0.1, 10, 1000, 100000),
+) +
+theme_minimal()
+
+```
+
+Now let's run the ridge regression, with the minimum value for Lambda, and store those values.
+
+```{r}
+
+# Let's fit the ridge regression on the test data.
+final_ridge <- glmnet(
+  x = train_set |> dplyr::select(-c('mkt_price','date','hour','day','on_peak','year',"ail","temp_yeg","temp_yyc","hourly_imports","hourly_exports")) |> as.matrix(),
+  y = train_set$mkt_price, 
+  alpha = 0,
+  standardize = F,
+  lambda = ridge_cv$lambda.min
+)
+
+# predict with ridge regression
+pred_ridge <- predict(
+  final_ridge,
+  type = "response",
+  s = ridge_cv$lambda.min,
+  newx = test_data |> dplyr::select(-c('mkt_price','date','hour','day','on_peak','year',"ail","temp_yeg","temp_yyc","hourly_imports","hourly_exports")) |> as.matrix()
+)
+
+```
+
+Now let's check on a lasso regression to see if it will yield even better predictions.
+
+```{r}
+
+# lasso reg for different values of lambda
+est_lasso <- glmnet(
+  x = train_set |> dplyr::select(-c('mkt_price','date','hour','day','on_peak','year',"ail","temp_yeg","temp_yyc","hourly_imports","hourly_exports")) |> as.matrix(),
+  y = train_set$mkt_price,
+  alpha = 1, 
+  standardize = F,
+  lambda = lambdas
+)
+
+```
+
+Associated with each value of $\lambda$ is a vector of lasso regression coefficients, stored in a matrix that can be accessed by coef().
+
+Now let’s plot the lasso regression coefficients using ggplot2.
+
+```{r}
+
+# organize results
+lasso_df <- est_lasso |> coef() |> t() |> as.matrix() |> as.data.frame()
+lasso_df <- lasso_df |> dplyr::select(-1) |> mutate(lambda = est_lasso$lambda)
+lasso_df <- lasso_df |> gather(key = "variable", value = "coefficient", -lambda)
+# plot
+ggplot(
+  data = lasso_df,
+  aes(x = lambda, y = coefficient, color = variable)
+) +
+geom_line() +
+scale_x_continuous(
+  expression(lambda),
+  labels = c("0.1", "10", "1,000", "100,000"),
+  breaks = c(0.1, 10, 1000, 100000),
+  trans = "log10"
+) +
+scale_y_continuous("Lasso coefficient") +
+scale_color_viridis_d("Predictor", option = "magma", end = 0.8) +
+theme_minimal() +
+theme(legend.position = "bottom")
+
+```
+
+Cross validation to tune the $\lambda$ parameter. We again use the built-in cross-validation function cv.glmnet().
+
+```{r}
+
+# lasso cv
+lasso_cv <- cv.glmnet(
+  x = train_set |> dplyr::select(-c('mkt_price','date','hour','day','on_peak','year',"ail","temp_yeg","temp_yyc","hourly_imports","hourly_exports")) |> as.matrix(),
+  y = train_set$mkt_price, 
+  alpha = 1,
+  standardize = F,
+  lambda = lambdas,
+  type.measure = "mse",
+  nfolds = 10
+)
+
+```
+
+From our cross-validation, we graph the RMSE of the lambdas.
+
+```{r}
+
+# create data frame with results
+lasso_cv_df <- data.frame(
+  lambda = lasso_cv$lambda, 
+  rmse = sqrt(lasso_cv$cvm)
+)
+# plot
+ggplot(
+  data = lasso_cv_df,
+  aes(x = lambda, y = rmse)
+) +
+geom_line() +
+geom_point(
+  data = lasso_cv_df |> filter(rmse == min(rmse)),
+  size = 3.5,
+  color = "darkorange"
+) +
+scale_y_continuous("RMSE") +
+scale_x_continuous(
+  expression(lambda),
+  trans = "log10",
+  labels = c("0.1", "10", "1,000", "100,000"),
+  breaks = c(0.1, 10, 1000, 100000),
+) +
+theme_minimal()
+
+```
+
+Now let's predict with the lasso regression and see how it does.
+
+```{r}
+
+# fit lasso regression 
+final_lasso <- glmnet(
+  x = train_set |> dplyr::select(-c('mkt_price','date','hour','day','on_peak','year',"ail","temp_yeg","temp_yyc","hourly_imports","hourly_exports")) |> as.matrix(),
+  y = train_set$mkt_price, 
+  alpha = 1,
+  standardize = F,
+  lambda = lasso_cv$lambda.min
+)
+
+# predict with lasso regression
+pred_lasso <- predict(
+  final_lasso,
+  type = "response",
+  s = lasso_cv$lambda.min,
+  newx = test_data |> dplyr::select(-c('mkt_price','date','hour','day','on_peak','year',"ail","temp_yeg","temp_yyc","hourly_imports","hourly_exports")) |> as.matrix()
+)
+
+```
+
+Let's look at the mean squared errors (MSE), and then we can decide on a model to use.
+
+```{r}
+
+test_data<-marco_data%>%
+             group_by(date,he)|> slice_head(n=1)%>%ungroup()%>%
+             select(mkt_price=actual_posted_pool_price,he,month,year,hourly_renewables,nit_settle_cad_gj,on_peak)%>%
+             filter(year==2024)
+
+
+# Make an object that will store the errors
+cv.error <- rep(NA,7)
+
+# Predict with our first model:
+
+# 1) First we predict with our tobit model and store them:
+mu <- predict(tob1,newdata=test_data)
+sigma <- tob1$scale
+# 2)
+p0 <- pnorm(mu/sigma)
+# 3)
+lambda <- function(x) dnorm(x)/pnorm(x)
+ey0 <- mu + sigma * lambda(mu/sigma)
+# 4) This last step gives us the actual expected prices
+ey <- p0 * ey0
+# So we just equate again:
+pred_tob <- ey
+
+# And now we add our tobit regression predicted values to check the MSE:
+cv.error[7] <- mean((test_data$mkt_price - pred_tob)^2)
+
+print(cv.error, digits = 4)
+
+```
+
+Let's now try getting the predictions and see how our model did. It looks like model 3 is the best at first, based on the AIC and BIC, however our ridge regression might be better.
+
+```{r}
+
+# Let's create a new dataframe to make graphing easier:
+for_graph <- test_data |> select(date,he,mkt_price,mktp_daylag)
+
+# Then let's get our predictions:
+
+pred1 <- predict(reg1, newdata = test_data)
+for_graph <- for_graph |> mutate(pred1 = pred1)
+pred2 <- predict(reg2, newdata = test_data)
+for_graph <- for_graph |> mutate(pred2 = pred2)
+pred3 <- predict(reg3, newdata = test_data)
+for_graph <- for_graph |> mutate(pred3 = pred3)
+# For the tobit predictions, we already did them in code above, so we're just storing here.
+for_graph <- for_graph |> mutate(pred_tob=pred_tob)
+# And now we put in our predictions from the ridge regression:
+for_graph <- for_graph |> mutate(pred_ridge=pred_ridge[,1])
+# And now from the lasso regression:
+for_graph <- for_graph |> mutate(pred_lasso=pred_lasso[,1])
+
+# Let's save this as a csv and graph on python:
+for_graph |> write_csv("graphing_predictions.csv")
+
+```
+
+
+Here I'm making code to create in-sample estimations with the tobit model.
+
+```{r}
+
+# TOBIT PREDICTIONS CALCULATED MANUALLY:
+# Like above, we are calculating the estimated values.
+# https://stats.stackexchange.com/questions/149091/censored-regression-in-r
+
+# 1) First we predict with our tobit model and store them:
+mu <- predict(tob1,newdata=test_data)
+sigma <- tob1$scale
+# 2)
+p0 <- pnorm(mu/sigma)
+# 3)
+lambda <- function(x) dnorm(x)/pnorm(x)
+ey0 <- mu + sigma * lambda(mu/sigma)
+# 4) This last step gives us the actual expected prices
+ey <- p0 * ey0
+# So we just equate again:
+pred_tob_insample <- as_tibble(ey)
+
+test_data<-test_data %>% bind_cols(pred_tob_insample)
+
+ggplot(test_data)%>%
+  geom_line()
+
+
+# And now let's create a dataset where we'll compare with in sample values.
+price_w_tob_insample <- train_data |> select(date,he,mkt_price,mktp_daylag) |>
+  mutate(pred_tob=pred_tob_insample)
+
+# Now let's save this in a CSV:
+price_w_tob_insample |> write_csv("insample_predictions.csv")
+
+
+```
+
+Now that we've chosen a model, let's see if we need to retrain our model in a method of a rolling window.
+
+```{r}
+
+# If we will be looping on our dates and variables, it would be useful to have a datetime variable.
+# Let's create one:
+
+# Creating a new date and time variable just in case. It might be important.
+fulldata <- fulldata |> mutate(datetime = format(make_datetime(year = year, hour = round(as.numeric(hour)), day = day, month = month), "%Y-%m-%d %H:%M:%S"))
+
+# Let's create a list of all the unique dates in our dataset.
+date_list <- fulldata |> select(date) |> unique()
+# And now we can use this to filter things out.
+year(date_list$date[length(date_list$date)]) # Just as an example of what we can do.
+
+# Now we need to create a loop that will loop and change the training window, then change the test day, as it goes along.
+# Let's get the length of time (in days) for how long our training set is supposed to be:
+train_length <- train_data |> select(date) |> unique() |> nrow()
+test_length <- test_data |> select(date) |> unique() |> nrow()
+
+date_list$date[train_length]
+
+# Let's make an empty list for the tobit predictions:
+pred_tob_roll <- list()
+
+# Now we loop and predict on a rolling window that updates:
+for (i in 1:test_length){
+  # Filter out the relevant training data
+  train_temp <- fulldata |> filter(date<=date_list$date[train_length-1+i]) # |> filter(date>=date_list$date[i])
+  # Filter out the day that we are forecasting
+  test_temp <- test_data |> filter(date==date_list$date[train_length+i])
+  
+  # Now we train our tobit regression and fit it:
+  tob_loop <- AER::tobit(model3,left=0,right=1000,data=train_temp)
+  # Then we run it on our forecast data. Recall, for Tobit, we have to manually calculate the predicted values each time:
+  #----------------------------------------------------------
+  # 1) First we predict with our tobit model and store them:
+  mu <- predict(tob_loop,newdata=test_temp)
+  sigma <- tob_loop$scale
+  # 2)
+  p0 <- pnorm(mu/sigma)
+  # 3)
+  lambda <- function(x) dnorm(x)/pnorm(x)
+  ey0 <- mu + sigma * lambda(mu/sigma)
+  # 4) This last step gives us the actual expected prices
+  ey <- p0 * ey0
+  # So we just equate again:
+  pred_tob <- ey
+  #----------------------------------------------------------
+  # And now we need to store our 24 hour prediction:
+  pred_tob_roll <- append(pred_tob_roll,pred_tob)
+}
+
+price_table <- test_data |> select(c("date","he","mkt_price")) |>
+  mutate(pred_tob_roll=as.numeric(pred_tob_roll))
+for_graph <- for_graph |> mutate(pred_tob_roll=as.numeric(pred_tob_roll))
+
+# Now let's check how accurate this is:
+
+mean((for_graph$mkt_price - for_graph$pred_tob_roll)^2)
+
+```
+
+
+
+
+
+
+
+
+

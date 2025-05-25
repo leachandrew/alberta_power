@@ -1007,6 +1007,26 @@ rep_cap
   
   
   
+#total revenue by plant time and year
+options(scipen = 999)  
+  
+  revs<- nrgstream_gen %>%
+    select(time,id,gen,plant_type)%>%
+    filter(year(time) >= 2004,plant_type %in% c("WIND","SOLAR"))%>% 
+    left_join(forecast_data%>%select(time,price=actual_posted_pool_price,ail=actual_ail))%>%
+    mutate(year=year(time))%>%
+    group_by(plant_type,year) %>% 
+    summarize(rev=round(sum(gen*price,na.rm=T)/10^6,2))%>%
+    ungroup()%>%
+    complete(year,plant_type,fill = list(avg_rev = NA))%>%
+    bind_rows(forecast_data%>%select(time,price=actual_posted_pool_price,ail=actual_ail)%>%
+                filter(year(time)>=2004)%>%
+                mutate(year=as.factor(year(time)))%>%
+                group_by(year)%>%
+                summarize(plant_type="Market average",avg_rev=sum(ail*price,na.rm = T)/sum(ail,na.rm=T)))
+  
+  
+  
 #price_capture
     
     trade_excl<-c("AB - WECC Imp Hr Avg MW", "AB - WECC Exp Hr Avg MW","AB - WECC Imp/Exp Hr Avg MW")

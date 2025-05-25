@@ -118,6 +118,8 @@ all_weather_data<-function(min_yr=2009,max_yr=2021){
   
   print(paste("Saving data"))
   temp_data<-rbind(eia_data,blatchford_data,yyc_data,yyc_sb_data,ymm_data,cold_lake_data)
+  
+  #names(temp_data)<-gsub("_lst","",names(temp_data))
   #AB_temps_data<-temp_data
   temp_data
 }
@@ -155,7 +157,11 @@ update_weather_data<-function(data_sent){
   max_yr<-year(Sys.Date())
   data_sent<-data_sent%>% filter(year(date)<min_yr)%>% #filter out partial year
     bind_rows(
-      all_weather_data(min_yr=min_yr,max_yr = max_yr)%>%
+      #test<-
+        all_weather_data(min_yr=min_yr,max_yr = max_yr)%>%
+        
+      #test %>%
+      rename(time=time_lst,temp=temp_c)%>%
       group_by(date_time,year,month,day,time,stn) %>% summarize(temp=mean(temp,na.rm = T))%>%
       group_by(date_time,year,month,day,time,stn) %>%
       mutate(hdd=pmax(18-temp,0)/24,cdd=pmax(temp-18,0)/24)%>% ungroup()%>%

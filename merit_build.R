@@ -12,7 +12,7 @@ options(scipen=999)
 
 update<-0 #add new data
 save<-1 #save files at the end
-synth<-1 #synthetic plants?
+synth<-0 #synthetic plants?
   synth_type<-2  #5 is a target facility, focus_id,4 is facility,3 is by Plant Type, 2 is by offer_control,1 is by plant_fuel, 0 is full merit as synthetic plant
   if(synth_type==5)
     focus_id<-c("EGC1")
@@ -56,7 +56,7 @@ load("data/forecast_data.RData")
   #clean up the trade date in the merit order
     
   merit_aug<-merit_data%>%
-    filter(date<ymd("2025-01-01"))%>%
+    #filter(date<ymd("2025-01-01"))%>%
     mutate(import_export=case_when(
     is.na(import_export) ~ "",
     TRUE                      ~  import_export
@@ -752,7 +752,7 @@ anci<-merit_aug %>% filter(is.na(Plant_Type))%>%
   load(file="data/hourly_summary.RData")
   load(file="data/market_data.RData")
   
-  mkt_data<-mkt_data%>%left_join(ngx_data_read(),by=c("date"))%>%filter(year>=2009,year<2025)
+  mkt_data<-mkt_data%>%left_join(ngx_data_read(),by=c("date"))#%>%filter(year>=2009,year<2025)
      
       
       # merge in companion market data and NIT gas prices
@@ -809,7 +809,11 @@ anci<-merit_aug %>% filter(is.na(Plant_Type))%>%
           #student csv  
           print(paste("Saving student csv file. Elapsed time is",time_length(interval(start_time, Sys.time()), "seconds"),"seconds"))
           write_csv(merit_aug %>% 
-                      select(date,he,asset_id,AESO_Name,Plant_Type,Plant_Fuel,co2_est,block_number,size,flexible,price,import_export,available_mw,dispatched_mw,merit,actual_posted_pool_price,actual_ail,month,day,hour,year,on_peak,temp_ymm=temp_YMM,temp_yeg=temp_YEG,temp_yyc=temp_YYC,hourly_dispatch,hourly_imports,hourly_exports,hourly_renewables), 
+                      select(date,he,month,day,hour,year,time,on_peak,import_export,asset_id,AESO_Name,Plant_Type,Plant_Fuel,co2_est,block_number,size,
+                             flexible,price,available_mw,dispatched_mw,merit,actual_posted_pool_price,
+                             actual_ail,temp_ymm=temp_YMM,temp_yeg=temp_YEG,temp_yyc=temp_YYC,
+                             hourly_dispatch,hourly_imports,hourly_exports,hourly_renewables,offer_control,offer_sum,
+                             nit_settle_cad_gj), 
                     file.path(format(Sys.time(),format="data/student_data_%Y_%b_%d_%H_%M.csv.gz",sep="")))
         }
       }
@@ -821,6 +825,16 @@ anci<-merit_aug %>% filter(is.na(Plant_Type))%>%
 #  select(date,he,alberta_internal_load=actual_ail,pool_price=actual_posted_pool_price,import_export,AESO_Name,Capacity,asset_id,block_number,price,from,to,size,available_mw,dispatched,dispatched_mw,flexible,Plant_Type,Plant_Fuel)
 #assignment_data%>%write_csv("merit_data.csv")
 
+# si_data<-merit_aug %>% 
+#  select(date,he,time,on_peak,super_peak,hourly_avail,hourly_dispatch,hourly_renewables,hourly_imports,hourly_exports,
+#         alberta_internal_load=actual_ail,pool_price=actual_posted_pool_price,import_export,AESO_Name,Capacity,asset_id,block_number,price,from,to,size,available_mw,dispatched,dispatched_mw,flexible,Plant_Type,Plant_Fuel,offer_sum)
+# write_csv(si_data, 
+#           file.path(format(Sys.time(),format="data/si_data_%Y_%b_%d_%H_%M.csv.gz",sep="")))
+
+#assignment_data%>%write_csv("merit_data.csv")
+
+      
+      
 # marco_data<-merit_aug %>% filter(date==ymd("2024-04-10"),size>0)%>%select(date,he,asset_id,size,price,dispatched,flexible)%>%
 #   group_by(date,he)%>%
 #   arrange(date,he,price,size,asset_id)%>%

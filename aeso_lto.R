@@ -1,11 +1,10 @@
 library(tidyverse)
 library(readxl)
-library(RColorBrewer)
-library(stringr)
+library(cowplot)
 
 lto_data <- read_excel("data/aesoLTO.xlsx")
 colnames(lto_data)[1] <- "date"
-df1<-lto_data %>% pivot_longer(-c(date, Actual),names_to = "forecast",values_to = "peak") %>% 
+lto_long<-lto_data %>% pivot_longer(-c(date, Actual),names_to = "forecast",values_to = "peak") %>% 
   filter(!is.na(peak))%>%
   group_by(forecast)%>%mutate(split=forecast)%>%
   separate(split,into = c("year","case"),extra="merge")%>%
@@ -16,61 +15,39 @@ df1<-lto_data %>% pivot_longer(-c(date, Actual),names_to = "forecast",values_to 
   #forecast != "2014L",
   #forecast != "2014.EnviroShift",forecast != "2014.EnergyTrans",
   #forecast != "2016L",
-#) %>%
-  mutate(forecast=as_factor(forecast),
-         forecast=fct_relevel(forecast,"2021 Reference Case",after = 18))
+#) #%>%
+  #mutate(forecast=as_factor(forecast),
+  #       forecast=fct_relevel(forecast,"2024 Reference Case",after = 18))
+  ungroup()%>%
+  I()
 
-#set_png(file="images/AESO_LTO.png", width = 1400, height = 750)
-#jpeg(file="AESO_LTO.jpg", width = 1400, height = 750)
-ggplot(df1) +
-  geom_line(data=filter(df1,grepl("Reference",forecast)|grepl("Forecast",forecast))%>% filter(year!=2021),
-            aes(date,peak,group = forecast,color="Previous AESO Reference Case Forecasts",linetype="Previous AESO Reference Case Forecasts"),size=.7) +
-  geom_line(data=filter(df1,forecast=="Actual"),aes(date,peak,group = forecast,colour="Historic Peak Loads",linetype="Historic Peak Loads"),size=2) +
-  geom_line(data=df1%>%filter(year==2021, forecast=="2021 Reference Case")%>%
-              mutate(forecast=fct_relevel(forecast,"2021 Reference Case",after = Inf),
-                     forecast=fct_recode(forecast,"Reference Case (2021)"="2021 Reference Case")),
-              aes(date,peak,group = forecast,colour=forecast,linetype=forecast),size=2) +
-  scale_colour_manual(NULL,values=c("Black","grey60","Black"),
-                      guide=guide_legend(override.aes = list(lty = c("solid", "solid","21"),size=c(2,.7,2) ) ))+
-  scale_linetype_manual(NULL,values=c("solid","solid","21")) +
-  theme_minimal()+theme(
-    legend.key.width=unit(2,"line"),
-    legend.position = "bottom",
-    legend.margin=margin(c(0,0,0,0),unit="cm"),
-    legend.text = element_text(colour="black", size = 14, face = "bold"),
-    plot.caption = element_text(size = 12, face = "italic",hjust = 0),
-    plot.title = element_text(face = "bold"),
-    plot.subtitle = element_text(size = 16, face = "italic"),
-    panel.grid.minor = element_blank(),
-    text = element_text(size = 16,face = "bold"),
-    axis.text = element_text(size = 16,face = "bold", colour="black")
-  )+    labs(y="Alberta Peak Internal Load (MW)",x="",
-             #title="AESO Long Term Outlook forecasts of Alberta peak internal load (MW, 2004-2021)",
+ggplot(lto_long) +
+  geom_line(data=lto_long%>%filter(year!=2024),aes(date,peak/1000,group = forecast,color="Previous AESO Forecasts",linetype="Previous AESO Forecasts"),size=.7) +
+  geom_line(aes(date,Actual/1000,colour="AESO 2004-24 Peak Internal Loads",linetype="AESO 2004-24 Peak Internal Loads"),size=2) +
+  geom_line(data=lto_long%>%
+              filter(forecast%in%c("2024 Reference Case","2024 High Electrification"))%>%
+              mutate(forecast=gsub("2024 Reference Case","AESO 2024 Reference Case",forecast),
+               forecast=gsub("2024 High Electrification","AESO 2024 High Electrification Case",forecast)),
+               aes(date,peak/1000,group = forecast,colour=forecast,linetype=forecast),size=2) +
+  scale_colour_manual(NULL, values = c(
+    "AESO 2004-24 Peak Internal Loads" = "black",
+    "Previous AESO Forecasts" = "grey60",
+    "AESO 2024 Reference Case" = "black",
+    "AESO 2024 High Electrification Case" = "dodgerblue"
+  )) +
+  scale_linetype_manual(NULL, values = c(
+    "AESO 2004-24 Peak Internal Loads" = "solid",
+    "Previous AESO Forecasts" = "solid",
+    "AESO 2024 Reference Case" = "11",
+    "AESO 2024 High Electrification Case" = "22"
+  ))+
+  
+  theme_ps_grid()+
+  labs(y="Alberta Peak Internal Load (GW)",x="",
+             title="AESO Load Forecasts",
+             subtitle="Have we seen this movie before?",
              caption="Data via AESO, graph by Andrew Leach.")
-ggsave("aeso_lto.png",width=14,height=6,dpi=300,bg="white")
-ggsave("aeso_lto_small.png",width=16,height=9,dpi=150)
-
-ggplot(df1) +
-  geom_line(aes(date,peak,group = forecast,color="Previous AESO Forecasts",linetype="Previous AESO Forecasts"),size=.7) +
-  geom_line(aes(date,Actual,colour="Historic Peak Loads",linetype="Historic Peak Loads"),size=2) +
-  scale_colour_manual(NULL,values=c("Black","grey60","Black"))+
-  #                    guide=guide_legend(override.aes = list(lty = c("solid", "solid","21"),size=c(2,.7,2) ) ))+
-  scale_linetype_manual(NULL,values=c("solid","solid","21")) +
-  theme_minimal()+theme(
-    legend.key.width=unit(2,"line"),
-    legend.position = "bottom",
-    legend.margin=margin(c(0,0,0,0),unit="cm"),
-    legend.text = element_text(colour="black", size = 14, face = "bold"),
-    plot.caption = element_text(size = 12, face = "italic",hjust = 0),
-    plot.title = element_text(face = "bold",size=18),
-    plot.subtitle = element_text(size = 16, face = "italic"),
-    panel.grid.minor = element_blank(),
-    text = element_text(size = 16,face = "bold"),
-    axis.text = element_text(size = 16,face = "bold", colour="black")
-  )+    labs(y="Alberta Peak Internal Load (MW)",x="",
-             title="The AESO is uniquely positioned and qualified to assess the future evolution of Alberta's electricity grid",
-             caption="Data via AESO, graph by Andrew Leach.")
-ggsave("aeso_lto_new.png",width=14,height=6,dpi=300,bg="white")
+ggsave("aeso_lto_new.png",width=12.5,height=6,dpi=300,bg="white")
 
 
 
