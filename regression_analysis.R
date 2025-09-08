@@ -901,6 +901,42 @@ ctax_type%>% #filter(percentile<=95) %>%
 ggsave(filename = "images/by_plant_net.png",dpi=300,width = 12, height=10)
 
 
+ctax_type%>% filter(Plant_Type %in% c("COAL","NGCC")) %>%
+  mutate(Plant_Type=case_when(                 Plant_Type=="GAS"~"Natural Gas",
+                                               Plant_Type=="SCGT"~"Natural Gas\nSimple Cycle",
+                                               Plant_Type=="NGCC"~"Natural Gas\nCombined Cycle",
+                                               Plant_Type=="NGCONV"~"Gas-Fired\nSteam",
+                                               Plant_Type=="COAL"~"Coal-Fired\nSteam",
+  ))%>%
+  ggplot(aes(x=percentile, y=estimate, ymin=conf.low, ymax=conf.high,group=reg,color=reg)) +
+  #geom_pointrange() +
+  #geom_line(size=1.25)+
+  geom_point()+
+  geom_errorbar(width=rel(.75),size=.85)+
+  geom_hline(yintercept = 1,linetype="dotted")+
+  scale_x_continuous(expand=c(0,0),breaks=pretty_breaks())+
+  expand_limits(x=c(0,100))+
+  scale_y_continuous(expand=c(0,0),breaks=pretty_breaks())+
+  #expand_limits(y=c(-6,6))+
+  facet_grid(rows=vars(Plant_Type),scales="free_y")+
+  geom_hline(yintercept = 0, col = "black") +
+  labs(
+    x = "Percentile of total offered power (%)", y = "Marginal effect (Δ in offer : Δ in $/MWh of carbon policy cost)",
+    #title = "Marginal effect of carbon tax cost and output-based allocation values on power offers by plant type"
+    #subtitle = "Conditional on plant type"
+  ) +
+  theme_ps()+
+  theme(panel.spacing = unit(3, "lines"),
+        legend.title = element_text())+
+  #theme_ipsum() + theme(legend.position = "bottom")+
+  scale_color_manual("Marginal effect of net carbon policy cost",values=c("black","dodgerblue"),labels=c("Full sample","Pre-2020"))+
+  #guides(color= "none")+
+  NULL
+ggsave(filename = "images/by_plant_net_talk.png",dpi=300,width = 12, height=8)
+
+
+
+
 load(file = paste("data/",bids_files$value,sep=""))
 paste("loaded file=data/",bids_files$value,sep="")
 
@@ -1040,8 +1076,16 @@ offer_reg%>%bind_rows(offer_reg_short)%>%
 ggsave(filename = "images/offers.png",dpi=300,width = 12, height=10,bg = "transparent")
 
 
-offer_co%>% filter(offer_gen %in% c("Balancing Pool"))%>%
-  ggplot(aes(x=percentile, y=estimate, ymin=conf.low, ymax=conf.high,group=term,color=term)) +
+offer_reg%>%bind_rows(offer_reg_short)%>%
+  filter(offer_gen%in% c("ATCO/Heartland","Balancing Pool"))%>%
+  mutate(offer_gen=as_factor(offer_gen),
+         offer_gen=fct_relevel(offer_gen,c("Balancing Pool","ATCO/Heartland","Capital Power","ENMAX","TransAlta"))
+  )%>%
+  filter(grepl("net",term)) %>%
+  #mutate(peak=ifelse(grepl("peak_facTRUE",term),"Peak Hours","Off-Peak Hours"),
+  #       Plant_Type="All Plants")
+  
+  ggplot(aes(x=percentile, y=estimate, ymin=conf.low, ymax=conf.high,group=sample,color=sample)) +
   #geom_pointrange() +
   #geom_line(size=1.25)+
   geom_point()+
@@ -1049,8 +1093,8 @@ offer_co%>% filter(offer_gen %in% c("Balancing Pool"))%>%
   #geom_errorbar(width=2.85)+
   geom_errorbar(width=rel(.5))+
   scale_x_continuous(expand=c(0,0),breaks=pretty_breaks())+
-  expand_limits(x=0)+
-  expand_limits(y=c(-.55,.55))+
+  expand_limits(x=c(0,100))+
+  expand_limits(y=c(0,1.25))+
   scale_y_continuous(expand=c(0,0),breaks=pretty_breaks())+
   facet_grid(row=vars(offer_gen),scales="free_y")+
   geom_hline(yintercept = 0, col = "black") +
@@ -1060,10 +1104,53 @@ offer_co%>% filter(offer_gen %in% c("Balancing Pool"))%>%
     #subtitle = "Conditional on plant type"
   ) +
   theme_ps()+
-  theme(panel.spacing = unit(1, "lines"))+
+  theme(
+    panel.spacing = unit(1, "lines"),
+    legend.title = element_text()
+  )+
   #theme_ipsum() + theme(legend.position = "bottom")+
-  scale_color_manual("",values=c("black"),labels=c("Marginal effect of net carbon policy cost"))+
-  guides(color= "none")+
+  scale_color_manual("Marginal effect of net carbon policy cost",values=c("black","dodgerblue"),labels=c("Full sample (2013-2023)","Pre-2020"))+
+  #guides(color= "none")+
+  NULL
+ggsave(filename = "images/offers_bp_hl.png",dpi=300,width = 11, height=6.5,bg = "transparent")
+
+
+
+offer_reg%>%bind_rows(offer_reg_short)%>%
+  filter(offer_gen%in% c("Balancing Pool"))%>%
+  mutate(offer_gen=as_factor(offer_gen),
+         offer_gen=fct_relevel(offer_gen,c("Balancing Pool","ATCO/Heartland","Capital Power","ENMAX","TransAlta"))
+  )%>%
+  filter(grepl("net",term)) %>%
+  #mutate(peak=ifelse(grepl("peak_facTRUE",term),"Peak Hours","Off-Peak Hours"),
+  #       Plant_Type="All Plants")
+  
+  ggplot(aes(x=percentile, y=estimate, ymin=conf.low, ymax=conf.high,group=sample,color=sample)) +
+  #geom_pointrange() +
+  #geom_line(size=1.25)+
+  geom_point()+
+  geom_hline(yintercept = 1,linetype="dotted")+
+  #geom_errorbar(width=2.85)+
+  geom_errorbar(width=rel(.5))+
+  scale_x_continuous(expand=c(0,0),breaks=pretty_breaks())+
+  expand_limits(x=c(0,100))+
+  expand_limits(y=c(0,1.25))+
+  scale_y_continuous(expand=c(0,0),breaks=pretty_breaks())+
+  facet_grid(row=vars(offer_gen),scales="free_y")+
+  geom_hline(yintercept = 0, col = "black") +
+  labs(
+    x = "Percentile of total offered power (%)", y = "Marginal effect (Δ in offer : Δ in $/MWh of net carbon policy cost)",
+    #title = "Marginal effect of carbon tax cost and output-based allocation values on power offers by plant type"
+    #subtitle = "Conditional on plant type"
+  ) +
+  theme_ps()+
+  theme(
+    panel.spacing = unit(1, "lines"),
+    legend.title = element_text()
+  )+
+  #theme_ipsum() + theme(legend.position = "bottom")+
+  scale_color_manual("Marginal effect of net carbon policy cost",values=c("black","dodgerblue"),labels=c("Full sample (2013-2023)","Pre-2020"))+
+  #guides(color= "none")+
   NULL
 ggsave(filename = "images/offers_bp.png",dpi=290,width = 14, height=6,bg = "transparent")
 
