@@ -173,6 +173,7 @@ data_update <- function(data_sent,fix_year=0) {
   #new_data$Time<- as.POSIXct(strptime(new_data$Time, "%m/%d/%Y %H:%M",tz="America/Denver"))
   #fix names in some older files  
   names(new_data)<-gsub("AB - H R  Milner Hr Avg MW","AB - H R Milner Hr Avg MW",names(new_data))
+  #names(new_data)<-gsub("AB - Stavely Hr Avg MW","AB - H R Milner Hr Avg MW",names(new_data))
   names(new_data)<-gsub("AB - NPC1 Denis St  Pierre Hr Avg MW","AB - NPC1 Denis St Pierre Hr Avg MW",names(new_data))
   names(new_data)<-gsub("AB - BC Hydro  Imp/Exp Hr Avg MW","AB - BC Hydro Imp/Exp Hr Avg MW",names(new_data))
   names(new_data)<-gsub("AB - Encana Foster Creek  Hr Avg MW","AB - Encana Foster Creek Hr Avg MW",names(new_data))
@@ -247,40 +248,40 @@ data_update <- function(data_sent,fix_year=0) {
 }
 
 
-ng_conv<-function(data_sent){
-
-#Repair coal-to-gas-conversions
-data_sent %>% 
-  mutate(Plant_Type=case_when( 
-    (ID=="GN3") & (Time>=ymd("2024-06-18")) ~ "NGCONV",  #GN3 change to gas effective
-    (ID=="HRM") & (Time>=ymd("2020-05-08")) ~ "SCGT",  #Milner change to gas effective
-    (ID=="HRM") & (Time>=ymd("2023-09-21")) ~ "CCGT",  #Milner change to gas effective 
-    #SH1 Sheerness #1 and SH2 Sheerness #2 -July 30, 2021.https://www.aeso.ca/market/market-upTimes/2021/sh1-sheerness-1-and-sh2-sheerness-2-change-in-fuel-type-notice/
-    (ID %in% c("SH1","SH2")) & (Time>=ymd("2021-07-30")) ~ "NGCONV",
-    #KH3 January 11, 2022
-    (ID =="KH1") & (Time>=ymd("2022-01-11")) ~ "NGCONV",
-    #KH2 July 27, 2021.
-    (ID =="KH2") & (Time>=ymd("2021-07-21")) ~ "NGCONV",
-    (ID =="KH3") & (Time>=ymd("2022-01-11")) ~ "NGCONV",
-    #Battle River #4 (BR4)	March 8, 2022
-    (ID =="BR4") & (Time>=ymd("2022-03-08")) ~ "NGCONV",
-    #Battle River #5 (BR5)	 November 19, 2021
-    (ID =="BR5") & (Time>=ymd("2021-11-19")) ~ "NGCONV",
-    #Sundance #6 (SD6)	401	0	0 February 19, 2021
-    (ID =="SD6") & (Time>=ymd("2021-02-19")) ~ "NGCONV",
-    (ID =="SD4") & (Time>=ymd("2022-01-4")) ~ "NGCONV",
-    TRUE ~ Plant_Type),
-    Capacity=case_when(
-      (ID=="HRM") & (Time>=ymd("2020-04-23"))&(Time<ymd("2020-05-08")) ~ 185,  #Milner change to gas effective 
-      (ID=="HRM") & (Time>=ymd("2020-05-08"))&(Time<ymd("2021-12-09")) ~ 208,  #Milner change to gas effective 
-      (ID=="HRM") & (Time>=ymd("2021-12-09")) ~ 300,  #Milner change to gas effective 
-      TRUE~Capacity
-    ),
-    Plant_Fuel=ifelse(Plant_Type=="NGCONV","GAS",Plant_Fuel)
-  )
-  
-  
-}
+# ng_conv<-function(data_sent){
+# 
+# #Repair coal-to-gas-conversions
+# data_sent %>% 
+#   mutate(Plant_Type=case_when( 
+#     (ID=="GN3") & (Time>=ymd("2024-06-18")) ~ "NGCONV",  #GN3 change to gas effective
+#     (ID=="HRM") & (Time>=ymd("2020-05-08")) ~ "SCGT",  #Milner change to gas effective
+#     (ID=="HRM") & (Time>=ymd("2023-09-21")) ~ "CCGT",  #Milner change to gas effective 
+#     #SH1 Sheerness #1 and SH2 Sheerness #2 -July 30, 2021.https://www.aeso.ca/market/market-upTimes/2021/sh1-sheerness-1-and-sh2-sheerness-2-change-in-fuel-type-notice/
+#     (ID %in% c("SH1","SH2")) & (Time>=ymd("2021-07-30")) ~ "NGCONV",
+#     #KH3 January 11, 2022
+#     (ID =="KH1") & (Time>=ymd("2022-01-11")) ~ "NGCONV",
+#     #KH2 July 27, 2021.
+#     (ID =="KH2") & (Time>=ymd("2021-07-21")) ~ "NGCONV",
+#     (ID =="KH3") & (Time>=ymd("2022-01-11")) ~ "NGCONV",
+#     #Battle River #4 (BR4)	March 8, 2022
+#     (ID =="BR4") & (Time>=ymd("2022-03-08")) ~ "NGCONV",
+#     #Battle River #5 (BR5)	 November 19, 2021
+#     (ID =="BR5") & (Time>=ymd("2021-11-19")) ~ "NGCONV",
+#     #Sundance #6 (SD6)	401	0	0 February 19, 2021
+#     (ID =="SD6") & (Time>=ymd("2021-02-19")) ~ "NGCONV",
+#     (ID =="SD4") & (Time>=ymd("2022-01-4")) ~ "NGCONV",
+#     TRUE ~ Plant_Type),
+#     Capacity=case_when(
+#       (ID=="HRM") & (Time>=ymd("2020-04-23"))&(Time<ymd("2020-05-08")) ~ 185,  #Milner change to gas effective 
+#       (ID=="HRM") & (Time>=ymd("2020-05-08"))&(Time<ymd("2021-12-09")) ~ 208,  #Milner change to gas effective 
+#       (ID=="HRM") & (Time>=ymd("2021-12-09")) ~ 300,  #Milner change to gas effective 
+#       TRUE~Capacity
+#     ),
+#     Plant_Fuel=ifelse(Plant_Type=="NGCONV","GAS",Plant_Fuel)
+#   )
+#   
+#   
+# }
 
 #load the file
 load(file="nrgstream/nrgstream_gen.RData")
@@ -295,13 +296,14 @@ get_plant_info()
 
 
 nrgstream_gen<-filter(nrgstream_gen,year(Time)<2023)
+#nrgstream_gen<-data_update(nrgstream_gen,2022)
 nrgstream_gen<-data_update(nrgstream_gen,2023)
 nrgstream_gen<-data_update(nrgstream_gen,2024)
 nrgstream_gen<-data_update(nrgstream_gen,2025)
 
+test<-nrgstream_gen %>% filter(is.na(Plant_Fuel))
 
-
-nrgstream_gen<-ng_conv(nrgstream_gen)
+nrgstream_gen<-ng_conv(nrgstream_gen,time_var = "Time",id_sent = "ID")
 
 
 #nrgstream_gen<-nrgstream_gen%>%clean_names()
@@ -311,8 +313,33 @@ nrgstream_gen<-ng_conv(nrgstream_gen)
 
 save(nrgstream_gen, file= "nrgstream/nrgstream_gen.RData")
 
+# 
+# R > aeso_assets %>% filter(! id %in% nrgstream_gen$id)
+# # A tibble: 19 × 7
+# asset                                mc   tng   dcr type    fuel    id   
+# <chr>                             <dbl> <dbl> <dbl> <chr>   <chr>   <chr>
+# 4 NPC3 Elmworth (NPC3)                  9     0     0 SCGT    GAS     NPC3  2022-01-14
 
+# 9 eReserve7 (ERV7)                     20     0    16 STORAGE STORAGE ERV7 2023
+# 10 eReserve8 (ERV8)                     20     0    16 STORAGE STORAGE ERV8 2023 
+# 11 eReserve9 (ERV9)                     20     0     0 STORAGE STORAGE ERV9 2023 
+# 12 Sollair Solar Energy Plant (SLR1)    75    64     0 SOLAR   SOLAR   SLR1 2023
 
+# 14 Buffalo Atlee 1 (BFL1)*              18     0     0 WIND    WIND    BFL1 2023
+# 15 Buffalo Atlee 2 (BFL2)*              16     0     0 WIND    WIND    BFL2 2023
+# 16 Buffalo Atlee 3 (BFL3)*              18     0     0 WIND    WIND    BFL3 2023
+# 17 Buffalo Atlee 4 (BFL4)*              11     0     0 WIND    WIND    BFL4 2023
+# 18 Jenner 2 (JNR2)*                     71     0     0 WIND    WIND    JNR2 2023
+# 19 Paintearth Wind Project (PAW1)*     198     0     0 WIND    WIND    PAW1 2023
+
+#   1 Benalto 1 (VBN1)                      5     0     0 SCGT    GAS   VBN1  2024
+# 2 Briker 1 (VBR1)                       5     0     0 SCGT    GAS     VBR1 2024
+# 3 Kenilworth 1 (VKW1)                   5     0     0 SCGT    GAS     VKW1 2024
+# 5 Netook 1 (VNT1)                       5     0     0 SCGT    GAS     VNT1 2024
+# 6 Northern Valley 1 (VNV1)              5     0     0 SCGT    GAS     VNV1 2024
+# 7 South Edmonton Terminal (SET1)       20     0     0 SCGT    GAS     SET1 2021
+# 8 Wapiti (WPT1)*                       30    21     0 COGEN   GAS     WPT1 2024
+# 13 Tilley Solar (TLE1)                  24     0     0 SOLAR   SOLAR   TLE1 2025
 
 
 

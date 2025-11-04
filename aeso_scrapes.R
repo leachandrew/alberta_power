@@ -47,10 +47,10 @@
  
  
  
-#test<-get_metered_volumes_report("2024-08-01")%>%filter(asset_id %in% c("HAL2","CLD1","BPW1","ACD1","WIN1","WIR1"))
+#test<-get_metered_volumes_report("2025-09-01")
 #test<-all_vols%>%filter(asset_id %in% c("HAL2","CLD1","BPW1","ACD1","WIN1","WIR1"))
  
-
+#test<-process_data(clean_volume_data(test))
  
  
 get_all_data<-function() {
@@ -79,13 +79,14 @@ get_all_data<-function() {
 #get_all_data()
 
 #rebuild the data
+#year_id<-2006
 build_all<-function(){
 years<-seq(2004,2020)
 data_list<-list()
 i<-1
 load("data/forecast_data.Rdata")
 for(year_id in years){
-  filename<-paste("measured_vols_",year_id,".RData",sep = "")
+  filename<-paste("data/measured_vols_",year_id,".RData",sep = "")
   print(filename)
   load(file= filename)
   #Need to process time and dates to have date,he,hour,dest
@@ -130,7 +131,20 @@ update_vols <- function(data_sent) {
   rbind(data_sent,process_data(data_store))
 }
 
-
+# data_store<-data.frame()
+# days<-test$date%>%unique()
+# for(day in days){
+#   print(as.Date(day))
+#   xdf<-get_metered_volumes_report(as.Date(day), as.Date(day)+days(1))
+#   data_store<-rbind(data_store,clean_volume_data(xdf))
+#   #list_item<-list_item+1
+# }
+# fix_data<-process_data(data_store)
+# all_vols<-all_vols%>%filter(date!=days)%>%
+#   bind_rows(fix_data)%>%
+#   arrange(date,hour)
+# 
+# testing<-all_vols %>%filter(date %in% days)
 
 process_data <- function(data_sent) {
   #function to process all AESO data into useful load and trade volumes

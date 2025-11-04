@@ -88,15 +88,37 @@ load("data/forecast_data.RData")
   #test<-all_vols%>% filter(date==ymd("2025-03-01"))
   #test<-all_vols%>% filter(is.na(Plant_Type))
   
+  # R > aeso_assets %>% filter(! id %in% all_vols$asset_id)
+  # # A tibble: 9 × 7
+  # asset                       mc   tng   dcr type  fuel  id   
+  # <chr>                    <dbl> <dbl> <dbl> <chr> <chr> <chr>
+  #   1 Benalto 1 (VBN1)             5     0     0 SCGT  GAS   VBN1 July 2024
+  # 2 Briker 1 (VBR1)              5     0     0 SCGT  GAS   VBR1 dec 2024
+  # 3 Kenilworth 1 (VKW1)          5     0     0 SCGT  GAS   VKW1 sep 2024
+  # 4 Netook 1 (VNT1)              5     0     0 SCGT  GAS   VNT1 aug 2024
+  # 5 Northern Valley 1 (VNV1)     5     0     0 SCGT  GAS   VNV1 nov 2024
+  # 6 Wapiti (WPT1)*              30    21     0 COGEN GAS   WPT1 sept 2024
+  # 7 Gleichen Solar (GLE1)       14    12     0 SOLAR SOLAR GLE1 mar 2025
+  # 8 Tilley Solar (TLE1)         24     0     0 SOLAR SOLAR TLE1 sep 2025
+  # 9 ETL1 Ethel Lake (ETL1)*     18    10     0 OTHER OTHER ETL1 may 2025
+  
+  
+  
   if(update==1)
    {
    load(file="data/metered_vols_data.Rdata" ) 
-    #all_vols<-all_vols %>% filter(date<=ymd("2025-01-20"))
+    #all_vols<-all_vols %>% filter(date<=ymd("2024-08-01"))
     #test<-all_vols %>% filter(asset_id=="SLD1")
     #anci<-all_vols %>% filter(is.na(Plant_Type))%>% 
     #  I()
     #all_vols <-all_vols %>% mutate(asset_id=gsub("SLD1","SDL1",asset_id)) #fix saddlebrook error
     #all_vols <-all_vols %>% mutate(asset_name=gsub("SLD1 Saddlebrook Solar","SDL1 Saddlebrook Solar",asset_name)) #fix saddlebrook error
+    #all_vols<-all_vols %>% filter(date<=ymd("2025-04-20"))
+    #left_join(forecast_data,by=c("date","he"))
+    #replace_data<-bind_rows(get_forecast_report(ymd("2006-12-01"),ymd("2006-12-31")),
+    #                        get_forecast_report(ymd("2007-01-01"),ymd("2007-01-31")))
+    #test_2<-test %>% rows_update(replace_data,by=c("date","he"))
+    
     all_vols<-update_vols(all_vols)
     save(all_vols,file="data/metered_vols_data.Rdata" ) 
     #isolate renewable (non-hydro and biomass) volumes from metered volumes - the ones that default bid to zero
